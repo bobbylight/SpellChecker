@@ -1,0 +1,196 @@
+<project name="JAZZY - Java Spell Checker" default="clean-build-all" basedir=".">
+
+  <!-- set global properties for this build (directory names) -->
+  <property name="src" value="src"/>
+  <property name="build" value="bin"/>
+  <property name="dist"  value="dist"/>
+  <property name="dict" value="dict"/>
+  <property name="www" value="www"/>
+  <property name="javadoc"  value="javadoc"/>
+  <property name="jedit-config" value="${src}/com/swabunga/spell/jedit/config"/>
+  <property name="target" value="1.1"/>
+  <property name="package" value="com.swabunga.spell.event"/>
+  <property name="verbose" value="false"/>
+  <property name="jsdk-lib"  value=""/>
+  <property name="junit"  value=""/>
+  <property name="extrafiles" value="CONTRIBUTORS.txt,LICENSE.txt,README.txt"/>
+  	
+  <!-- Build classpath -->
+  <path id="classpath.id">
+    <pathelement path="${classpath}"/>
+    <pathelement location="${junit}"/>
+    <!-- external libs needed for build
+    <fileset dir="lib">
+      <include name="**/*.jar"/>
+    </fileset>
+    -->
+  </path>
+
+  <path id="bootclass.path">
+    <fileset dir="${jsdk-lib}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${dist}/lib"/>
+    <mkdir dir="${www}"/>
+    <mkdir dir="${www}/dict"/>
+    <mkdir dir="${javadoc}"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac deprecation="true" verbose="${verbose}" srcdir="${src}" destdir="${build}" target="${target}" source="1.3">
+      <classpath refid="classpath.id"/>
+      <exclude name="com/swabunga/spell/jedit/**"/>
+      <exclude name="com/swabunga/test/**"/>
+    </javac>
+    <copy todir="${build}" >
+      <fileset dir="${src}" >
+        <include name="**/*.properties"/>
+      </fileset>
+      <fileset dir="${basedir}" includes="${extrafiles}"/>
+    </copy>
+  </target>
+
+  <target name="cross-compile" depends="init">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac deprecation="true" verbose="${verbose}" srcdir="${src}" destdir="${build}" target="${target}"
+           bootclasspathref="bootclass.path">
+      <classpath refid="classpath.id"/>
+      <exclude name="com/swabunga/spell/jedit/**"/>
+      <exclude name="com/swabunga/test/**"/>
+    </javac>
+    <copy todir="${build}" >
+      <fileset dir="${src}" >
+        <include name="**/*.properties"/>
+      </fileset>
+    <fileset dir="${basedir}" includes="${extrafiles}"/>
+    </copy>
+  </target>
+
+  <target name="debug-compile" depends="init">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac debug="true" srcdir="${src}" destdir="${build}"
+           target="${target}" classpath="${classpath};${junit}">
+      <!-- <classpath refid="classpath.id"/> -->
+      <exclude name="com/swabunga/spell/jedit/**"/>
+    </javac>
+    <copy todir="${build}" >
+      <fileset dir="${src}" >
+        <include name="**/*.properties"/>
+      </fileset>
+    <fileset dir="${basedir}" includes="${extrafiles}"/>
+    </copy>
+  </target>
+
+  <target name="clean-debug-compile" depends="clean,debug-compile"/>
+
+  <target name="clean-build-all" depends="clean,applet,library-core,library-swing,library-all,examples,source-release,binary-release"/>
+  	
+  <target name="clean-compile" depends="clean,compile"/>
+  
+  <target name="javadoc" depends="init">
+    <!-- Compile the javadoc from ${src} into ${javadoc} -->
+    <javadoc sourcepath="${src}" destdir="${javadoc}" packagenames="com.swabunga.spell.*">
+      <classpath refid="classpath.id"/>
+    </javadoc>
+  </target>
+
+  <target name="clean">
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+    <delete dir="${javadoc}"/>
+    <delete file="${www}/jazzy-applet.jar"/>
+    <delete dir="${www}/dict"/>
+  </target>
+
+  <target name="applet" depends="compile">
+	<jar jarfile="${www}/jazzy-applet.jar" basedir="${build}"/>
+  	
+  	<zip basedir="${dict}" zipfile="${www}/dict/english.0.zip" includes="english.0"/>
+  	
+  </target>
+
+  <target name="dictionary-release">
+	<zip zipfile="${dist}/english.0.zip" basedir="${dict}" includes="**/english.0" />
+  </target>
+
+  <target name="website" depends="applet,dictionary-release">
+  	<copy file="${dist}/english.0.zip" todir="${www}/dict"/>
+  </target>
+
+  <target name="javadoc-release" depends="javadoc">
+    <!-- Create the distribution directories -->
+    <zip zipfile="${dist}/jazzy-doc.zip" basedir="${javadoc}"/>
+  </target>
+  
+  <target name="source-release">
+    <!-- Create the distribution directories -->
+    <zip zipfile="${dist}/jazzy-src.zip" basedir="."
+         excludes="www/dict/**,bin/**,dist/**,dict/**,src/**/jedit/**,test/**,javadoc/**"/>
+  </target>
+
+  <target name="binary-release" depends="compile,library-core,library-swing,examples">
+    <copy todir="${dist}/lib" >
+      <fileset dir="${basedir}" includes="${extrafiles}"/>
+    </copy>
+  	<zip zipfile="${dist}/jazzy-bin.zip" basedir="${dist}/lib" includes="${extrafiles},jazzy-core.jar,jazzy-swing.jar,jazzy-examples.jar"/>
+  </target>
+
+  <target name="library-core" depends="compile">
+  	<jar jarfile="${dist}/lib/jazzy-core.jar" basedir="${build}" includes="**,${extrafiles}" excludes="com/swabunga/spell/examples/**,com/swabunga/spell/swing/**"/>
+  </target>
+
+  <target name="library-all" depends="compile">
+  	<jar jarfile="${dist}/lib/jazzy.jar" basedir="${build}" includes="**,${extrafiles}" excludes="**/test/**,**/jedit/**">
+  	  	<manifest>
+  			<attribute name="Built-By" value="${user.name}"/>
+  		</manifest>
+	</jar>
+  </target>
+
+  <target name="library-swing" depends="compile">
+  	<jar jarfile="${dist}/lib/jazzy-swing.jar" basedir="${build}" includes="com/swabunga/spell/swing/**,${extrafiles}">
+  	  	<manifest>
+  			<attribute name="Built-By" value="${user.name}"/>
+  			<attribute name="Class-Path" value="jazzy-core.jar"/>
+  		</manifest>
+  	</jar>
+  </target>
+
+  <target name="examples" depends="compile">
+ 	<jar jarfile="${dist}/lib/jazzy-examples.jar" basedir="${build}" includes="com/swabunga/spell/examples/**,${extrafiles}">
+  		<manifest>
+  			<attribute name="Built-By" value="${user.name}"/>
+  			<attribute name="Class-Path" value="jazzy-core.jar  $jazzy-swing.jar"/>
+  			<attribute name="Main-Class" value="com.swabunga.spell.examples.JTextComponentSpellCheckExample"/>
+  		</manifest>
+  	</jar>
+  </target>
+
+  <target name="compile-test" depends="debug-compile">
+    <java classname="com.swabunga.test.spell.event.TeXWordFinderTester" 
+          fork="true" classpath="bin;${junit}"/>
+    <java classname="com.swabunga.test.spell.event.FileWordTokenizerTester"
+          fork="true" classpath="bin;${junit}" dir="."/>
+    <java classname="com.swabunga.test.spell.event.StringWordTokenizerTester"
+          fork="true" classpath="bin;${junit}" dir="."/>
+    <java classname="com.swabunga.test.spell.event.SpellCheckerTester"
+          fork="true" classpath="bin;${junit}" dir="."/>
+  </target>
+  
+ <!-- Build jEdit Plugin from jedit_build.xml Ant file. -->
+
+ <target name="jedit-plugin-install">
+    <ant antfile="jedit_build.xml" target="jedit-clean-install"></ant>
+ </target>
+
+</project>
+
