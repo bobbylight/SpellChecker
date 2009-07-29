@@ -58,7 +58,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 				if (parser!=null) {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
-							textArea.setParser(parser);
+							textArea.addParser(parser);
 						}
 					});
 				}

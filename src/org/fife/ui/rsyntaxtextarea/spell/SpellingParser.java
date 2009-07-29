@@ -22,13 +22,13 @@
  */
 package org.fife.ui.rsyntaxtextarea.spell;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -36,11 +36,14 @@ import java.util.zip.ZipFile;
 
 import javax.swing.text.Element;
 
-import org.fife.ui.rsyntaxtextarea.Parser;
-import org.fife.ui.rsyntaxtextarea.ParserNotice;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
+import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
+import org.fife.ui.rsyntaxtextarea.parser.Parser;
+import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
+
 
 import com.swabunga.spell.engine.Configuration;
 import com.swabunga.spell.engine.SpellDictionary;
@@ -76,9 +79,11 @@ import com.swabunga.spell.event.StringWordTokenizer;
  */
 public class SpellingParser implements Parser, SpellCheckListener {
 
-	private List noticeList;
+	private DefaultParseResult result;
 	private SpellChecker sc;
+	private RSyntaxDocument doc;
 	private int startOffs;
+	private Color squiggleUnderlineColor;
 	private String noticePrefix;
 	private String noticeSuffix;
 
@@ -93,9 +98,10 @@ public class SpellingParser implements Parser, SpellCheckListener {
 	 */
 	public SpellingParser(SpellDictionary dict) {
 
-		noticeList = new ArrayList();
+		result = new DefaultParseResult(this);
 		sc = new SpellChecker(dict);
 		sc.addSpellCheckListener(this);
+		setSquiggleUnderlineColor(Color.BLUE);
 
 		// Since the spelling callback can possibly be called many times
 		// per parsing, we're extremely cheap here and pre-split our message
@@ -172,26 +178,35 @@ public class SpellingParser implements Parser, SpellCheckListener {
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public List getNotices() {
-		return noticeList;
+	private final int getLineOfOffset(int offs) {
+		return doc.getDefaultRootElement().getElementIndex(offs);
 	}
 
 
 	/**
-	 * Called by RSTA when it's time to re-parse the text for spelling errors.
+	 * Returns the color to use when painting spelling errors in an editor.
 	 *
-	 * @param doc
-	 * @param style
+	 * @return The color to use.
+	 * @see #setSquiggleUnderlineColor(Color)
 	 */
-	public void parse(RSyntaxDocument doc, String style) {
+	public Color getSquiggleUnderlineColor() {
+		return squiggleUnderlineColor;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+private int count;
+private boolean firstTime;
+	public ParseResult parse(RSyntaxDocument doc, String style) {
 
 		long startTime = System.currentTimeMillis();
-		noticeList.clear();
+		result.clearNotices();
 		sc.reset();
-
+		this.doc = doc;
+count = 0;
+firstTime = true;
 		// Use a faster method for spell-checking plain text.
 		if (style==null || SyntaxConstants.SYNTAX_STYLE_NONE.equals(style)) {
 			parseEntireDocument(doc);
@@ -218,12 +233,21 @@ public class SpellingParser implements Parser, SpellCheckListener {
 					}
 					t = t.getNextToken();
 				}
+
+if (count==9 && firstTime) {
+	firstTime = false;
+	float secs = (System.currentTimeMillis() - startTime)/1000f;
+	System.out.println("count==9 reached in: " + secs + " seconds");
+}
+
 			}
 
 		}
 
 		float secs = (System.currentTimeMillis() - startTime)/1000f;
 		System.out.println("Spell check completed in: " + secs + " seconds");
+System.out.println("... count==" + count);
+		return result;
 
 	}
 
@@ -240,29 +264,47 @@ public class SpellingParser implements Parser, SpellCheckListener {
 
 
 	/**
+	 * Sets the color to use when painting spelling errors in an editor.
+	 *
+	 * @param color The color to use.
+	 * @see #getSquiggleUnderlineColor()
+	 */
+	public void setSquiggleUnderlineColor(Color color) {
+		squiggleUnderlineColor = color;
+	}
+
+
+	/**
 	 * Callback called when a spelling error is found.
 	 *
 	 * @param e The event.
 	 */
 	public void spellingError(SpellCheckEvent e) {
-		e.ignoreWord(true);
+count++;
+//		e.ignoreWord(true);
 		String word = e.getInvalidWord();
 		int offs = startOffs + e.getWordContextPosition();
+		int line = getLineOfOffset(offs);
 		String text = noticePrefix + word + noticeSuffix;
 		SpellingParserNotice notice =
-			new SpellingParserNotice(text, offs, word.length(), word, sc);
-		noticeList.add(notice);
+			new SpellingParserNotice(this, text, line, offs, word, sc);
+		notice.setColor(getSquiggleUnderlineColor());
+		result.addNotice(notice);
 	}
 
 
-	private class SpellingParserNotice extends ParserNotice {
+	/**
+	 * The notice type returned by this parser.
+	 */
+	private static class SpellingParserNotice extends ParserNotice {
 
 		private String word;
 		private SpellChecker sc;
 
-		public SpellingParserNotice(String msg, int offs, int len,
-									String word, SpellChecker sc) {
-			super(msg, offs, len);
+		public SpellingParserNotice(SpellingParser parser, String msg,
+									int line, int offs, String word,
+									SpellChecker sc) {
+			super(parser, msg, line, offs, word.length());
 			this.word = word;
 			this.sc = sc;
 		}
