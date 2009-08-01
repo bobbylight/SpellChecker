@@ -1,4 +1,4 @@
-package demo.package;
+package demo.spellchecker.pkg;
 
 /**
  * Tihs is a test class with severall mispelled words.  The sppell checker

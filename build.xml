@@ -53,6 +53,11 @@
 		<mkdir dir="${dist-dir}"/>
 		<jar destfile="${dist-dir}/rsta_spellchecker.jar">
 			<fileset dir="${class-dir}"/>
+			<fileset dir="i18n"/>
+			<fileset dir="img"/>
+			<fileset dir="${source-dir}">
+				<include name="com/swabunga/spell/engine/configuration.properties"/>
+			</fileset>
 		</jar>
 	</target>
 
@@ -74,6 +79,7 @@
 		<zip destfile="./rsta_spellchecker_${version}_Source.zip">
 			<fileset dir=".">
 				<include name="src/**"/>
+				<include name="img/**"/>
 				<include name="i18n/**"/>
 				<include name="distfiles/**"/>
 				<include name="lib/**"/>

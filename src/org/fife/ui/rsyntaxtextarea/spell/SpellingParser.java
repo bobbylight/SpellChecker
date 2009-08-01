@@ -28,22 +28,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.zip.ZipFile;
 
+import javax.swing.UIManager;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.Element;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip;
+import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
+import org.fife.ui.rsyntaxtextarea.parser.ExtendedHyperlinkListener;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
-import org.fife.ui.rsyntaxtextarea.parser.Parser;
 import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
-
 
 import com.swabunga.spell.engine.Configuration;
 import com.swabunga.spell.engine.SpellDictionary;
@@ -59,25 +63,29 @@ import com.swabunga.spell.event.StringWordTokenizer;
 /**
  * A parser that spell-checks documents.  The spelling engine is a lightly
  * modified version of <a href="http://jazzy.sourceforge.net/">Jazzy</a>.
- * All Jazzy source, modified or otherwise, is licensed under the GPL.
- * This specific class, and any other RSyntaxTextArea-specific stuff, is
- * LGPL.<p>
+ * All Jazzy source, modified or otherwise, is licensed under the LGPL. just
+ * like RSyntaxTextArea.<p>
  *
  * For source code only comments are spell checked.  For plain text files,
  * the entire content is spell checked.<p>
  *
+ * This parser (for the time being at least) cannot be shared among multiple
+ * <code>RSyntaxTextArea</code> instances. The {@link SpellDictionary} it is
+ * created from can be, however.<p>
+ *
  * Usage:
  * <pre>
  * RSyntaxTextArea textArea = new RSyntaxTextArea(40, 25);
- * SpellingDictionary dict = new SpellDictionaryHashMap(new File("eng_com.dic"));
+ * SpellDictionary dict = new SpellDictionaryHashMap(new File("eng_com.dic"));
  * SpellingParser parser = new SpellingParser(dict);
  * textArea.setParser(parser);
  * </pre>
  *
  * @author Robert Futrell
- * @version 0.1
+ * @version 0.2
  */
-public class SpellingParser implements Parser, SpellCheckListener {
+public class SpellingParser extends AbstractParser
+			implements SpellCheckListener, ExtendedHyperlinkListener {
 
 	private DefaultParseResult result;
 	private SpellChecker sc;
@@ -89,6 +97,11 @@ public class SpellingParser implements Parser, SpellCheckListener {
 
 	private static final String MSG = "org.fife.ui.rsyntaxtextarea.spell.SpellingParser";
 	private static final ResourceBundle msg = ResourceBundle.getBundle(MSG);
+
+	private static final String ADD			= "add";
+	private static final String REPLACE		= "replace";
+	private static final String TOOLTIP_TEXT_FORMAT =
+		"<html><img src='lightbulb.png' width='16' height='16'>{0}<hr><img src='spellcheck.png' width='16' height='16'>{1}<br>{2}<br>&nbsp;";
 
 
 	/**
@@ -102,6 +115,7 @@ public class SpellingParser implements Parser, SpellCheckListener {
 		sc = new SpellChecker(dict);
 		sc.addSpellCheckListener(this);
 		setSquiggleUnderlineColor(Color.BLUE);
+		setHyperlinkListener(this);
 
 		// Since the spelling callback can possibly be called many times
 		// per parsing, we're extremely cheap here and pre-split our message
@@ -126,7 +140,7 @@ public class SpellingParser implements Parser, SpellCheckListener {
 	 * @throws IOException If an error occurs reading the zip file.
 	 */
 	public static SpellingParser createEnglishSpellingParser(File zip,
-							boolean american) throws IOException {
+									boolean american) throws IOException {
 
 		long start = System.currentTimeMillis();
 
@@ -178,6 +192,17 @@ public class SpellingParser implements Parser, SpellCheckListener {
 	}
 
 
+	/**
+	 * Overridden to return the image base for {@link FocusableTip}s made
+	 * from this parser's notices.
+	 *
+	 * @return The image base.
+	 */
+	public URL getImageBase() {
+		return getClass().getResource("/org/fife/ui/rsyntaxtextarea/spell/");
+	}
+
+
 	private final int getLineOfOffset(int offs) {
 		return doc.getDefaultRootElement().getElementIndex(offs);
 	}
@@ -191,6 +216,35 @@ public class SpellingParser implements Parser, SpellCheckListener {
 	 */
 	public Color getSquiggleUnderlineColor() {
 		return squiggleUnderlineColor;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void linkClicked(RSyntaxTextArea textArea, HyperlinkEvent e) {
+
+		if (e.getEventType()==HyperlinkEvent.EventType.ACTIVATED) {
+
+			String desc = e.getDescription();
+			int temp = desc.indexOf("://");
+			String operation = desc.substring(0, temp);
+			String[] tokens = desc.substring(temp + 3).split(",");
+
+			if (REPLACE.equals(operation)) {
+				int offs = Integer.parseInt(tokens[0]);
+				int len = Integer.parseInt(tokens[1]);
+				String replacement = tokens[2];
+				textArea.replaceRange(replacement, offs, offs+len);
+			}
+			else if (ADD.equals(operation)) {
+				// TODO: Implement me
+				System.out.println("[DEBUG]: Add word: '" + tokens[0] + "'");
+				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+			}
+
+		}
+
 	}
 
 
@@ -311,25 +365,58 @@ count++;
 
 		public String getToolTipText() {
 
-			String temp = msg.getString("SpellingErrorHtml");
-
 			StringBuffer sb = new StringBuffer();
 			String spacing = "&nbsp;&nbsp;&nbsp;";
 			int threshold = sc.getConfiguration().getInteger(Configuration.SPELL_THRESHOLD);
 			List suggestions = sc.getSuggestions(word, threshold);
 			if (suggestions==null || suggestions.size()==0) {
-				sb.append(spacing).append("<em>None</em>");
+				sb.append(spacing).append("<em>");
+				sb.append(msg.getString("None"));
+				sb.append("</em>");
 			}
 			else {
-				for (Iterator i=suggestions.iterator(); i.hasNext(); ) {
-					Word suggestion = (Word)i.next();
-					sb.append(spacing).
-							append(suggestion.getWord()).append("<br>");
+				sb.append("<center>");
+				sb.append("<table width='75%'>");
+				for (int i=0; i<suggestions.size(); i++) {
+					if ((i%2)==0) {
+						sb.append("<tr>");
+					}
+					sb.append("<td>&#8226;&nbsp;");
+					Word suggestion = (Word)suggestions.get(i);
+					sb.append("<a href='").append(REPLACE).append("://").
+					append(getOffset()).append(',').
+					append(getLength()).append(',').
+					append(suggestion.getWord()).
+					append("'>").
+					append(suggestion.getWord()).
+					append("</a>").
+					append("</td>");
+					if ((i%2)==1) {
+						sb.append("</tr>");
+					}
 				}
+				if ((suggestions.size()%2)==0) {
+					sb.append("<td></td></tr>");
+				}
+				sb.append("</table>");
+				sb.append("</center>");
+				sb.append("<img src='add.png' width='16' height='16'>&nbsp;").
+					append("<a href='").append(ADD).
+					append("://").append(word).append("'>").
+					append(msg.getString("ErrorToolTip.AddToDictionary")).
+					append("</a>");
+
 			}
 
-			temp = MessageFormat.format(temp,
-							new String[] { word, sb.toString() });
+			String firstLine = MessageFormat.format(
+									msg.getString("ErrorToolTip.DescHtml"),
+									new String[] { word });
+			String temp = MessageFormat.format(TOOLTIP_TEXT_FORMAT,
+							new String[] {
+								firstLine,
+								msg.getString("ErrorToolTip.SuggestionsHtml"),
+								sb.toString() });
+
 			return temp;
 
 		}
