@@ -1,3 +1,25 @@
+/*
+ * 07/21/2009
+ *
+ * DemoRootPane.java - Root pane for the demo.
+ * Copyright (C) 2009 Robert Futrell
+ * robert_futrell at users.sourceforge.net
+ * http://fifesoft.com/rsyntaxtextarea
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
+ */
 package org.fife.ui.rsyntaxtextarea.spell.demo;
 
 import java.awt.event.ActionEvent;
@@ -29,6 +51,8 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 
 	private RTextScrollPane scrollPane;
 	private RSyntaxTextArea textArea;
+	private SpellingParser parser;
+	private ToggleSpellCheckingAction toggleAction;
 
 	private static final String INPUT_FILE	= "Input.java";
 
@@ -54,11 +78,12 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 		super.addNotify();
 		new Thread() {
 			public void run() {
-				final SpellingParser parser = createSpellingParser();
+				parser = createSpellingParser();
 				if (parser!=null) {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							textArea.addParser(parser);
+							toggleAction.setEnabled(true);
 						}
 					});
 				}
@@ -71,7 +96,13 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 
 		JMenuBar mb = new JMenuBar();
 
-		JMenu menu = new JMenu("Help");
+		JMenu menu = new JMenu("Options");
+		toggleAction = new ToggleSpellCheckingAction();
+		toggleAction.setEnabled(false);
+		JCheckBoxMenuItem cbItem = new JCheckBoxMenuItem(toggleAction);
+		cbItem.setSelected(true);
+		menu.add(cbItem);
+		menu.addSeparator();
 		JMenuItem item = new JMenuItem(new AboutAction());
 		menu.add(item);
 		mb.add(menu);
@@ -118,11 +149,6 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 	}
 
 
-	void focusTextArea() {
-		textArea.requestFocusInWindow();
-	}
-
-
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if (e.getEventType()==HyperlinkEvent.EventType.ACTIVATED) {
 			URL url = e.getURL();
@@ -151,6 +177,28 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 				"<br>Licensed under the LGPL",
 				"About Spell Checker",
 				JOptionPane.INFORMATION_MESSAGE);
+		}
+
+	}
+
+
+	private class ToggleSpellCheckingAction extends AbstractAction {
+
+		private boolean enabled;
+
+		public ToggleSpellCheckingAction() {
+			putValue(NAME, "Toggle Spell Checking");
+			enabled = true;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			enabled = !enabled;
+			if (enabled) {
+				textArea.addParser(parser);
+			}
+			else {
+				textArea.removeParser(parser);
+			}
 		}
 
 	}
