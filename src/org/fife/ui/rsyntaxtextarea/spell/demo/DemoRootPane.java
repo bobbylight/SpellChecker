@@ -22,6 +22,7 @@
  */
 package org.fife.ui.rsyntaxtextarea.spell.demo;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,6 +36,7 @@ import javax.swing.event.*;
 
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.TaskTagParser;
 import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
@@ -62,6 +64,10 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 		scrollPane = new RTextScrollPane(textArea, true);
 		getContentPane().add(scrollPane);
 		setJMenuBar(createMenuBar());
+
+		ParserNoticeTable pnt = new ParserNoticeTable(textArea);
+		getContentPane().add(pnt, BorderLayout.SOUTH);
+
 	}
 
 
@@ -145,6 +151,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 		textArea.addHyperlinkListener(this);
 		textArea.requestFocusInWindow();
 		textArea.setMarkOccurrences(true);
+textArea.addParser(new TaskTagParser());
 		return textArea;
 	}
 

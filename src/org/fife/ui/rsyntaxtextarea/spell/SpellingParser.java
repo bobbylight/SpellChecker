@@ -248,28 +248,29 @@ public class SpellingParser extends AbstractParser
 	}
 
 
+private int count;
 	/**
 	 * {@inheritDoc}
 	 */
-private int count;
-private boolean firstTime;
 	public ParseResult parse(RSyntaxDocument doc, String style) {
 
 		long startTime = System.currentTimeMillis();
+
+		Element root = doc.getDefaultRootElement();
+		int lineCount = root.getElementCount();
 		result.clearNotices();
+		// Always spell check all lines, for now.
+		result.setParsedLines(0, lineCount-1);
 		sc.reset();
 		this.doc = doc;
 count = 0;
-firstTime = true;
+
 		// Use a faster method for spell-checking plain text.
 		if (style==null || SyntaxConstants.SYNTAX_STYLE_NONE.equals(style)) {
 			parseEntireDocument(doc);
 		}
 
 		else {
-
-			Element root = doc.getDefaultRootElement();
-			int lineCount = root.getElementCount();
 
 			for (int line=0; line<lineCount; line++) {
 
@@ -287,12 +288,6 @@ firstTime = true;
 					}
 					t = t.getNextToken();
 				}
-
-if (count==9 && firstTime) {
-	firstTime = false;
-	float secs = (System.currentTimeMillis() - startTime)/1000f;
-	System.out.println("count==9 reached in: " + secs + " seconds");
-}
 
 			}
 
