@@ -47,7 +47,7 @@ import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.ExtendedHyperlinkListener;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
-import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
+import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
 
 import com.swabunga.spell.engine.Configuration;
 import com.swabunga.spell.engine.SpellDictionary;
@@ -345,7 +345,7 @@ count++;
 	/**
 	 * The notice type returned by this parser.
 	 */
-	private static class SpellingParserNotice extends ParserNotice {
+	private static class SpellingParserNotice extends DefaultParserNotice {
 
 		private String word;
 		private SpellChecker sc;

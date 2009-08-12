@@ -434,7 +434,7 @@ System.out.println("[DEBUG]: getSuggestions() called");
 
 long time = System.currentTimeMillis() - start;
 float secs = time/1000f;
-System.out.println("[RFDEBUG]: Suggestions for '" + word + "' took " + secs + " seconds");
+System.out.println("[DEBUG]: Suggestions for '" + word + "' took " + secs + " seconds");
     return suggestions;
   }
 

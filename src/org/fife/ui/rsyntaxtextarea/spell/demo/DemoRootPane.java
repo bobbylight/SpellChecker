@@ -34,9 +34,9 @@ import java.net.URL;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import org.fife.ui.rsyntaxtextarea.ErrorStrip;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.TaskTagParser;
 import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
@@ -62,11 +62,12 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 	public DemoRootPane() {
 		textArea = createTextArea();
 		scrollPane = new RTextScrollPane(textArea, true);
-		getContentPane().add(scrollPane);
+		ErrorStrip es = new ErrorStrip(textArea);
+		JPanel temp = new JPanel(new BorderLayout());
+		temp.add(scrollPane);
+		temp.add(es, BorderLayout.LINE_END);
+		getContentPane().add(temp);
 		setJMenuBar(createMenuBar());
-
-		ParserNoticeTable pnt = new ParserNoticeTable(textArea);
-		getContentPane().add(pnt, BorderLayout.SOUTH);
 
 	}
 
@@ -151,7 +152,6 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 		textArea.addHyperlinkListener(this);
 		textArea.requestFocusInWindow();
 		textArea.setMarkOccurrences(true);
-textArea.addParser(new TaskTagParser());
 		return textArea;
 	}
 
