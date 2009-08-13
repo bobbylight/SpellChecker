@@ -404,7 +404,6 @@ public class SpellChecker {
    */
   public List getSuggestions(String word, int threshold) {
 long start = System.currentTimeMillis();
-System.out.println("[DEBUG]: getSuggestions() called");
 	  if (this.threshold != threshold && cache != null) {
        this.threshold = threshold;
        cache.clear();

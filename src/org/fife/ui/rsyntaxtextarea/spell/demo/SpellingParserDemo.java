@@ -59,6 +59,7 @@ public class SpellingParserDemo extends JFrame {
 			public void run() {
 				try {
 					String laf = UIManager.getSystemLookAndFeelClassName();
+laf = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
 					UIManager.setLookAndFeel(laf);
 				} catch (RuntimeException re) { // FindBugs
 					throw re;

@@ -33,7 +33,6 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.zip.ZipFile;
-
 import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.Element;
