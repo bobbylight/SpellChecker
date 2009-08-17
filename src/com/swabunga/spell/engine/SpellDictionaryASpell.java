@@ -150,7 +150,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     nearmisscodes.put(code, code);
     Vector phoneticList = getWordsFromCode(word, nearmisscodes);
 
-    // do some tranformations to pick up more results
+    // do some transformations to pick up more results
     //interchange
     nearmisscodes = new Hashtable();
     char[] charArray = word.toCharArray();
@@ -325,8 +325,8 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     List possible = getWords(getCode(word));
     if (possible.contains(word))
       return true;
-    //JMH should we always try the lowercase version. If I dont then capitalised
-    //words are always returned as incorrect.
+    //JMH should we always try the lowercase version. If I don't then
+    // capitalized words are always returned as incorrect.
     else if (possible.contains(word.toLowerCase()))
       return true;
     return false;

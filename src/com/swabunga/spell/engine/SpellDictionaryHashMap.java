@@ -184,11 +184,11 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
     if (dictFile == null)
       return;
     try {
-      FileWriter w = new FileWriter(dictFile.toString(), true);
-      // Open with append.
-      w.write(word);
-      w.write("\n");
-      w.close();
+    	// Append new word to user's word file
+    	BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, true));
+    	w.write(word);
+    	w.write("\n");
+    	w.close();
     } catch (IOException ex) {
       System.out.println("Error writing to dictionary file");
     }
@@ -203,11 +203,10 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * load the data in. I suspect that we could speed this up quite allot.
    */
   protected void createDictionary(BufferedReader in) throws IOException {
-    String line = "";
-    while (line != null) {
-      line = in.readLine();
-      if (line != null && line.length() > 0) {
-        line = new String(line.toCharArray());
+	  // robert: Optimized ever-so-slightly
+    String line;
+    while ((line=in.readLine())!=null) {
+      if (line.length() > 0) {
         putWord(line);
       }
     }
@@ -227,15 +226,13 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * to subclass for the cases where duplicates are bad.
    */
   protected void addDictionaryHelper(BufferedReader in) throws IOException {
-
-    String line = "";
-    while (line != null) {
-      line = in.readLine();
-      if (line != null && line.length() > 0) {
-        line = new String(line.toCharArray());
-        putWordUnique(line);
-      }
-    }
+	  // robert: Optimized ever-so-slightly
+	    String line;
+	    while ((line=in.readLine())!=null) {
+	      if (line.length() > 0) {
+	        putWordUnique(line);
+	      }
+	    }
   }
 
   /**

@@ -266,6 +266,7 @@ count = 0;
 
 		// Use a faster method for spell-checking plain text.
 		if (style==null || SyntaxConstants.SYNTAX_STYLE_NONE.equals(style)) {
+			startOffs = 0;
 			parseEntireDocument(doc);
 		}
 
