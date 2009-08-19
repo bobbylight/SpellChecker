@@ -103,20 +103,24 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
    * Add a word permanently to the dictionary (and the dictionary file).
    * <p>This needs to be made thread safe (synchronized)</p>
    * @param word The word to add to the dictionary
+   * @return Whether the word was successfully added.
    */
-  public void addWord(String word) {
+  public boolean addWord(String word) {
     putWord(word);
-    if (dictFile == null)
-      return;
-    try {
-      FileWriter w = new FileWriter(dictFile.toString(), true);
-      // Open with append.
-      w.write(word);
-      w.write("\n");
-      w.close();
-    } catch (IOException ex) {
-      System.out.println("Error writing to dictionary file");
+    if (dictFile!=null) {
+	    try {
+	      FileWriter w = new FileWriter(dictFile.toString(), true);
+	      // Open with append.
+	      w.write(word);
+	      w.write("\n");
+	      w.close();
+	    } catch (IOException ex) {
+	      System.out.println("Error writing to dictionary file");
+	      ex.printStackTrace();
+	      return false;
+	    }
     }
+    return true;
   }
 
   /**

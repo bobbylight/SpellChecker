@@ -349,10 +349,13 @@ public class SpellChecker {
   /**
    * Adds a word to the user dictionary
    * @param word The text of the word to add
+   * @return Whether the word was successfully added
    */
-  public void addToDictionary(String word) {
-    if (!userdictionary.isCorrect(word))
-      userdictionary.addWord(word);
+  public boolean addToDictionary(String word) {
+	  if (!userdictionary.isCorrect(word)) {
+		  return userdictionary.addWord(word);
+	  }
+	  return false;
   }
   
   /**
@@ -415,7 +418,7 @@ long start = System.currentTimeMillis();
        suggestions = (ArrayList) cache.get(word);
 
     if (suggestions == null) {
-       suggestions = new ArrayList(50);
+       suggestions = new ArrayList();
     
        for (Enumeration e = dictionaries.elements(); e.hasMoreElements();) {
            SpellDictionary dictionary = (SpellDictionary) e.nextElement();
@@ -492,7 +495,7 @@ System.out.println("[DEBUG]: Suggestions for '" + word + "' took " + secs + " se
             if (autoReplaceWords.containsKey(word)) {
               tokenizer.replaceWord((String) autoReplaceWords.get(word));
             } else {
-				// RSTA: Don't calculate suggestions until mouseover for speed.
+				// robert: Don't calculate suggestions until mouseover for speed.
 				List suggestions = null;
               SpellCheckEvent event = new BasicSpellCheckEvent(word, suggestions, tokenizer);
               terminated = fireAndHandleEvent(tokenizer, event);

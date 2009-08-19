@@ -87,6 +87,18 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			public void run() {
 				parser = createSpellingParser();
 				if (parser!=null) {
+					try {
+						File userDict= File.createTempFile("spellDemo", ".txt");
+						parser.setUserDictionary(userDict);
+						System.out.println("User dictionary: " +
+											userDict.getAbsolutePath());
+					} catch (IOException ioe) { // Applets, IO errors
+						System.err.println("Can't open user dictionary: " +
+									ioe.getMessage());
+					} catch (SecurityException se) { // Applets
+						System.err.println("Can't open user dictionary: " +
+								se.getMessage());
+					}
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							textArea.addParser(parser);

@@ -31,8 +31,9 @@ public interface SpellDictionary {
   /**
    * Add a word permanently to the dictionary.
    * @param word The word to add to the dictionary
+   * @return Whether the word was successfully added.
    */
-  public void addWord(String word);
+  public boolean addWord(String word);
 
   /**
    * Evaluates if the word is correctly spelled against the dictionary.

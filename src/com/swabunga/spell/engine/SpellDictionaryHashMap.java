@@ -179,19 +179,23 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * Add a word permanently to the dictionary (and the dictionary file).
    * <p>This needs to be made thread safe (synchronized)</p>
    */
-  public void addWord(String word) {
+  public boolean addWord(String word) {
     putWord(word);
-    if (dictFile == null)
-      return;
-    try {
-    	// Append new word to user's word file
-    	BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, true));
-    	w.write(word);
-    	w.write("\n");
-    	w.close();
-    } catch (IOException ex) {
-      System.out.println("Error writing to dictionary file");
+    if (dictFile!=null) {
+	    try {
+	    	// Append new word to user's word file
+	    	BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, true));
+	    	w.write(word);
+	    	w.write("\n");
+	    	w.close();
+	    	return true;
+	    } catch (IOException ex) {
+	      System.out.println("Error writing to dictionary file");
+	      ex.printStackTrace();
+	    }
     }
+    // Only return true if added to dictionary file.
+    return false;
   }
 
   /**

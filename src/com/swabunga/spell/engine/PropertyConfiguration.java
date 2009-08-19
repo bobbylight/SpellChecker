@@ -100,7 +100,7 @@ public class PropertyConfiguration extends Configuration {
       File file = new File(filename.getFile());
       FileOutputStream fout = new FileOutputStream(file);
       prop.store(fout, "HEADER");
-    } catch (FileNotFoundException e) {
+      fout.close(); // robert: close stream
     } catch (IOException e) {
     }
   }

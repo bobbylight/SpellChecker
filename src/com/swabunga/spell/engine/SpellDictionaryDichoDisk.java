@@ -113,8 +113,9 @@ public class SpellDictionaryDichoDisk extends SpellDictionaryASpell {
    * <i>not implemented !</i>
    * @param word The word to add.
    */
-  public void addWord(String word) {
+  public boolean addWord(String word) {
     System.err.println("error: addWord is not implemented for SpellDictionaryDichoDisk");
+    return false;
   }
 
   /**

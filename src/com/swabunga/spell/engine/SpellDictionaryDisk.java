@@ -159,7 +159,7 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
    * for this class</em>.
    * @param word The word to add.
    */
-  public void addWord(String word) {
+  public boolean addWord(String word) {
     throw new UnsupportedOperationException("addWord not yet implemented (sorry)");
   }
 
@@ -437,7 +437,7 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
     return out;
   }
 
-  private class CodeWord implements Comparable {
+  private static class CodeWord implements Comparable { // robert: static
     private String code;
     private String word;
 
@@ -474,7 +474,7 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
     }
   }
 
-  private class FileSize {
+  private static class FileSize { // robert: static
     private String filename;
     private long size;
 
@@ -485,14 +485,11 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
 
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (!(o instanceof FileSize)) return false;
-
-      final FileSize fileSize = (FileSize) o;
-
-      if (size != fileSize.size) return false;
-      if (!filename.equals(fileSize.filename)) return false;
-
-      return true;
+		if (o instanceof FileSize) {
+			FileSize fs = (FileSize)o;
+			return size==fs.size && fs.equals(fs.filename);
+		}
+      return false;
     }
 
     public int hashCode() {

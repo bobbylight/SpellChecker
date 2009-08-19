@@ -46,7 +46,7 @@ public class EditDistance {
   /**
    * Fetches the spell engine configuration properties.
    */
-  public static Configuration config = Configuration.getConfiguration();
+  public static final Configuration config = Configuration.getConfiguration();
 
   /**
    * get the weights for each possible operation

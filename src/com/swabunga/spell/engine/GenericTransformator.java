@@ -353,7 +353,7 @@ public class GenericTransformator implements Transformator {
   * Holds the match string and the replace string and all the rule attributes.
   * Is responsible for indicating matches.
   */
-  private class TransformationRule {
+  private static class TransformationRule { // robert: make inner class static
 
     private String replace;
     private char[] match;
@@ -362,7 +362,7 @@ public class GenericTransformator implements Transformator {
     private int takeOut, matchLength;
     private boolean start, end;
 
-    // Construktor
+    // Constructor
     public TransformationRule(String match, String replace, int takeout, int matchLength, boolean start, boolean end) {
       this.match = match.toCharArray();
       this.replace = replace;

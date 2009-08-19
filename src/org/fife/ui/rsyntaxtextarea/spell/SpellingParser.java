@@ -25,6 +25,7 @@ package org.fife.ui.rsyntaxtextarea.spell;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -68,20 +69,19 @@ import com.swabunga.spell.event.StringWordTokenizer;
  * For source code only comments are spell checked.  For plain text files,
  * the entire content is spell checked.<p>
  *
- * This parser (for the time being at least) cannot be shared among multiple
- * <code>RSyntaxTextArea</code> instances. The {@link SpellDictionary} it is
- * created from can be, however.<p>
+ * This parser can be shared among multiple <code>RSyntaxTextArea</code>
+ * instances.<p>
  *
  * Usage:
  * <pre>
  * RSyntaxTextArea textArea = new RSyntaxTextArea(40, 25);
- * SpellDictionary dict = new SpellDictionaryHashMap(new File("eng_com.dic"));
- * SpellingParser parser = new SpellingParser(dict);
- * textArea.setParser(parser);
+ * File englishZip = new File("english_dic.zip");
+ * SpellingParser parser = SpellingParser.createEnglishSpellingParser(englishZip, true);
+ * textArea.addParser(parser);
  * </pre>
  *
  * @author Robert Futrell
- * @version 0.2
+ * @version 0.5
  */
 public class SpellingParser extends AbstractParser
 			implements SpellCheckListener, ExtendedHyperlinkListener {
@@ -93,6 +93,14 @@ public class SpellingParser extends AbstractParser
 	private Color squiggleUnderlineColor;
 	private String noticePrefix;
 	private String noticeSuffix;
+
+	/**
+	 * The "user dictionary."  If this is non-<code>null</code>, then the
+	 * user will be able to select "Add word to dictionary" for spelling
+	 * errors.  When this option is selected, the word is added to this
+	 * file.
+	 */
+	private File dictionaryFile;
 
 	private static final String MSG = "org.fife.ui.rsyntaxtextarea.spell.SpellingParser";
 	private static final ResourceBundle msg = ResourceBundle.getBundle(MSG);
@@ -219,6 +227,18 @@ public class SpellingParser extends AbstractParser
 
 
 	/**
+	 * Returns the user's dictionary file.
+	 *
+	 * @return The user's dictionary file, or <code>null</code> if none has
+	 *         been set.
+	 * @see #setUserDictionary(File)
+	 */
+	public File getUserDictionary() {
+		return dictionaryFile;
+	}
+
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public void linkClicked(RSyntaxTextArea textArea, HyperlinkEvent e) {
@@ -235,11 +255,28 @@ public class SpellingParser extends AbstractParser
 				int len = Integer.parseInt(tokens[1]);
 				String replacement = tokens[2];
 				textArea.replaceRange(replacement, offs, offs+len);
+				textArea.setSelectionStart(offs);
+				textArea.setSelectionEnd(offs + replacement.length());
 			}
 			else if (ADD.equals(operation)) {
-				// TODO: Implement me
-				System.out.println("[DEBUG]: Add word: '" + tokens[0] + "'");
-				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+				if (dictionaryFile==null) {
+					// TODO: Add callback for application to prompt to create
+					// a user dictionary
+					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+				}
+				String word = tokens[0];
+				if (sc.addToDictionary(word)) {
+					for (int i=0; i<textArea.getParserCount(); i++) {
+						// Should be in the list somewhere...
+						if (textArea.getParser(i)==this) {
+							textArea.forceReparsing(i);
+							break;
+						}
+					}
+				}
+				else { // IO error adding the word
+					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+				}
 			}
 
 		}
@@ -324,6 +361,39 @@ System.out.println("... count==" + count);
 
 
 	/**
+	 * Sets the "user dictionary," that is, the dictionary that words can be
+	 * added to at runtime.<p>
+	 *
+	 * If this is non-<code>null</code>, then on the focusable tool tip for
+	 * spelling errors, there will be an option available: "Add word to
+	 * dictionary."  If this is clicked then the "error" word is added to the
+	 * user's dictionary and the document is re-parsed.
+	 *
+	 * @param dictionaryFile The dictionary file.  If this is <code>null</code>
+	 *        then the user will not be able to add words.
+	 * @throws IOException If an IO error occurs.
+	 * @see #getUserDictionary()
+	 */
+	public void setUserDictionary(File dictionaryFile) throws IOException {
+		SpellDictionaryHashMap userDict = null;
+		if (dictionaryFile!=null) {
+			if (!dictionaryFile.exists()) {
+				// The file must exist for Jazzy to be happy
+				FileWriter w = new FileWriter(dictionaryFile);
+				w.close();
+			}
+			userDict = new SpellDictionaryHashMap(dictionaryFile);
+		}
+		else {
+			// Unfortunately cannot use null, Jazzy won't allow it
+			userDict = new SpellDictionaryHashMap();
+		}
+		sc.setUserDictionary(userDict);
+		this.dictionaryFile = dictionaryFile;
+	}
+
+
+	/**
 	 * Callback called when a spelling error is found.
 	 *
 	 * @param e The event.
@@ -386,7 +456,7 @@ count++;
 					append(suggestion.getWord()).
 					append("</a>").
 					append("</td>");
-					if ((i%2)==1) {
+					if ((i&1)==1) {
 						sb.append("</tr>");
 					}
 				}
