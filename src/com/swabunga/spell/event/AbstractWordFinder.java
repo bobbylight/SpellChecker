@@ -232,15 +232,15 @@ public abstract class AbstractWordFinder implements WordFinder {
    * @param c The character to evaluates if it can be part of a word
    * @return true if the character is a letter, digit or a ' (an apostrophe).
    */
-  protected boolean isWordChar(char c) {
-    boolean out = false;
-
-    if (Character.isLetterOrDigit(c) || (c == '\'')) {
-      out = true;
-    }
-
-    return out;
-  }
+//  protected boolean isWordChar(char c) {
+//    boolean out = false;
+//
+//    if (Character.isLetterOrDigit(c) || (c == '\'')) {
+//      out = true;
+//    }
+//
+//    return out;
+//  }
 
   /**
    * Ignores or skip over text starting from the index position specified 

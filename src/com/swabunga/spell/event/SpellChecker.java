@@ -231,9 +231,18 @@ public class SpellChecker {
    *
    * @param  word  The word to analyze for an Internet address.
    * @return       true if this word looks like an Internet address.
+   * @see #isINETWord(String)
    */
-    public final static boolean isINETWord(String word) {
-        String lowerCaseWord = word.toLowerCase();
+  /*
+   * robert: In standard Jazzy distributions, this is "isINETWord(String)".
+   */
+    public final static boolean beginsAsINETWord(String word) {
+    	// robert: Since "word" may be the entire rest of the document (line), we'll try
+    	// to micro-optimize a little here and just get the smallest lower-case String
+    	// we need.
+        //String lowerCaseWord = word.toLowerCase();
+    	int last = Math.min(8, word.length());
+    	String lowerCaseWord = word.substring(0, last);
         return lowerCaseWord.startsWith("http://") ||
               lowerCaseWord.startsWith("www.") ||
               lowerCaseWord.startsWith("ftp://") ||
@@ -242,6 +251,33 @@ public class SpellChecker {
   }
 
 
+    /**
+     * Checks if the word that is being spell checked contains an Internet 
+     * address. This method look for typical protocol or the habitual string 
+     * in the word:
+     * <ul>
+     * <li>http://</li>
+     * <li>ftp://</li>
+     * <li>https://</li>
+     * <li>ftps://</li>
+     * <li>www.</li>
+     * <li>anything@anythingelse</li>
+     * </ul>
+     *
+     * It is assumed that <code>word</code> is just the word to scan, without
+     * any trailing characters.  This is different from the standard Jazzy
+     * distribution's implementation (which has been renamed to
+     * <code>beginsAsINETWord(String)</code>).
+     *
+     * @param  word  The word to analyze for an Internet address.
+     * @return       true if this word looks like an Internet address.
+     * @see #beginsAsINETWord(String)
+     */
+    public static final boolean isINETWord(String word) {
+    	return beginsAsINETWord(word) || word.indexOf('@')>0;
+    }
+
+ 
   /**
    * Verifies if the word that is being spell checked contains all
    * upper-cases characters.

@@ -90,6 +90,8 @@ public class SpellingParser extends AbstractParser
 	private SpellChecker sc;
 	private RSyntaxDocument doc;
 	private int startOffs;
+	private int errorCount;
+	private int maxErrorCount;
 	private Color squiggleUnderlineColor;
 	private String noticePrefix;
 	private String noticeSuffix;
@@ -110,6 +112,11 @@ public class SpellingParser extends AbstractParser
 	private static final String TOOLTIP_TEXT_FORMAT =
 		"<html><img src='lightbulb.png' width='16' height='16'>{0}<hr><img src='spellcheck.png' width='16' height='16'>{1}<br>{2}<br>&nbsp;";
 
+	/**
+	 * The default maximum number of spelling errors to report for a document.
+	 */
+	private static final int DEFAULT_MAX_ERROR_COUNT			= 100;
+
 
 	/**
 	 * Constructor.
@@ -123,6 +130,7 @@ public class SpellingParser extends AbstractParser
 		sc.addSpellCheckListener(this);
 		setSquiggleUnderlineColor(Color.BLUE);
 		setHyperlinkListener(this);
+		setMaxErrorCount(DEFAULT_MAX_ERROR_COUNT);
 
 		// Since the spelling callback can possibly be called many times
 		// per parsing, we're extremely cheap here and pre-split our message
@@ -216,6 +224,17 @@ public class SpellingParser extends AbstractParser
 
 
 	/**
+	 * Returns the maximum number of errors this parser will report for a single document.
+	 *
+	 * @return The maximum number of errors that will be reported.
+	 * @see #setMaxErrorCount(int)
+	 */
+	public int getMaxErrorCount() {
+		return maxErrorCount;
+	}
+
+
+	/**
 	 * Returns the color to use when painting spelling errors in an editor.
 	 *
 	 * @return The color to use.
@@ -284,7 +303,6 @@ public class SpellingParser extends AbstractParser
 	}
 
 
-private int count;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -299,7 +317,7 @@ private int count;
 		result.setParsedLines(0, lineCount-1);
 		sc.reset();
 		this.doc = doc;
-count = 0;
+		errorCount = 0;
 
 		// Use a faster method for spell-checking plain text.
 		if (style==null || SyntaxConstants.SYNTAX_STYLE_NONE.equals(style)) {
@@ -309,6 +327,7 @@ count = 0;
 
 		else {
 
+			outer:
 			for (int line=0; line<lineCount; line++) {
 
 				Token t = doc.getTokenListForLine(line);
@@ -321,7 +340,10 @@ count = 0;
 						// to prevent String allocation.
 						StringWordTokenizer swt =
 									new StringWordTokenizer(t.getLexeme());
-						sc.checkSpelling(swt);
+						int rc = sc.checkSpelling(swt);
+						if (rc==SpellChecker.SPELLCHECK_CANCEL) {
+							break outer; // Stop spell checking comments
+						}
 					}
 					t = t.getNextToken();
 				}
@@ -332,7 +354,7 @@ count = 0;
 
 		float secs = (System.currentTimeMillis() - startTime)/1000f;
 		System.out.println("Spell check completed in: " + secs + " seconds");
-System.out.println("... count==" + count);
+		System.out.println("Error count==" + errorCount);
 		return result;
 
 	}
@@ -346,6 +368,18 @@ System.out.println("... count==" + count);
 	private void parseEntireDocument(RSyntaxDocument doc) {
 		DocumentWordTokenizer dwt = new DocumentWordTokenizer(doc);
 		sc.checkSpelling(dwt);
+	}
+
+
+	/**
+	 * Sets the maximum number of spelling errors this parser will report for a single
+	 * text file.  Note that the file should be re-parsed after changing this value.
+	 *
+	 * @param max The ew maximum error count.
+	 * @see #getMaxErrorCount()
+	 */
+	public void setMaxErrorCount(int max) {
+		maxErrorCount = max;
 	}
 
 
@@ -399,7 +433,6 @@ System.out.println("... count==" + count);
 	 * @param e The event.
 	 */
 	public void spellingError(SpellCheckEvent e) {
-count++;
 //		e.ignoreWord(true);
 		String word = e.getInvalidWord();
 		int offs = startOffs + e.getWordContextPosition();
@@ -409,6 +442,10 @@ count++;
 			new SpellingParserNotice(this, text, line, offs, word, sc);
 		notice.setColor(getSquiggleUnderlineColor());
 		result.addNotice(notice);
+		if (++errorCount>=maxErrorCount) {
+			System.out.println("Cancelling the spelling check!");
+			e.cancel();
+		}
 	}
 
 

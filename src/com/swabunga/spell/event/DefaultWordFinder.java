@@ -89,7 +89,9 @@ public class DefaultWordFinder extends AbstractWordFinder {
   private int getNextWordEnd(String text, int startPos) {
     // If we're dealing with a possible 'internet word' we need to provide
     // some special handling
-    if (SpellChecker.isINETWord(text.substring(startPos))) {
+    //if (SpellChecker.isINETWord(text.substring(startPos))) {
+	  // robert: trying to be smarter avoiding email addresses (see SpellChecker changes)
+    if (SpellChecker.beginsAsINETWord(text.substring(startPos))) {
       for (int i = startPos; i < text.length(); i++) {
         char ch = text.charAt(i);
         if (Character.isLetterOrDigit(ch))
