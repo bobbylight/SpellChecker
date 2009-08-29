@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.zip.ZipFile;
 import javax.swing.UIManager;
+import javax.swing.event.EventListenerList;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.Element;
 
@@ -48,6 +49,8 @@ import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.ExtendedHyperlinkListener;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
+import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserEvent;
+import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserListener;
 
 import com.swabunga.spell.engine.Configuration;
 import com.swabunga.spell.engine.SpellDictionary;
@@ -92,9 +95,13 @@ public class SpellingParser extends AbstractParser
 	private int startOffs;
 	private int errorCount;
 	private int maxErrorCount;
+	private boolean allowAdd;
+	private boolean allowIgnore;
 	private Color squiggleUnderlineColor;
 	private String noticePrefix;
 	private String noticeSuffix;
+	private EventListenerList listenerList;
+
 
 	/**
 	 * The "user dictionary."  If this is non-<code>null</code>, then the
@@ -108,6 +115,7 @@ public class SpellingParser extends AbstractParser
 	private static final ResourceBundle msg = ResourceBundle.getBundle(MSG);
 
 	private static final String ADD			= "add";
+	private static final String IGNORE		= "ignore";
 	private static final String REPLACE		= "replace";
 	private static final String TOOLTIP_TEXT_FORMAT =
 		"<html><img src='lightbulb.png' width='16' height='16'>{0}<hr><img src='spellcheck.png' width='16' height='16'>{1}<br>{2}<br>&nbsp;";
@@ -131,6 +139,8 @@ public class SpellingParser extends AbstractParser
 		setSquiggleUnderlineColor(Color.BLUE);
 		setHyperlinkListener(this);
 		setMaxErrorCount(DEFAULT_MAX_ERROR_COUNT);
+		setAllowAdd(true);
+		setAllowIgnore(true);
 
 		// Since the spelling callback can possibly be called many times
 		// per parsing, we're extremely cheap here and pre-split our message
@@ -140,6 +150,19 @@ public class SpellingParser extends AbstractParser
 		noticePrefix = temp.substring(0, offs);
 		noticeSuffix = temp.substring(offs+3);
 
+		listenerList = new EventListenerList();
+
+	}
+
+
+	/**
+	 * Adds a listener to this spelling parser.
+	 *
+	 * @param l The new listener.
+	 * @see #removeSpellingParserListener(SpellingParserListener)
+	 */
+	public void addSpellingParserListener(SpellingParserListener l) {
+		listenerList.add(SpellingParserListener.class, l);
 	}
 
 
@@ -208,6 +231,50 @@ public class SpellingParser extends AbstractParser
 
 
 	/**
+	 * Notifies all listeners about an event in this parser.
+	 *
+	 * @param e The event.
+	 */
+	protected void fireSpellingParserEvent(SpellingParserEvent e) {
+		// Guaranteed to return a non-null array
+		Object[] listeners = listenerList.getListenerList();
+		// Process the listeners last to first, notifying
+		// those that are interested in this event
+		for (int i = listeners.length-2; i>=0; i-=2) {
+			if (listeners[i]==SpellingParserListener.class) {
+				((SpellingParserListener)listeners[i+1]).spellingParserEvent(e);
+			}
+		}
+	}
+
+
+	/**
+	 * Returns whether an "Add word to dictionary" link is added to tool tips
+	 * returned by this parser.  Note that for an add operation to be
+	 * successful, a user dictionary must also be defined.
+	 *
+	 * @return Whether words can be added to the user dictionary.
+	 * @see #setAllowAdd(boolean)
+	 * @see #setUserDictionary(File)
+	 */
+	public boolean getAllowAdd() {
+		return allowAdd;
+	}
+
+
+	/**
+	 * Returns whether an "Ignore this word for this session" link is
+	 * added to tool tips returns by this parser.
+	 *
+	 * @return Whether words can be ignored.
+	 * @see #setAllowIgnore(boolean)
+	 */
+	public boolean getAllowIgnore() {
+		return allowIgnore;
+	}
+
+
+	/**
 	 * Overridden to return the image base for {@link FocusableTip}s made
 	 * from this parser's notices.
 	 *
@@ -224,7 +291,8 @@ public class SpellingParser extends AbstractParser
 
 
 	/**
-	 * Returns the maximum number of errors this parser will report for a single document.
+	 * Returns the maximum number of errors this parser will report for a
+	 * single document.
 	 *
 	 * @return The maximum number of errors that will be reported.
 	 * @see #setMaxErrorCount(int)
@@ -277,6 +345,7 @@ public class SpellingParser extends AbstractParser
 				textArea.setSelectionStart(offs);
 				textArea.setSelectionEnd(offs + replacement.length());
 			}
+
 			else if (ADD.equals(operation)) {
 				if (dictionaryFile==null) {
 					// TODO: Add callback for application to prompt to create
@@ -292,9 +361,27 @@ public class SpellingParser extends AbstractParser
 							break;
 						}
 					}
+					SpellingParserEvent se = new SpellingParserEvent(this,
+							textArea, SpellingParserEvent.WORD_ADDED, word);
+					fireSpellingParserEvent(se);
 				}
 				else { // IO error adding the word
 					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+				}
+			}
+
+			else if (IGNORE.equals(operation)) {
+				String word = tokens[0];
+				sc.ignoreAll(word);
+				for (int i=0; i<textArea.getParserCount(); i++) {
+					// Should be in the list somewhere...
+					if (textArea.getParser(i)==this) {
+						textArea.forceReparsing(i);
+						break;
+					}
+					SpellingParserEvent se = new SpellingParserEvent(this,
+							textArea, SpellingParserEvent.WORD_IGNORED, word);
+					fireSpellingParserEvent(se);
 				}
 			}
 
@@ -315,7 +402,6 @@ public class SpellingParser extends AbstractParser
 		result.clearNotices();
 		// Always spell check all lines, for now.
 		result.setParsedLines(0, lineCount-1);
-		sc.reset();
 		this.doc = doc;
 		errorCount = 0;
 
@@ -372,10 +458,48 @@ public class SpellingParser extends AbstractParser
 
 
 	/**
-	 * Sets the maximum number of spelling errors this parser will report for a single
-	 * text file.  Note that the file should be re-parsed after changing this value.
+	 * Removes a listener from this spelling parser.
 	 *
-	 * @param max The ew maximum error count.
+	 * @param l The listener to remove.
+	 * @see #addSpellingParserListener(SpellingParserListener)
+	 */
+	public void removeSpellingParserListener(SpellingParserListener l) {
+		listenerList.remove(SpellingParserListener.class, l);
+	}
+
+
+	/**
+	 * Sets whether an "Add word to dictionary" link is added to tool tips
+	 * returned by this parser.  Note that for an add operation to be
+	 * successful, a user dictionary must also be defined.
+	 *
+	 * @param add Whether the option should be available.
+	 * @see #getAllowAdd()
+	 * @see #setUserDictionary(File)
+	 */
+	public void setAllowAdd(boolean add) {
+		allowAdd = add;
+	}
+
+
+	/**
+	 * Returns whether an "Ignore this word for this session" link is
+	 * added to tool tips returns by this parser.
+	 *
+	 * @param ignore Whether the option should be available.
+	 * @see #getAllowIgnore()
+	 */
+	public void setAllowIgnore(boolean ignore) {
+		allowIgnore = ignore;
+	}
+
+
+	/**
+	 * Sets the maximum number of spelling errors this parser will report for a
+	 * single text file.  Note that the file should be re-parsed after changing
+	 * this value.
+	 *
+	 * @param max The new maximum error count.
 	 * @see #getMaxErrorCount()
 	 */
 	public void setMaxErrorCount(int max) {
@@ -468,13 +592,13 @@ public class SpellingParser extends AbstractParser
 		public String getToolTipText() {
 
 			StringBuffer sb = new StringBuffer();
-			String spacing = "&nbsp;&nbsp;&nbsp;";
+			String spacing = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 			int threshold = sc.getConfiguration().getInteger(Configuration.SPELL_THRESHOLD);
 			List suggestions = sc.getSuggestions(word, threshold);
 			if (suggestions==null || suggestions.size()==0) {
-				sb.append(spacing).append("<em>");
+				sb.append(spacing).append("&#8226;&nbsp;<em>");
 				sb.append(msg.getString("None"));
-				sb.append("</em>");
+				sb.append("</em><br><br>");
 			}
 			else {
 				sb.append("<center>");
@@ -502,12 +626,24 @@ public class SpellingParser extends AbstractParser
 				}
 				sb.append("</table>");
 				sb.append("</center>");
-				sb.append("<img src='add.png' width='16' height='16'>&nbsp;").
-					append("<a href='").append(ADD).
-					append("://").append(word).append("'>").
-					append(msg.getString("ErrorToolTip.AddToDictionary")).
-					append("</a>");
+			}
 
+			SpellingParser sp = (SpellingParser)getParser();
+			if (sp.getAllowAdd()) {
+				sb.append("<img src='add.png' width='16' height='16'>&nbsp;").
+						append("<a href='").append(ADD).
+						append("://").append(word).append("'>").
+						append(msg.getString("ErrorToolTip.AddToDictionary")).
+						append("</a><br>");
+			}
+
+			if (sp.getAllowIgnore()) {
+				String text = msg.getString("ErrorToolTip.IgnoreWord");
+				text = MessageFormat.format(text, new String[] { word });
+				sb.append("<img src='cross.png' width='16' height='16'>&nbsp;").
+						append("<a href='").append(IGNORE).
+						append("://").append(word).append("'>").
+						append(text).append("</a>");
 			}
 
 			String firstLine = MessageFormat.format(
