@@ -379,10 +379,10 @@ public class SpellingParser extends AbstractParser
 						textArea.forceReparsing(i);
 						break;
 					}
-					SpellingParserEvent se = new SpellingParserEvent(this,
-							textArea, SpellingParserEvent.WORD_IGNORED, word);
-					fireSpellingParserEvent(se);
 				}
+				SpellingParserEvent se = new SpellingParserEvent(this,
+						textArea, SpellingParserEvent.WORD_IGNORED, word);
+				fireSpellingParserEvent(se);
 			}
 
 		}
@@ -564,7 +564,6 @@ public class SpellingParser extends AbstractParser
 		String text = noticePrefix + word + noticeSuffix;
 		SpellingParserNotice notice =
 			new SpellingParserNotice(this, text, line, offs, word, sc);
-		notice.setColor(getSquiggleUnderlineColor());
 		result.addNotice(notice);
 		if (++errorCount>=maxErrorCount) {
 			System.out.println("Cancelling the spelling check!");
@@ -585,8 +584,13 @@ public class SpellingParser extends AbstractParser
 									int line, int offs, String word,
 									SpellChecker sc) {
 			super(parser, msg, line, offs, word.length());
+			setLevel(INFO);
 			this.word = word;
 			this.sc = sc;
+		}
+
+		public Color getColor() {
+			return ((SpellingParser)getParser()).getSquiggleUnderlineColor();
 		}
 
 		public String getToolTipText() {
