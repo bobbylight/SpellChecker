@@ -194,6 +194,64 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
     return words;
   }
 
+
+// rofutr: Faster getWords() implementation (buffering and re-using stream,
+// otherwise just micro-optimizations).
+/*
+  BufferedInputStream input;
+  byte[] bytes;
+    public List getWords(String code) {
+      Vector words = new Vector();
+
+      int[] posLen = getStartPosAndLen(code);
+      if (posLen != null) {
+        try {
+        	//InputStream input = new FileInputStream(new File(db, FILE_DB));
+        	if (input==null) {
+        		input = new BufferedInputStream(new FileInputStream(new File(db, FILE_DB)));
+        		input.mark(Integer.MAX_VALUE);
+        	}
+        	input.skip(posLen[0]);
+        	//byte[] bytes = new byte[posLen[1]];
+        	if (bytes==null || bytes.length<posLen[1]) {
+        		bytes = new byte[posLen[1]];
+        	}
+        	input.read(bytes, 0, posLen[1]);
+        	//input.close();
+        	input.reset();
+        	input.mark(Integer.MAX_VALUE);
+//          String data = new String(bytes);
+//          String[] lines = split(data, "\n");
+//          for (int i = 0; i < lines.length; i++) {
+//            String[] s = split(lines[i], ",");
+//            if (s[0].equals(code)) words.addElement(s[1]);
+//          }
+  int offs = 0;
+  while (offs<posLen[1]) {
+  	int tokenStart = offs;
+  	int offs2 = tokenStart;
+  	while (bytes[offs2]!=',') {
+  		offs2++;
+  	}
+  	String s0 = new String(bytes, tokenStart, offs2-tokenStart);
+  	tokenStart = ++offs2;
+  	while (offs2<posLen[1] && bytes[offs2]!='\n') {
+  		offs2++;
+  	}
+  	if (s0.equals(code)) {
+  		words.addElement(new String(bytes, tokenStart, offs2-tokenStart));
+  	}
+  	offs = offs2 + 1;
+  }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+
+      return words;
+    }
+*/
+
   /**
    * Indicates if the initial preparation or loading of the on disk dictionary
    * is complete.
