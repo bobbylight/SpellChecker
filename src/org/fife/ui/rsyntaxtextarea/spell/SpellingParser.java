@@ -180,7 +180,7 @@ public class SpellingParser extends AbstractParser
 	public static SpellingParser createEnglishSpellingParser(File zip,
 									boolean american) throws IOException {
 
-		long start = System.currentTimeMillis();
+//		long start = System.currentTimeMillis();
 
 		SpellDictionaryHashMap dict = null;
 
@@ -222,8 +222,8 @@ public class SpellingParser extends AbstractParser
 			zf.close();
 		}
 
-		float secs = (System.currentTimeMillis() - start)/1000f;
-		System.out.println("Loading dictionary took " + secs + " seconds");
+//		float secs = (System.currentTimeMillis() - start)/1000f;
+//		System.out.println("Loading dictionary took " + secs + " seconds");
 
 		return new SpellingParser(dict);
 
@@ -395,7 +395,7 @@ public class SpellingParser extends AbstractParser
 	 */
 	public ParseResult parse(RSyntaxDocument doc, String style) {
 
-		long startTime = System.currentTimeMillis();
+//		long startTime = System.currentTimeMillis();
 
 		Element root = doc.getDefaultRootElement();
 		int lineCount = root.getElementCount();
@@ -438,9 +438,9 @@ public class SpellingParser extends AbstractParser
 
 		}
 
-		float secs = (System.currentTimeMillis() - startTime)/1000f;
-		System.out.println("Spell check completed in: " + secs + " seconds");
-		System.out.println("Error count==" + errorCount);
+//		float secs = (System.currentTimeMillis() - startTime)/1000f;
+//		System.out.println("Spell check completed in: " + secs + " seconds");
+//		System.out.println("Error count==" + errorCount);
 		return result;
 
 	}

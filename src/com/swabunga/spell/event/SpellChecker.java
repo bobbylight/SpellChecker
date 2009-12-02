@@ -442,7 +442,7 @@ public class SpellChecker {
    * @return the list of words suggested
    */
   public List getSuggestions(String word, int threshold) {
-long start = System.currentTimeMillis();
+//long start = System.currentTimeMillis();
 	  if (this.threshold != threshold && cache != null) {
        this.threshold = threshold;
        cache.clear();
@@ -470,9 +470,9 @@ long start = System.currentTimeMillis();
     VectorUtility.addAll(suggestions, userdictionary.getSuggestions(word, threshold), false);
     suggestions.trimToSize();
 
-long time = System.currentTimeMillis() - start;
-float secs = time/1000f;
-System.out.println("[DEBUG]: Suggestions for '" + word + "' took " + secs + " seconds");
+//long time = System.currentTimeMillis() - start;
+//float secs = time/1000f;
+//System.out.println("[DEBUG]: Suggestions for '" + word + "' took " + secs + " seconds");
     return suggestions;
   }
 

@@ -192,7 +192,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			JOptionPane.showMessageDialog(DemoRootPane.this,
 				"<html><b>Spell Checker</b> - An add-on for RSyntaxTextArea" +
 				"<br>that does spell checking in code comments." +
-				"<br>Version 1.3" +
+				"<br>Version 1.4" +
 				"<br>Licensed under the LGPL",
 				"About Spell Checker",
 				JOptionPane.INFORMATION_MESSAGE);
