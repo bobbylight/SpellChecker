@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package com.swabunga.spell.event;
 
-
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Segment;
@@ -65,7 +64,8 @@ public class DocumentWordTokenizer implements WordTokenizer {
     try {
       document.getText(0, document.getLength(), text);
       sentenceIterator.setText(text);
-      currentWordPos = getNextWordStart(text, 0);
+      // robert: use text.getBeginIndex(), not 0, for segment's first offset
+      currentWordPos = getNextWordStart(text, text.getBeginIndex());
       //If the current word pos is -1 then the string was all white space
       if (currentWordPos != -1) {
         currentWordEnd = getNextWordEnd(text, currentWordPos);
@@ -153,7 +153,8 @@ public class DocumentWordTokenizer implements WordTokenizer {
    * @return the number of words found so far.
    */
   public int getCurrentWordPosition() {
-    return currentWordPos;
+	  // robert: bug fix - segment's start offset may be != 0
+    return currentWordPos - text.offset;
   }
 
   /**
@@ -161,7 +162,8 @@ public class DocumentWordTokenizer implements WordTokenizer {
    * @return index of the end of the current word in the text.
    */
   public int getCurrentWordEnd() {
-    return currentWordEnd;
+	  // robert: bug fix - segment's start offset may be != 0
+    return currentWordEnd - text.offset;
   }
 
   /**
@@ -187,8 +189,12 @@ public class DocumentWordTokenizer implements WordTokenizer {
     //The nextWordPos has already been populated
     String word = null;
     try {
-      word = document.getText(currentWordPos, currentWordEnd - currentWordPos);
+    	// robert: bug fix - Segment's begin offset may be != 0
+        int offs = currentWordPos - text.offset;
+        word = document.getText(offs, currentWordEnd - currentWordPos);
+      //word = document.getText(currentWordPos, currentWordEnd - currentWordPos);
     } catch (BadLocationException ex) {
+    	ex.printStackTrace();
       moreTokens = false;
     }
     wordCount++;
@@ -207,7 +213,7 @@ public class DocumentWordTokenizer implements WordTokenizer {
   }
 
   /** Replaces the current word token
-   * @param newWord The new word to replace the misspelt one
+   * @param newWord The new word to replace the misspelled one
    */
   public void replaceWord(String newWord) {
     if (currentWordPos != -1) {
@@ -244,8 +250,8 @@ public class DocumentWordTokenizer implements WordTokenizer {
    * @return true if the current word is at the start of a sentence
    */
   public boolean isNewSentence() {
-    // BreakIterator doesn't work when the first word in a sentence is not capitalised,
-    // but we need to check for capitalisation
+    // BreakIterator doesn't work when the first word in a sentence is not
+	// capitalized, but we need to check for capitalization
     if (startsSentence || currentWordPos < 2)
       return(true);
     

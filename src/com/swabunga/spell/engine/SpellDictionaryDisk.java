@@ -195,7 +195,7 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
   }
 
 
-// rofutr: Faster getWords() implementation (buffering and re-using stream,
+// robert: Faster getWords() implementation (buffering and re-using stream,
 // otherwise just micro-optimizations).
 /*
   BufferedInputStream input;

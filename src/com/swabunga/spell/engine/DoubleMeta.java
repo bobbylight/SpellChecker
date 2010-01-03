@@ -223,10 +223,10 @@ public class DoubleMeta implements Transformator {
 
   /**
    * Take the given word, and return the best phonetic hash for it.
-   * Vowels are minimized as much as possible, and consenants
-   * that have similiar sounds are converted to the same consenant
+   * Vowels are minimized as much as possible, and consonants
+   * that have similar sounds are converted to the same consonant
    * for example, 'v' and 'f' are both converted to 'f'
-   * @param word the texte to transform
+   * @param word the text to transform
    * @return the result of the phonetic transformation
    */
   public final String transform(String word) {

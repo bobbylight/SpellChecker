@@ -307,7 +307,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
     List possible = getWords(getCode(word));
     if (possible.contains(word))
       return true;
-    //JMH should we always try the lowercase version. If I dont then capitalised
+    //JMH should we always try the lowercase version. If I dont then capitalized
     //words are always returned as incorrect.
     else if (possible.contains(word.toLowerCase()))
       return true;
