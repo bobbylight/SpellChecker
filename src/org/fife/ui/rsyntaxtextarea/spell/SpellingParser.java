@@ -354,13 +354,7 @@ public class SpellingParser extends AbstractParser
 				}
 				String word = tokens[0];
 				if (sc.addToDictionary(word)) {
-					for (int i=0; i<textArea.getParserCount(); i++) {
-						// Should be in the list somewhere...
-						if (textArea.getParser(i)==this) {
-							textArea.forceReparsing(i);
-							break;
-						}
-					}
+					textArea.forceReparsing(this);
 					SpellingParserEvent se = new SpellingParserEvent(this,
 							textArea, SpellingParserEvent.WORD_ADDED, word);
 					fireSpellingParserEvent(se);
@@ -373,13 +367,7 @@ public class SpellingParser extends AbstractParser
 			else if (IGNORE.equals(operation)) {
 				String word = tokens[0];
 				sc.ignoreAll(word);
-				for (int i=0; i<textArea.getParserCount(); i++) {
-					// Should be in the list somewhere...
-					if (textArea.getParser(i)==this) {
-						textArea.forceReparsing(i);
-						break;
-					}
-				}
+				textArea.forceReparsing(this);
 				SpellingParserEvent se = new SpellingParserEvent(this,
 						textArea, SpellingParserEvent.WORD_IGNORED, word);
 				fireSpellingParserEvent(se);
