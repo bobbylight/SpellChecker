@@ -651,6 +651,10 @@ public class SpellingParser extends AbstractParser
 
 		}
 
+		public String toString() {
+			return "[SpellingParserNotice: " + word + "]";
+		}
+
 	}
 
 

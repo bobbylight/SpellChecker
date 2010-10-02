@@ -1,6 +1,6 @@
 RSyntaxTextArea SpellChecker README
 -----------------------------------
-Last modified: 7/26/2009
+Last modified: 10/02/2010
 
 Note that this is preview software and may well contain bugs!
 
@@ -24,7 +24,7 @@ British).  The easiest method to add spell checking to RSTA is as follows:
      boolean american = true; // "false" will use British English
      SpellingParser parser = SpellingParser.
                                  createEnglishSpellingParser(zip, american);
-     textArea.setParser(parser);
+     textArea.addParser(parser);
 
 See class org.fife.ui.rsyntaxtextarea.spell.demo.SpellingParserDemo for a
 working example.
