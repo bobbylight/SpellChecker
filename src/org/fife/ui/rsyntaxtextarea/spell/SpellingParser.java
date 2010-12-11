@@ -406,9 +406,7 @@ public class SpellingParser extends AbstractParser
 
 				Token t = doc.getTokenListForLine(line);
 				while (t!=null && t.isPaintable()) {
-					if (t.type==Token.COMMENT_EOL ||
-							t.type==Token.COMMENT_MULTILINE ||
-							t.type==Token.COMMENT_DOCUMENTATION) {
+					if (t.isComment()) {
 						startOffs = t.offset;
 						// TODO: Create a wordTokenizer that uses char[] array
 						// to prevent String allocation.
