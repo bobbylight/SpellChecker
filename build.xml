@@ -14,8 +14,8 @@
 		4. make-source-zip: Creates a source zip file.
 
 	Author:   Robert Futrell
-	Version:  1.4
-	Date:     01dec2009
+	Version:  1.5
+	Date:     11dec2010
 
 -->
 
@@ -26,7 +26,7 @@
 
 
 	<!-- Set global properties for this build. -->
-	<property name="version"          value="1.4.2"/>
+	<property name="version"          value="1.4.3"/>
 	<property name="source-dir"       location="src"/>
 	<property name="class-dir"        location="ant-classes"/>
 	<property name="dist-dir"         location="dist"/>
@@ -56,7 +56,7 @@
 			<fileset dir="i18n"/>
 			<fileset dir="img"/>
 			<fileset dir="${source-dir}">
-				<include name="com/swabunga/spell/engine/configuration.properties"/>
+				<include name="org/fife/com/swabunga/spell/engine/configuration.properties"/>
 			</fileset>
 		</jar>
 	</target>

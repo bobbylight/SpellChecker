@@ -39,6 +39,15 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.Element;
 
+import org.fife.com.swabunga.spell.engine.Configuration;
+import org.fife.com.swabunga.spell.engine.SpellDictionary;
+import org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap;
+import org.fife.com.swabunga.spell.engine.Word;
+import org.fife.com.swabunga.spell.event.DocumentWordTokenizer;
+import org.fife.com.swabunga.spell.event.SpellCheckEvent;
+import org.fife.com.swabunga.spell.event.SpellCheckListener;
+import org.fife.com.swabunga.spell.event.SpellChecker;
+import org.fife.com.swabunga.spell.event.StringWordTokenizer;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -52,15 +61,6 @@ import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
 import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserEvent;
 import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserListener;
 
-import com.swabunga.spell.engine.Configuration;
-import com.swabunga.spell.engine.SpellDictionary;
-import com.swabunga.spell.engine.SpellDictionaryHashMap;
-import com.swabunga.spell.engine.Word;
-import com.swabunga.spell.event.DocumentWordTokenizer;
-import com.swabunga.spell.event.SpellCheckEvent;
-import com.swabunga.spell.event.SpellCheckListener;
-import com.swabunga.spell.event.SpellChecker;
-import com.swabunga.spell.event.StringWordTokenizer;
 
 
 /**
