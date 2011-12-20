@@ -552,7 +552,7 @@ public class SpellingParser extends AbstractParser
 			new SpellingParserNotice(this, text, line, offs, word, sc);
 		result.addNotice(notice);
 		if (++errorCount>=maxErrorCount) {
-			System.out.println("Cancelling the spelling check!");
+			//System.out.println("Cancelling the spelling check!");
 			e.cancel();
 		}
 	}
