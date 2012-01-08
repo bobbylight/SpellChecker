@@ -161,6 +161,8 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			textArea.setText("// Type Java source.  Comments are spell checked.");
 		}
 		textArea.setCaretPosition(0);
+		textArea.discardAllEdits();
+		textArea.setAntiAliasingEnabled(true);
 		textArea.addHyperlinkListener(this);
 		textArea.requestFocusInWindow();
 		textArea.setMarkOccurrences(true);
