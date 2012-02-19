@@ -78,8 +78,6 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 	 * a 3.0 GHz Core 2 Duo).<p>
 	 * This assumes the app will only be made visible once, which is certainly
 	 * true for our demo.
-	 *
-	 * @param visible Whether the root pane should be made visible.
 	 */
 	public void addNotify() {
 		super.addNotify();
