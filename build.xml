@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- 
 
@@ -15,7 +15,7 @@
 
 	Author:   Robert Futrell
 	Version:  1.5
-	Date:     11dec2010
+	Date:     10mar2012
 
 -->
 
@@ -26,7 +26,7 @@
 
 
 	<!-- Set global properties for this build. -->
-	<property name="version"          value="2.0.0"/>
+	<property name="version"          value="2.0.2"/>
 	<property name="source-dir"       location="src"/>
 	<property name="class-dir"        location="ant-classes"/>
 	<property name="dist-dir"         location="dist"/>

@@ -2,23 +2,9 @@
  * 07/21/2009
  *
  * SpellingParser.java - A spell-checker for RSyntaxTextArea.
- * Copyright (C) 2009 Robert Futrell
- * robert_futrell at users.sourceforge.net
- * http://fifesoft.com/rsyntaxtextarea
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
+ * 
+ * This library is distributed under the LGPL.  See the included
+ * SpellChecker.License.txt file for details.
  */
 package org.fife.ui.rsyntaxtextarea.spell;
 
@@ -67,7 +53,7 @@ import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserListener;
  * A parser that spell-checks documents.  The spelling engine is a lightly
  * modified version of <a href="http://jazzy.sourceforge.net/">Jazzy</a>.
  * All Jazzy source, modified or otherwise, is licensed under the LGPL. just
- * like RSyntaxTextArea.<p>
+ * like the entirety of this library.<p>
  *
  * For source code only comments are spell checked.  For plain text files,
  * the entire content is spell checked.<p>

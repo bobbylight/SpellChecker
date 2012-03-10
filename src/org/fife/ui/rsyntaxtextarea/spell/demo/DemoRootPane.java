@@ -2,23 +2,9 @@
  * 07/21/2009
  *
  * DemoRootPane.java - Root pane for the demo.
- * Copyright (C) 2009 Robert Futrell
- * robert_futrell at users.sourceforge.net
- * http://fifesoft.com/rsyntaxtextarea
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
+ * 
+ * This library is distributed under the LGPL.  See the included
+ * SpellChecker.License.txt file for details.
  */
 package org.fife.ui.rsyntaxtextarea.spell.demo;
 
@@ -192,8 +178,8 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			JOptionPane.showMessageDialog(DemoRootPane.this,
 				"<html><b>Spell Checker</b> - An add-on for RSyntaxTextArea" +
 				"<br>that does spell checking in code comments." +
-				"<br>Version 1.5.0" +
-				"<br>Licensed under the LGPL",
+				"<br>Version 2.0.2" +
+				"<br>Licensed under a modified BSD license",
 				"About Spell Checker",
 				JOptionPane.INFORMATION_MESSAGE);
 		}

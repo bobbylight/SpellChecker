@@ -1,8 +1,6 @@
 RSyntaxTextArea SpellChecker README
 -----------------------------------
-Last modified: 10/02/2010
-
-Note that this is preview software and may well contain bugs!
+Last modified: 03/10/2012
 
 By popular demand, here is the beginnings of a spell checker add-on for
 RSyntaxTextArea.  For programming languages, it spell-checks text in comments,
@@ -29,5 +27,6 @@ British).  The easiest method to add spell checking to RSTA is as follows:
 See class org.fife.ui.rsyntaxtextarea.spell.demo.SpellingParserDemo for a
 working example.
 
-This add-on is licensed under the LGPL, as is Jazzy itself and RSyntaxTextArea.
-See the included LICENSE.txt file.
+This add-on is licensed under the LGPL; see the included
+SpellChecker.License.txt file.
+Jazzy is licensed under the LGPL; see Jazzy.LICENSE.txt.
