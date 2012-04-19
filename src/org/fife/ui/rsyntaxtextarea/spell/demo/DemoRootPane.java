@@ -179,7 +179,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 				"<html><b>Spell Checker</b> - An add-on for RSyntaxTextArea" +
 				"<br>that does spell checking in code comments." +
 				"<br>Version 2.0.2" +
-				"<br>Licensed under a modified BSD license",
+				"<br>Licensed under the LGPL",
 				"About Spell Checker",
 				JOptionPane.INFORMATION_MESSAGE);
 		}
