@@ -146,7 +146,6 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 		}
 		textArea.setCaretPosition(0);
 		textArea.discardAllEdits();
-		textArea.setAntiAliasingEnabled(true);
 		textArea.addHyperlinkListener(this);
 		textArea.requestFocusInWindow();
 		textArea.setMarkOccurrences(true);
