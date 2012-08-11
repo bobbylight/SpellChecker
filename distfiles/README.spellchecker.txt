@@ -30,3 +30,7 @@ working example.
 This add-on is licensed under the LGPL; see the included
 SpellChecker.License.txt file.
 Jazzy is licensed under the LGPL; see Jazzy.LICENSE.txt.
+
+Contributors:
+
+   
