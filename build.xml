@@ -43,7 +43,8 @@
 		<javac srcdir="${source-dir}" destdir="${class-dir}"
 			classpath="${rsta-jar}"
 			deprecation="yes" debug="${debug}" debuglevel="${debuglevel}"
-			source="${java-level}" target="${java-level}"/>
+			source="${java-level}" target="${java-level}"
+			includeantruntime="false"/>
 	</target>
 
 
