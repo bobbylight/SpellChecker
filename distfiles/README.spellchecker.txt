@@ -1,6 +1,6 @@
 RSyntaxTextArea SpellChecker README
 -----------------------------------
-Last modified: 08/23/2012
+Last modified: 08/26/2012
 
 By popular demand, here is the beginnings of a spell checker add-on for
 RSyntaxTextArea.  For programming languages, it spell-checks text in comments,
@@ -42,3 +42,10 @@ that you check the two projects out side by side.  Then, to build:
 This add-on is licensed under the LGPL; see the included
 SpellChecker.License.txt file.
 Jazzy is licensed under the LGPL; see Jazzy.LICENSE.txt.
+
+Translators:
+   Chinese (Simplified):   Terrance Chen
+   Polish:                 Chris
+   Portuguese (Brazil):    Patricia Thaine
+   Russian:                Nadiya Holub
+   Spanish:                Leonardo Aguado
