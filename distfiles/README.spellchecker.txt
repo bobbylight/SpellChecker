@@ -46,6 +46,7 @@ Jazzy is licensed under the LGPL; see Jazzy.LICENSE.txt.
 Translators:
    Chinese (Simplified):   Terrance Chen
    German:                 Domenic
+   Japanese:               Josh
    Korean:                 Changkyoon
    Polish:                 Chris
    Portuguese (Brazil):    Patricia Thaine
