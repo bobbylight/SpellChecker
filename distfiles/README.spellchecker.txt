@@ -1,6 +1,6 @@
 RSyntaxTextArea SpellChecker README
 -----------------------------------
-Last modified: 08/26/2012
+Last modified: 11/17/2012
 
 By popular demand, here is the beginnings of a spell checker add-on for
 RSyntaxTextArea.  For programming languages, it spell-checks text in comments,
