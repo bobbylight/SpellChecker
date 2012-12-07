@@ -9,6 +9,7 @@
 package org.fife.ui.rsyntaxtextarea.spell;
 
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,6 +19,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.zip.ZipFile;
 import javax.swing.UIManager;
@@ -104,7 +106,7 @@ public class SpellingParser extends AbstractParser
 	private static final String IGNORE		= "ignore";
 	private static final String REPLACE		= "replace";
 	private static final String TOOLTIP_TEXT_FORMAT =
-		"<html><img src='lightbulb.png' width='16' height='16'>{0}<hr><img src='spellcheck.png' width='16' height='16'>{1}<br>{2}<br>&nbsp;";
+		"<html><body dir='{0}'><img src='lightbulb.png' width='16' height='16'>{1}<hr><img src='spellcheck.png' width='16' height='16'>{2}<br>{3}<br>&nbsp;";
 
 	/**
 	 * The default maximum number of spelling errors to report for a document.
@@ -625,8 +627,12 @@ public class SpellingParser extends AbstractParser
 			String firstLine = MessageFormat.format(
 									msg.getString("ErrorToolTip.DescHtml"),
 									new String[] { word });
+			ComponentOrientation o = ComponentOrientation.getOrientation(
+												Locale.getDefault());
+			String dirAttr = o.isLeftToRight() ? "ltr" : "rtl";
 			String temp = MessageFormat.format(TOOLTIP_TEXT_FORMAT,
 							new String[] {
+								dirAttr,
 								firstLine,
 								msg.getString("ErrorToolTip.SuggestionsHtml"),
 								sb.toString() });
