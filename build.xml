@@ -31,7 +31,7 @@
 	<property name="class-dir"        location="ant-classes"/>
 	<property name="dist-dir"         location="dist"/>
 	<property name="debug"            value="true"/>
-	<property name="debuglevel"       value="lines,var,source"/>
+	<property name="debuglevel"       value="lines,vars,source"/>
 	<property name="java-level"       value="1.4"/>
 	<property name="rsta-jar"         location="../RSyntaxTextArea/dist/rsyntaxtextarea.jar"/>
 
