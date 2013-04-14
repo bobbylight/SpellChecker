@@ -25,14 +25,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 package org.fife.com.swabunga.spell.engine;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * The SpellDictionaryHashMap holds the dictionary
- * <p/>
- * This class is thread safe. Derived classes should ensure that this preserved.
  * <p/>
  * There are many open source dictionary files. For just a few see:
  * http://wordlist.sourceforge.net/
@@ -43,6 +42,7 @@ import java.util.Vector;
  * Note that you must create the dictionary with a word list for the added
  * words to persist.
  */
+// robert: Converted use of Vectors to ArrayLists; we're single-threaded
 public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   /** A field indicating the initial hash map capacity (16KB) for the main
    *  dictionary hash map. Interested to see what the performance of a
@@ -245,14 +245,12 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    */
   protected void putWord(String word) {
     String code = getCode(word);
-    Vector list = (Vector) mainDictionary.get(code);
-    if (list != null) {
-      list.addElement(word);
-    } else {
-      list = new Vector();
-      list.addElement(word);
+    List list = (List) mainDictionary.get(code);
+    if (list == null) {
+      list = new ArrayList();
       mainDictionary.put(code, list);
     }
+    list.add(word);
   }
 
   /**
@@ -263,7 +261,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   protected void putWordUnique(String word) {
 
     String code = getCode(word);
-    Vector list = (Vector) mainDictionary.get(code);
+    List list = (List) mainDictionary.get(code);
 
     if (list != null) {
 
@@ -271,19 +269,19 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
 
       for (int i = 0; i < list.size(); i++) {
 
-        if (word.equalsIgnoreCase((String) list.elementAt(i))) {
+        if (word.equalsIgnoreCase((String) list.get(i))) {
           isAlready = true;
           break;
         }
       }
 
       if (!isAlready)
-        list.addElement(word);
+        list.add(word);
 
     } else {
 
-      list = new Vector();
-      list.addElement(word);
+      list = new ArrayList();
+      list.add(word);
       mainDictionary.put(code, list);
 
     }
@@ -294,9 +292,9 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    */
   public List getWords(String code) {
     //Check the main dictionary.
-    Vector mainDictResult = (Vector) mainDictionary.get(code);
+    List mainDictResult = (List) mainDictionary.get(code);
     if (mainDictResult == null)
-      return new Vector();
+      return Collections.EMPTY_LIST;
     return mainDictResult;
   }
 

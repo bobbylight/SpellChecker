@@ -117,7 +117,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @see #getSuggestions(String, int, int[][])
    * @param word Suggestions for given misspelt word
    * @param threshold The lower boundary of similarity to misspelt word
-   * @return Vector a List of suggestions
+   * @return a List of suggestions
    */
   public List getSuggestions(String word, int threshold) {
   	
@@ -133,7 +133,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @param threshold The lower boundary of similarity to misspelt word
    * @param matrix Two dimensional int array used to calculate
    * edit distance. Allocating this memory outside of the function will greatly improve efficiency. 
-   * @return Vector a List of suggestions
+   * @return a List of suggestions
    */
   public List getSuggestions(String word, int threshold, int[][] matrix) {
 
