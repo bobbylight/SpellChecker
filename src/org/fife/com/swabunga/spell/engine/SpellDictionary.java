@@ -81,7 +81,7 @@ public interface SpellDictionary {
    * <p>
    * @param sourceWord the string that we want to get a list of spelling suggestions for
    * @param scoreThreshold Any words that have score less than this number are returned.
-   * @param Two dimensional int array used to calculate edit distance. Allocating 
+   * @param matrix Two dimensional int array used to calculate edit distance. Allocating 
    * this memory outside of the function will greatly improve efficiency.   
    * @return List a List of suggested words
    * @see org.fife.com.swabunga.spell.engine.Word
