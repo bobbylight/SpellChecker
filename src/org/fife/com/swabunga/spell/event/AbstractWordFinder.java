@@ -128,7 +128,8 @@ public abstract class AbstractWordFinder implements WordFinder {
       throw new WordNotFoundException("No Words in current String");
     }
 
-    StringBuffer sb = new StringBuffer(text.substring(0, currentWord.getStart()));
+    // robert: Use StringBuilder
+    StringBuilder sb = new StringBuilder(text.substring(0, currentWord.getStart()));
     sb.append(newWord);
     sb.append(text.substring(currentWord.getEnd()));
     int diff = newWord.length() - currentWord.getText().length();

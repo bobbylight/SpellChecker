@@ -42,6 +42,7 @@ package org.fife.com.swabunga.spell.engine;
  *   <br/>The function call SlavoGermaic was called repeatedly in the process function, it is now only called once.
  *
  */
+// robert: Use StringBuilder instead of StringBuffer in transform()
 public class DoubleMeta implements Transformator {
 
   /**
@@ -178,13 +179,13 @@ public class DoubleMeta implements Transformator {
    * put your documentation comment here
    * @param main
    */
-  private final static void MetaphAdd(StringBuffer primary, String main) {
+  private final static void MetaphAdd(StringBuilder primary, String main) {
     if (main != null) {
       primary.append(main);
     }
   }
 
-  private final static void MetaphAdd(StringBuffer primary, char main) {
+  private final static void MetaphAdd(StringBuilder primary, char main) {
     primary.append(main);
   }
 
@@ -230,7 +231,7 @@ public class DoubleMeta implements Transformator {
    * @return the result of the phonetic transformation
    */
   public final String transform(String word) {
-    StringBuffer primary = new StringBuffer(word.length() + 5);
+	StringBuilder primary = new StringBuilder(word.length() + 5);
     String in = word.toUpperCase() + "     ";
     int current = 0;
     int length = in.length();

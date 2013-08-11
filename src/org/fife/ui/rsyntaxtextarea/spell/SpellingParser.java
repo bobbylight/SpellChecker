@@ -569,7 +569,7 @@ public class SpellingParser extends AbstractParser
 
 		public String getToolTipText() {
 
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			String spacing = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 			int threshold = sc.getConfiguration().getInteger(Configuration.SPELL_THRESHOLD);
 			List suggestions = sc.getSuggestions(word, threshold);

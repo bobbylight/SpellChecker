@@ -549,11 +549,12 @@ public class SpellChecker {
         //Check for capitalization
         if (isSupposedToBeCapitalized(word, tokenizer)) {
           errors++;
-          StringBuffer buf = new StringBuffer(word);
+          // robert: StringBuilder and List instead of SBuf/Vector
+          StringBuilder buf = new StringBuilder(word);
           buf.setCharAt(0, Character.toUpperCase(word.charAt(0)));
-          Vector suggestion = new Vector();
-          suggestion.addElement(new Word(buf.toString(), 0));
-          SpellCheckEvent event = new BasicSpellCheckEvent(word, suggestion, tokenizer);
+          List suggestions = new ArrayList();
+          suggestions.add(new Word(buf.toString(), 0));
+          SpellCheckEvent event = new BasicSpellCheckEvent(word, suggestions, tokenizer);
           terminated = fireAndHandleEvent(tokenizer, event);
         }
       }
