@@ -14,8 +14,8 @@
 		4. make-source-zip: Creates a source zip file.
 
 	Author:   Robert Futrell
-	Version:  1.5
-	Date:     10mar2012
+	Version:  1.6
+	Date:     11aug2013
 
 -->
 
@@ -26,7 +26,7 @@
 
 
 	<!-- Set global properties for this build. -->
-	<property name="version"          value="2.0.7"/>
+	<property name="version"          value="2.5.0"/>
 	<property name="source-dir"       location="src"/>
 	<property name="class-dir"        location="ant-classes"/>
 	<property name="dist-dir"         location="dist"/>
