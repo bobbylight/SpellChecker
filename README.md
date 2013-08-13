@@ -10,8 +10,7 @@ import org.fife.ui.rsyntaxtextarea.spell.*;
 // ...
 File zip = new File("location/of/included/english_dic.zip");
 boolean american = true; // "false" will use British English
-SpellingParser parser = SpellingParser.
-createEnglishSpellingParser(zip, american);
+SpellingParser parser = SpellingParser.createEnglishSpellingParser(zip, american);
 textArea.addParser(parser);
 ```
 
