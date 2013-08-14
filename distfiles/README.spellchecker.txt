@@ -1,5 +1,6 @@
 RSyntaxTextArea SpellChecker README
 -----------------------------------
+https://github.com/bobbylight/SpellChecker
 Last modified: 04/14/2013
 
 By popular demand, here is a spell checker add-on for RSyntaxTextArea.  For
