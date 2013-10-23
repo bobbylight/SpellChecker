@@ -60,14 +60,16 @@ public class PropertyConfiguration extends Configuration {
    * @see org.fife.com.swabunga.spell.engine.Configuration#getBoolean(String)
    */
   public boolean getBoolean(String key) {
-    return new Boolean(prop.getProperty(key)).booleanValue();
+	  // robert: Avoid Boolean allocations
+	  return Boolean.parseBoolean(prop.getProperty(key));
   }
 
   /**
    * @see org.fife.com.swabunga.spell.engine.Configuration#getInteger(String)
    */
   public int getInteger(String key) {
-    return new Integer(prop.getProperty(key)).intValue();
+	  // robert: Avoid Integer allocations
+	  return Integer.parseInt(prop.getProperty(key), 10);
   }
 
   /**
