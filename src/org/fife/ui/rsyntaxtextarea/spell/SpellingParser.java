@@ -587,11 +587,13 @@ public class SpellingParser extends AbstractParser
 					}
 					sb.append("<td>&#8226;&nbsp;");
 					Word suggestion = (Word)suggestions.get(i);
-					sb.append("<a href='").append(REPLACE).append("://").
+					// Surround with double quotes, not single, since
+					// replacement words can have single quotes in them.
+					sb.append("<a href=\"").append(REPLACE).append("://").
 					append(getOffset()).append(',').
 					append(getLength()).append(',').
 					append(suggestion.getWord()).
-					append("'>").
+					append("\">").
 					append(suggestion.getWord()).
 					append("</a>").
 					append("</td>");
