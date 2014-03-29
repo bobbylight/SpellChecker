@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -89,6 +90,7 @@ public class SpellingParser extends AbstractParser
 	private String noticePrefix;
 	private String noticeSuffix;
 	private EventListenerList listenerList;
+	private SpellCheckableTokenIdentifier spellCheckableTokenIdentifier;
 
 
 	/**
@@ -129,6 +131,8 @@ public class SpellingParser extends AbstractParser
 		setMaxErrorCount(DEFAULT_MAX_ERROR_COUNT);
 		setAllowAdd(true);
 		setAllowIgnore(true);
+		setSpellCheckableTokenIdentifier(
+				new DefaultSpellCheckableTokenIdentifier());
 
 		// Since the spelling callback can possibly be called many times
 		// per parsing, we're extremely cheap here and pre-split our message
@@ -291,6 +295,17 @@ public class SpellingParser extends AbstractParser
 
 
 	/**
+	 * Returns the strategy to use to identify tokens to spell check.
+	 *
+	 * @return The strategy.
+	 * @see #setSpellCheckableTokenIdentifier(SpellCheckableTokenIdentifier)
+	 */
+	public SpellCheckableTokenIdentifier getSpellCheckableTokenIdentifier() {
+		return spellCheckableTokenIdentifier;
+	}
+
+
+	/**
 	 * Returns the color to use when painting spelling errors in an editor.
 	 *
 	 * @return The color to use.
@@ -389,12 +404,14 @@ public class SpellingParser extends AbstractParser
 
 		else {
 
-			outer:
-			for (int line=0; line<lineCount; line++) {
+			SpellCheckableTokenIdentifier scti =
+					getSpellCheckableTokenIdentifier();
 
-				Token t = doc.getTokenListForLine(line);
-				while (t!=null && t.isPaintable()) {
-					if (t.isComment()) {
+			scti.begin();
+			try {
+				for (Iterator i=doc.iterator(); i.hasNext(); ) {
+					Token t = (Token)i.next();
+					if (scti.isSpellCheckable(t)) {
 						startOffs = t.getOffset();
 						// TODO: Create a wordTokenizer that uses char[] array
 						// to prevent String allocation.
@@ -402,12 +419,12 @@ public class SpellingParser extends AbstractParser
 									new StringWordTokenizer(t.getLexeme());
 						int rc = sc.checkSpelling(swt);
 						if (rc==SpellChecker.SPELLCHECK_CANCEL) {
-							break outer; // Stop spell checking comments
+							break; // Stop spell checking comments
 						}
 					}
-					t = t.getNextToken();
 				}
-
+			} finally {
+				scti.end();
 			}
 
 		}
@@ -478,6 +495,22 @@ public class SpellingParser extends AbstractParser
 	 */
 	public void setMaxErrorCount(int max) {
 		maxErrorCount = max;
+	}
+
+
+	/**
+	 * Sets the strategy to use to identify tokens to spell check.
+	 *
+	 * @param scti The new strategy to use.  This cannot be <code>null</code>.
+	 * @see #getSpellCheckableTokenIdentifier()
+	 */
+	public void setSpellCheckableTokenIdentifier(
+			SpellCheckableTokenIdentifier scti) {
+		if (scti==null) {
+			throw new IllegalArgumentException(
+					"SpellCheckableTokenIdentifier cannot be null");
+		}
+		this.spellCheckableTokenIdentifier = scti;
 	}
 
 
