@@ -591,7 +591,7 @@ public class SpellingParser extends AbstractParser
 									int line, int offs, String word,
 									SpellChecker sc) {
 			super(parser, msg, line, offs, word.length());
-			setLevel(INFO);
+			setLevel(Level.INFO);
 			this.word = word;
 			this.sc = sc;
 		}
