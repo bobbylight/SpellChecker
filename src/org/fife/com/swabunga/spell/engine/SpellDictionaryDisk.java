@@ -545,7 +545,10 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
       if (this == o) return true;
 		if (o instanceof FileSize) {
 			FileSize fs = (FileSize)o;
-			return size==fs.size && fs.equals(fs.filename);
+			// robert: Line below previously was buggy and would never return
+			// true (comparing a FileSize to a String).
+			return size==fs.size && this.filename!=null &&
+					this.filename.equals(fs.filename);
 		}
       return false;
     }
