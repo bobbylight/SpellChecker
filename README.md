@@ -17,7 +17,7 @@ textArea.addParser(parser);
 See class org.fife.ui.rsyntaxtextarea.spell.demo.SpellingParserDemo for a working example.  
 
 Just like Jazzy itself, this add-on is licensed under the LGPL; see the included
-[SpellChecker.License.txt](https://github.com/bobbylight/SpellChecker/blob/master/distfiles/SpellChecker.License.txt) file.
+[SpellChecker.License.txt](https://github.com/bobbylight/SpellChecker/blob/master/src/main/dist/SpellChecker.License.txt) file.
 
 # Sister Projects
 
