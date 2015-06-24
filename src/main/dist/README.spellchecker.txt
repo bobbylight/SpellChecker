@@ -1,7 +1,7 @@
 RSyntaxTextArea SpellChecker README
 -----------------------------------
 https://github.com/bobbylight/SpellChecker
-Last modified: 04/14/2013
+Last modified: 23jun2015
 
 By popular demand, here is a spell checker add-on for RSyntaxTextArea.  For
 programming languages, it spell-checks text in comments, and when editing plain
@@ -35,9 +35,9 @@ This project depends on its sister RSyntaxTextArea project.  It is recommended
 that you check the two projects out side by side.  Then, to build:
   
    cd RSyntaxTextArea
-   ant
+   gradlew build
    cd ../SpellChecker
-   ant
+   gradlew build
 
 
 This add-on is licensed under the LGPL; see the included
