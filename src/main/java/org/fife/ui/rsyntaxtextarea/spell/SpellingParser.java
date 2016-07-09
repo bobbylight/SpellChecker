@@ -2,7 +2,7 @@
  * 07/21/2009
  *
  * SpellingParser.java - A spell-checker for RSyntaxTextArea.
- * 
+ *
  * This library is distributed under the LGPL.  See the included
  * SpellChecker.License.txt file for details.
  */
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.zip.ZipFile;
+
 import javax.swing.UIManager;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.HyperlinkEvent;
@@ -44,9 +45,9 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip;
 import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
+import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
 import org.fife.ui.rsyntaxtextarea.parser.ExtendedHyperlinkListener;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
-import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
 import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserEvent;
 import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserListener;
 
@@ -652,7 +653,7 @@ public class SpellingParser extends AbstractParser
 
 			if (sp.getAllowIgnore()) {
 				String text = msg.getString("ErrorToolTip.IgnoreWord");
-				text = MessageFormat.format(text, new String[] { word });
+				text = MessageFormat.format(text, new Object[] { word });
 				sb.append("<img src='cross.png' width='16' height='16'>&nbsp;").
 						append("<a href='").append(IGNORE).
 						append("://").append(word).append("'>").
@@ -661,12 +662,12 @@ public class SpellingParser extends AbstractParser
 
 			String firstLine = MessageFormat.format(
 									msg.getString("ErrorToolTip.DescHtml"),
-									new String[] { word });
+									new Object[] { word });
 			ComponentOrientation o = ComponentOrientation.getOrientation(
 												Locale.getDefault());
 			String dirAttr = o.isLeftToRight() ? "ltr" : "rtl";
 			String temp = MessageFormat.format(TOOLTIP_TEXT_FORMAT,
-							new String[] {
+							new Object[] {
 								dirAttr,
 								firstLine,
 								msg.getString("ErrorToolTip.SuggestionsHtml"),
