@@ -28,7 +28,7 @@ import java.util.Comparator;
  *  <p>This class is now immutable.
  *  </p>
  */
-public class Word implements Comparator {
+public class Word implements Comparator<Word> {
   private String word;
   private int score;
 
@@ -59,9 +59,10 @@ public class Word implements Comparator {
    * <br>0 if both words are equally similar
    *
    */
-  public int compare(Object o1, Object o2) {
-    if (((Word) o1).getCost() < ((Word) o2).getCost()) return -1;
-    if (((Word) o1).getCost() == ((Word) o2).getCost()) return 0;
+  @Override
+  public int compare(Word o1, Word o2) {
+    if (o1.getCost() < o2.getCost()) return -1;
+    if (o1.getCost() == o2.getCost()) return 0;
     return 1;
   }
 
@@ -70,12 +71,13 @@ public class Word implements Comparator {
    * @param o The other word to compare
    * @return The indication of equality
    */
+  @Override
   public boolean equals(Object o) {
     if (o instanceof Word)  // added by bd
       return(((Word)o).getWord().equals(getWord()));
     return false;
   }
-  
+
   /**
    * gets suggested spelling
    * @return the actual text of the suggest spelling
@@ -89,10 +91,11 @@ public class Word implements Comparator {
    *
    * @return The hash code for this word.
    */
+  @Override
   public int hashCode() {
     return word.hashCode();
   }
- 
+
 
   /**
    * sets suggested spelling
@@ -113,8 +116,9 @@ public class Word implements Comparator {
 
   /**
    * returns the suggested spelling
-   * @return The word's text 
+   * @return The word's text
    */
+  @Override
   public String toString() {
     return word;
   }

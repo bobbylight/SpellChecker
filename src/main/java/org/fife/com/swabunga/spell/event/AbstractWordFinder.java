@@ -69,7 +69,8 @@ public abstract class AbstractWordFinder implements WordFinder {
    *
    * @return the following word.
    */
-  public abstract Word next();
+  @Override
+public abstract Word next();
 
   /**
    * Return the text being searched. May have changed since first set
@@ -77,7 +78,8 @@ public abstract class AbstractWordFinder implements WordFinder {
    *
    * @return the text being searched.
    */
-  public String getText() {
+  @Override
+public String getText() {
 
     return text;
   }
@@ -86,7 +88,8 @@ public abstract class AbstractWordFinder implements WordFinder {
    * Defines the text to search.
    * @param newText The text to be analyzed
    */
-  public void setText(String newText) {
+  @Override
+public void setText(String newText) {
     text = newText;
     setup();
   }
@@ -97,7 +100,8 @@ public abstract class AbstractWordFinder implements WordFinder {
    * @return the current word.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public Word current() {
+  @Override
+public Word current() {
 
     if (currentWord == null) {
       throw new WordNotFoundException("No Words in current String");
@@ -110,7 +114,8 @@ public abstract class AbstractWordFinder implements WordFinder {
    * Indicates if there is some more word to analyze
    * @return true if there are further words in the string.
    */
-  public boolean hasNext() {
+  @Override
+public boolean hasNext() {
 
     return nextWord != null;
 
@@ -122,7 +127,8 @@ public abstract class AbstractWordFinder implements WordFinder {
    * @param newWord the replacement string.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public void replace(String newWord) {
+  @Override
+public void replace(String newWord) {
 
     if (currentWord == null) {
       throw new WordNotFoundException("No Words in current String");
@@ -151,7 +157,8 @@ public abstract class AbstractWordFinder implements WordFinder {
    * @return true if the current word starts a new sentence.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public boolean startsSentence() {
+  @Override
+public boolean startsSentence() {
 
     if (currentWord == null) {
       throw new WordNotFoundException("No Words in current String");
@@ -166,7 +173,8 @@ public abstract class AbstractWordFinder implements WordFinder {
    *
    * @return the text being searched.
    */
-  public String toString() {
+  @Override
+public String toString() {
 
     return text;
   }

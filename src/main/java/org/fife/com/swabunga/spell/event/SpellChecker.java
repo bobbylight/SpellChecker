@@ -19,9 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.spell.event;
 
-
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.fife.com.swabunga.spell.engine.Configuration;
 import org.fife.com.swabunga.spell.engine.SpellDictionary;
@@ -32,12 +36,12 @@ import org.fife.com.swabunga.util.VectorUtility;
 
 /**
  * This is the main class for spell checking (using the new event based spell
- * checking). 
+ * checking).
  * <p/>
  * By default, the class makes a user dictionary to accumulate added words.
  * Since this user directory has no file assign to persist added words, they
  * will be retained for the duration of the spell checker instance.
- * If you set a user dictionary like 
+ * If you set a user dictionary like
  * {@link org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap SpellDictionaryHashMap}
  * to persist the added word, the user dictionary will have the possibility to
  * grow and be available across different invocations of the spell checker.
@@ -51,22 +55,22 @@ public class SpellChecker {
   /** Flag indicating that the Spell Check completed due to user cancellation*/
   public static final int SPELLCHECK_CANCEL = -2;
 
-  private Vector eventListeners = new Vector();
-  private Vector dictionaries = new Vector();
+  private List<SpellCheckListener> eventListeners = new ArrayList<SpellCheckListener>();
+  private List<SpellDictionary> dictionaries = new ArrayList<SpellDictionary>();
   private SpellDictionary userdictionary;
 
   private Configuration config = Configuration.getConfiguration();
 
   /**This variable holds all of the words that are to be always ignored */
-  private Vector ignoredWords = new Vector();
-  private Hashtable autoReplaceWords = new Hashtable();
-  
+  private Set<String> ignoredWords = new HashSet<String>();
+  private Map<String, String> autoReplaceWords = new HashMap<String, String>();
+
   // added caching - bd
   // For cached operation a separate user dictionary is required
-  private Map cache;
+  private Map<String, List<Word>> cache;
   private int threshold = 0;
   private int cacheSize = 0;
-  
+
 
   /**
    * Constructs the SpellChecker.
@@ -94,7 +98,7 @@ public class SpellChecker {
    * Constructs the SpellChecker with a threshold
    *
    * @param  dictionary  the dictionary used for looking up words.
-   * @param  threshold   the cost value above which any suggestions are 
+   * @param  threshold   the cost value above which any suggestions are
    *                     thrown away
    */
   public SpellChecker(SpellDictionary dictionary, int threshold) {
@@ -113,7 +117,7 @@ public class SpellChecker {
     if (dictionary == null) {
       throw new IllegalArgumentException("dictionary must be non-null");
     }
-    this.dictionaries.addElement(dictionary);
+    this.dictionaries.add(dictionary);
   }
 
   /**
@@ -142,7 +146,7 @@ public class SpellChecker {
    * @param  listener  The feature to be added to the SpellCheckListener attribute
    */
   public void addSpellCheckListener(SpellCheckListener listener) {
-    eventListeners.addElement(listener);
+    eventListeners.add(listener);
   }
 
 
@@ -152,7 +156,7 @@ public class SpellChecker {
    * @param  listener  The listener to be removed from the listeners list.
    */
   public void removeSpellCheckListener(SpellCheckListener listener) {
-    eventListeners.removeElement(listener);
+    eventListeners.remove(listener);
   }
 
 
@@ -164,7 +168,7 @@ public class SpellChecker {
    */
   protected void fireSpellCheckEvent(SpellCheckEvent event) {
     for (int i = eventListeners.size() - 1; i >= 0; i--) {
-      ((SpellCheckListener) eventListeners.elementAt(i)).spellingError(event);
+      eventListeners.get(i).spellingError(event);
     }
   }
 
@@ -174,8 +178,8 @@ public class SpellChecker {
    *  <code>Ignore All</code> words and <code>Replace All</code> words.
    */
   public void reset() {
-    ignoredWords = new Vector();
-    autoReplaceWords = new Hashtable();
+    ignoredWords.clear();
+    autoReplaceWords.clear();
   }
 
 
@@ -188,6 +192,7 @@ public class SpellChecker {
    * @return        The text after spell checking
    * @deprecated    use checkSpelling(WordTokenizer)
    */
+  @Deprecated
   public String checkString(String text) {
     StringWordTokenizer tokens = new StringWordTokenizer(text);
     checkSpelling(tokens);
@@ -214,8 +219,8 @@ public class SpellChecker {
 
 
   /**
-   * Checks if the word that is being spell checked contains an Internet 
-   * address. This method look for typical protocol or the habitual string 
+   * Checks if the word that is being spell checked contains an Internet
+   * address. This method look for typical protocol or the habitual string
    * in the word:
    * <ul>
    * <li>http://</li>
@@ -253,8 +258,8 @@ public class SpellChecker {
 
 
     /**
-     * Checks if the word that is being spell checked contains an Internet 
-     * address. This method look for typical protocol or the habitual string 
+     * Checks if the word that is being spell checked contains an Internet
+     * address. This method look for typical protocol or the habitual string
      * in the word:
      * <ul>
      * <li>http://</li>
@@ -278,7 +283,7 @@ public class SpellChecker {
     	return beginsAsINETWord(word) || word.indexOf('@')>0;
     }
 
- 
+
   /**
    * Verifies if the word that is being spell checked contains all
    * upper-cases characters.
@@ -378,11 +383,9 @@ public class SpellChecker {
    * @param word The text of the word to ignore
    */
   public void ignoreAll(String word) {
-    if (!ignoredWords.contains(word)) {
-      ignoredWords.addElement(word);
-    }
+	  ignoredWords.add(word);
   }
-  
+
   /**
    * Adds a word to the user dictionary
    * @param word The text of the word to add
@@ -394,7 +397,7 @@ public class SpellChecker {
 	  }
 	  return false;
   }
-  
+
   /**
    * Indicates if a word is in the list of ignored words
    * @param word The text of the word check
@@ -402,15 +405,15 @@ public class SpellChecker {
   public boolean isIgnored(String word){
   	return ignoredWords.contains(word);
   }
-  
+
   /**
-   * Verifies if the word to analyze is contained in dictionaries. The order 
+   * Verifies if the word to analyze is contained in dictionaries. The order
    * of dictionary lookup is:
    * <ul>
-   * <li>The default user dictionary or the one set through 
+   * <li>The default user dictionary or the one set through
    * {@link SpellChecker#setUserDictionary}</li>
    * <li>The dictionary specified at construction time, if any.</li>
-   * <li>Any dictionary in the order they were added through 
+   * <li>Any dictionary in the order they were added through
    * {@link SpellChecker#addDictionary}</li>
    * </ul>
    *
@@ -419,8 +422,7 @@ public class SpellChecker {
    */
   public boolean isCorrect(String word) {
     if (userdictionary.isCorrect(word)) return true;
-    for (Enumeration e = dictionaries.elements(); e.hasMoreElements();) {
-      SpellDictionary dictionary = (SpellDictionary) e.nextElement();
+    for (SpellDictionary dictionary : dictionaries) {
       if (dictionary.isCorrect(word)) return true;
     }
     return false;
@@ -430,36 +432,34 @@ public class SpellChecker {
    * Produces a list of suggested word after looking for suggestions in various
    * dictionaries. The order of dictionary lookup is:
    * <ul>
-   * <li>The default user dictionary or the one set through 
+   * <li>The default user dictionary or the one set through
    * {@link SpellChecker#setUserDictionary}</li>
    * <li>The dictionary specified at construction time, if any.</li>
-   * <li>Any dictionary in the order they were added through 
+   * <li>Any dictionary in the order they were added through
    * {@link SpellChecker#addDictionary}</li>
    * </ul>
    *
    * @param word The word for which we want to gather suggestions
-   * @param threshold the cost value above which any suggestions are 
+   * @param threshold the cost value above which any suggestions are
    *                  thrown away
    * @return the list of words suggested
    */
-  public List getSuggestions(String word, int threshold) {
+  public List<Word> getSuggestions(String word, int threshold) {
 //long start = System.currentTimeMillis();
 	  if (this.threshold != threshold && cache != null) {
        this.threshold = threshold;
        cache.clear();
     }
 
-    ArrayList suggestions = null;
-    
+    List<Word> suggestions = null;
+
     if (cache != null)
-       suggestions = (ArrayList) cache.get(word);
+       suggestions = cache.get(word);
 
     if (suggestions == null) {
-       suggestions = new ArrayList();
-    
-       for (Enumeration e = dictionaries.elements(); e.hasMoreElements();) {
-           SpellDictionary dictionary = (SpellDictionary) e.nextElement();
-           
+       suggestions = new ArrayList<Word>();
+
+       for (SpellDictionary dictionary : dictionaries) {
            if (dictionary != userdictionary)
               VectorUtility.addAll(suggestions, dictionary.getSuggestions(word, threshold), false);
        }
@@ -467,9 +467,11 @@ public class SpellChecker {
        if (cache != null && cache.size() < cacheSize)
          cache.put(word, suggestions);
     }
-    
+
     VectorUtility.addAll(suggestions, userdictionary.getSuggestions(word, threshold), false);
-    suggestions.trimToSize();
+    if (suggestions instanceof ArrayList) {
+    	((ArrayList<Word>)suggestions).trimToSize();
+    }
 
 //long time = System.currentTimeMillis() - start;
 //float secs = time/1000f;
@@ -493,14 +495,14 @@ public class SpellChecker {
     if (size == 0)
       cache = null;
    else
-     cache = new HashMap((size + 2) / 3 * 4);
+     cache = new HashMap<String, List<Word>>((size + 2) / 3 * 4);
   }
 
   /**
    * This method is called to check the spelling of the words that are returned
    * by the WordTokenizer.
    * <p/>
-   * For each invalid word the action listeners will be informed with a new 
+   * For each invalid word the action listeners will be informed with a new
    * SpellCheckEvent.<p>
    *
    * @param  tokenizer  The media containing the text to analyze.
@@ -530,10 +532,10 @@ public class SpellChecker {
             errors++;
             //Is this word being automagically replaced
             if (autoReplaceWords.containsKey(word)) {
-              tokenizer.replaceWord((String) autoReplaceWords.get(word));
+              tokenizer.replaceWord(autoReplaceWords.get(word));
             } else {
 				// robert: Don't calculate suggestions until mouseover for speed.
-				List suggestions = null;
+				List<org.fife.com.swabunga.spell.event.Word> suggestions = null;
               SpellCheckEvent event = new BasicSpellCheckEvent(word, suggestions, tokenizer);
               terminated = fireAndHandleEvent(tokenizer, event);
             }
@@ -552,8 +554,8 @@ public class SpellChecker {
           // robert: StringBuilder and List instead of SBuf/Vector
           StringBuilder buf = new StringBuilder(word);
           buf.setCharAt(0, Character.toUpperCase(word.charAt(0)));
-          List suggestions = new ArrayList();
-          suggestions.add(new Word(buf.toString(), 0));
+          List<org.fife.com.swabunga.spell.event.Word> suggestions = new ArrayList<org.fife.com.swabunga.spell.event.Word>();
+          suggestions.add(new org.fife.com.swabunga.spell.event.Word(buf.toString(), 0));
           SpellCheckEvent event = new BasicSpellCheckEvent(word, suggestions, tokenizer);
           terminated = fireAndHandleEvent(tokenizer, event);
         }
@@ -567,12 +569,12 @@ public class SpellChecker {
     else
       return errors;
   }
-  
-  
+
+
    private boolean isSupposedToBeCapitalized(String word, WordTokenizer wordTokenizer) {
      boolean configCapitalize = !config.getBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION);
      return configCapitalize && wordTokenizer.isNewSentence() && Character.isLowerCase(word.charAt(0));
-  } 
+  }
 
 
 }

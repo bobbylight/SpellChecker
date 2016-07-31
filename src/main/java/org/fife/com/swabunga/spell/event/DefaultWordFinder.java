@@ -55,7 +55,8 @@ public class DefaultWordFinder extends AbstractWordFinder {
    * @return the next word.
    * @throws WordNotFoundException search string contains no more words.
    */
-  public Word next() {
+  @Override
+public Word next() {
     if (nextWord == null) {
       throw new WordNotFoundException("No more words found.");
     }

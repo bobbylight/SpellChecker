@@ -19,7 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.spell.engine;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +65,7 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
    * The hashmap that contains the word dictionary. The map is hashed on the doublemeta
    * code. The map entry contains a LinkedList of words that have the same double meta code.
    */
-  protected HashMap mainDictionary = new HashMap(INITIAL_CAPACITY);
+  protected HashMap<String, LinkedList<String>> mainDictionary = new HashMap<String, LinkedList<String>>(INITIAL_CAPACITY);
 
   /** Holds the dictionary file for appending*/
   private File dictFile = null;
@@ -70,9 +75,9 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
    * Dictionary constructor that uses the DoubleMeta class with the
    * English alphabet.
    * @param wordList The file containing dictionary as a words list.
-   * @throws java.io.FileNotFoundException when the words list file could not 
+   * @throws java.io.FileNotFoundException when the words list file could not
    * be located on the system.
-   * @throws java.io.IOException when problems occurs while reading the words 
+   * @throws java.io.IOException when problems occurs while reading the words
    * list file
    */
   public GenericSpellDictionary(File wordList) throws FileNotFoundException, IOException {
@@ -84,11 +89,11 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
    * build the transformation table.
    * If phonetic is null, then DoubleMeta is used with the English alphabet
    * @param wordList The file containing dictionary as a words list.
-   * @param phonetic The file containing the phonetic transformation 
+   * @param phonetic The file containing the phonetic transformation
    * information.
-   * @throws java.io.FileNotFoundException when the words list or phonetic 
+   * @throws java.io.FileNotFoundException when the words list or phonetic
    * file could not be located on the system
-   * @throws java.io.IOException when problems occurs while reading the 
+   * @throws java.io.IOException when problems occurs while reading the
    * words list or phonetic file
    */
   public GenericSpellDictionary(File wordList, File phonetic) throws FileNotFoundException, IOException {
@@ -105,6 +110,7 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
    * @param word The word to add to the dictionary
    * @return Whether the word was successfully added.
    */
+  @Override
   public boolean addWord(String word) {
     putWord(word);
     if (dictFile!=null) {
@@ -147,11 +153,11 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
    */
   protected void putWord(String word) {
     String code = getCode(word);
-    LinkedList list = (LinkedList) mainDictionary.get(code);
+    LinkedList<String> list = mainDictionary.get(code);
     if (list != null) {
       list.add(word);
     } else {
-      list = new LinkedList();
+      list = new LinkedList<String>();
       list.add(word);
       mainDictionary.put(code, list);
     }
@@ -162,11 +168,12 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
    * @param code The phonetic code we want to find words for
    * @return the list of words having the same phonetic code
    */
-  public List getWords(String code) {
+  @Override
+  public List<String> getWords(String code) {
     //Check the main dictionary.
-    List mainDictResult = (List) mainDictionary.get(code);
+    List<String> mainDictResult = mainDictionary.get(code);
     if (mainDictResult == null)
-      return new Vector();
+      return new Vector<String>();
     return mainDictResult;
   }
 
@@ -175,8 +182,9 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
    * @param word The word to checked in the dictionary
    * @return indication if the word is in the dictionary
    */
+  @Override
   public boolean isCorrect(String word) {
-    List possible = getWords(getCode(word));
+    List<String> possible = getWords(getCode(word));
     if (possible.contains(word))
       return true;
     //JMH should we always try the lowercase version. If I dont then capitalised

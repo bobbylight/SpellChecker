@@ -24,7 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 package org.fife.com.swabunga.spell.engine;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -54,7 +61,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * The hashmap that contains the word dictionary. The map is hashed on the doublemeta
    * code. The map entry contains a LinkedList of words that have the same double meta code.
    */
-  protected Hashtable mainDictionary = new Hashtable(INITIAL_CAPACITY);
+  protected Hashtable<String, List<String>> mainDictionary = new Hashtable<String, List<String>>(INITIAL_CAPACITY);
 
   /** Holds the dictionary file for appending*/
   private File dictFile = null;
@@ -95,7 +102,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * Dictionary constructor that uses an aspell phonetic file to
    * build the transformation table.
    * @param wordList The file containing the words list for the dictionary
-   * @param phonetic The file to use for phonetic transformation of the 
+   * @param phonetic The file to use for phonetic transformation of the
    * wordlist.
    * @throws java.io.FileNotFoundException indicates problems locating the
    * file on the system
@@ -110,10 +117,10 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
 
   /**
    * Dictionary constructor that uses an aspell phonetic file to
-   * build the transformation table. Encoding is used for phonetic file only; 
+   * build the transformation table. Encoding is used for phonetic file only;
    * default encoding is used for wordList
    * @param wordList The file containing the words list for the dictionary
-   * @param phonetic The file to use for phonetic transformation of the 
+   * @param phonetic The file to use for phonetic transformation of the
    * wordlist.
    * @param phoneticEncoding Uses the character set encoding specified
    * @throws java.io.FileNotFoundException indicates problems locating the
@@ -131,7 +138,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * Dictionary constructor that uses an aspell phonetic file to
    * build the transformation table.
    * @param wordList The file containing the words list for the dictionary
-   * @param phonetic The reader to use for phonetic transformation of the 
+   * @param phonetic The reader to use for phonetic transformation of the
    * wordlist.
    * @throws java.io.IOException indicates problems reading the words list
    * or phonetic information
@@ -179,7 +186,8 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * Add a word permanently to the dictionary (and the dictionary file).
    * <p>This needs to be made thread safe (synchronized)</p>
    */
-  public boolean addWord(String word) {
+  @Override
+public boolean addWord(String word) {
     putWord(word);
     if (dictFile!=null) {
 	    try {
@@ -245,9 +253,9 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    */
   protected void putWord(String word) {
     String code = getCode(word);
-    List list = (List) mainDictionary.get(code);
+    List<String> list = mainDictionary.get(code);
     if (list == null) {
-      list = new ArrayList();
+      list = new ArrayList<String>();
       mainDictionary.put(code, list);
     }
     list.add(word);
@@ -261,7 +269,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   protected void putWordUnique(String word) {
 
     String code = getCode(word);
-    List list = (List) mainDictionary.get(code);
+    List<String> list = mainDictionary.get(code);
 
     if (list != null) {
 
@@ -269,7 +277,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
 
       for (int i = 0; i < list.size(); i++) {
 
-        if (word.equalsIgnoreCase((String) list.get(i))) {
+        if (word.equalsIgnoreCase(list.get(i))) {
           isAlready = true;
           break;
         }
@@ -280,7 +288,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
 
     } else {
 
-      list = new ArrayList();
+      list = new ArrayList<String>();
       list.add(word);
       mainDictionary.put(code, list);
 
@@ -290,19 +298,21 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   /**
    * Returns a list of strings (words) for the code.
    */
-  public List getWords(String code) {
+  @Override
+  public List<String> getWords(String code) {
     //Check the main dictionary.
-    List mainDictResult = (List) mainDictionary.get(code);
+    List<String> mainDictResult = mainDictionary.get(code);
     if (mainDictResult == null)
-      return Collections.EMPTY_LIST;
+      return Collections.emptyList();
     return mainDictResult;
   }
 
   /**
    * Returns true if the word is correctly spelled against the current word list.
    */
+  @Override
   public boolean isCorrect(String word) {
-    List possible = getWords(getCode(word));
+    List<String> possible = getWords(getCode(word));
     if (possible.contains(word))
       return true;
     //JMH should we always try the lowercase version. If I dont then capitalized

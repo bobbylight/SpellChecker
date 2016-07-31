@@ -230,7 +230,8 @@ public class DoubleMeta implements Transformator {
    * @param word the text to transform
    * @return the result of the phonetic transformation
    */
-  public final String transform(String word) {
+  @Override
+public final String transform(String word) {
 	StringBuilder primary = new StringBuilder(word.length() + 5);
     String in = word.toUpperCase() + "     ";
     int current = 0;
@@ -705,7 +706,8 @@ public class DoubleMeta implements Transformator {
   /**
    * @see org.fife.com.swabunga.spell.engine.Transformator#getReplaceList()
    */
-  public char[] getReplaceList() {
+  @Override
+public char[] getReplaceList() {
     return replaceList;
   }
 }

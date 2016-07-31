@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -50,7 +49,6 @@ import org.fife.ui.rsyntaxtextarea.parser.ExtendedHyperlinkListener;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserEvent;
 import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserListener;
-
 
 
 /**
@@ -273,6 +271,7 @@ public class SpellingParser extends AbstractParser
 	 *
 	 * @return The image base.
 	 */
+	@Override
 	public URL getImageBase() {
 		return getClass().getResource("/org/fife/ui/rsyntaxtextarea/spell/");
 	}
@@ -332,6 +331,7 @@ public class SpellingParser extends AbstractParser
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void linkClicked(RSyntaxTextArea textArea, HyperlinkEvent e) {
 
 		if (e.getEventType()==HyperlinkEvent.EventType.ACTIVATED) {
@@ -385,6 +385,7 @@ public class SpellingParser extends AbstractParser
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ParseResult parse(RSyntaxDocument doc, String style) {
 
 //		long startTime = System.currentTimeMillis();
@@ -410,8 +411,7 @@ public class SpellingParser extends AbstractParser
 
 			scti.begin();
 			try {
-				for (Iterator i=doc.iterator(); i.hasNext(); ) {
-					Token t = (Token)i.next();
+				for (Token t : doc) {
 					if (scti.isSpellCheckable(t)) {
 						startOffs = t.getOffset();
 						// TODO: Create a wordTokenizer that uses char[] array
@@ -564,6 +564,7 @@ public class SpellingParser extends AbstractParser
 	 *
 	 * @param e The event.
 	 */
+	@Override
 	public void spellingError(SpellCheckEvent e) {
 //		e.ignoreWord(true);
 		String word = e.getInvalidWord();
@@ -597,16 +598,18 @@ public class SpellingParser extends AbstractParser
 			this.sc = sc;
 		}
 
+		@Override
 		public Color getColor() {
 			return ((SpellingParser)getParser()).getSquiggleUnderlineColor();
 		}
 
+		@Override
 		public String getToolTipText() {
 
 			StringBuilder sb = new StringBuilder();
 			String spacing = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 			int threshold = sc.getConfiguration().getInteger(Configuration.SPELL_THRESHOLD);
-			List suggestions = sc.getSuggestions(word, threshold);
+			List<Word> suggestions = sc.getSuggestions(word, threshold);
 			if (suggestions==null || suggestions.size()==0) {
 				sb.append(spacing).append("&#8226;&nbsp;<em>");
 				sb.append(msg.getString("None"));
@@ -620,7 +623,7 @@ public class SpellingParser extends AbstractParser
 						sb.append("<tr>");
 					}
 					sb.append("<td>&#8226;&nbsp;");
-					Word suggestion = (Word)suggestions.get(i);
+					Word suggestion = suggestions.get(i);
 					// Surround with double quotes, not single, since
 					// replacement words can have single quotes in them.
 					sb.append("<a href=\"").append(REPLACE).append("://").
@@ -677,6 +680,7 @@ public class SpellingParser extends AbstractParser
 
 		}
 
+		@Override
 		public String toString() {
 			return "[SpellingParserNotice: " + word + "]";
 		}

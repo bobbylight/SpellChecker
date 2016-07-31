@@ -60,7 +60,8 @@ public class JavaWordFinder extends AbstractWordFinder {
    * @return the next word.
    * @throws WordNotFoundException search string contains no more words.
    */
-  public Word next() {
+  @Override
+public Word next() {
 
     if (nextWord == null) {
       throw new WordNotFoundException("No more words found.");
@@ -129,7 +130,8 @@ public class JavaWordFinder extends AbstractWordFinder {
    * Initializes this word finder
    */
 
-  protected void init() {
+  @Override
+protected void init() {
 //    sentenceIterator = BreakIterator.getSentenceInstance();
 //    sentenceIterator.setText(text);
     super.init();

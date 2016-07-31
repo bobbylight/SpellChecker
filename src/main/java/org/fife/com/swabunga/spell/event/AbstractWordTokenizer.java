@@ -75,7 +75,8 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
    *
    * @return number of words so far iterated.
    */
-  public int getCurrentWordCount() {
+  @Override
+public int getCurrentWordCount() {
 
     return wordCount;
   }
@@ -86,7 +87,8 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
    * @return index in string of the end of the current word.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public int getCurrentWordEnd() {
+  @Override
+public int getCurrentWordEnd() {
 
     if (currentWord == null) {
       throw new WordNotFoundException("No Words in current String");
@@ -101,7 +103,8 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
    * @return index in string of the start of the current word.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public int getCurrentWordPosition() {
+  @Override
+public int getCurrentWordPosition() {
 
     if (currentWord == null) {
       throw new WordNotFoundException("No Words in current String");
@@ -115,7 +118,8 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
    *
    * @return true if there are further words in the text.
    */
-  public boolean hasMoreWords() {
+  @Override
+public boolean hasMoreWords() {
 
     return finder.hasNext();
   }
@@ -126,7 +130,8 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
    * @return the string representing the current word.
    * @throws WordNotFoundException search string contains no more words.
    */
-  public String nextWord() {
+  @Override
+public String nextWord() {
     currentWord = finder.next();
 
     return currentWord.getText();
@@ -138,7 +143,8 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
    * @param newWord replacement word.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public abstract void replaceWord(String newWord);
+  @Override
+public abstract void replaceWord(String newWord);
 
   /**
    * Returns the current text that is being tokenized (includes any changes
@@ -146,7 +152,8 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
    *
    * @return the text being tokenized.
    */
-  public String getContext() {
+  @Override
+public String getContext() {
 
     return finder.toString();
   }
@@ -157,7 +164,8 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
    * @return true if the current word starts a sentence.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public boolean isNewSentence() {
+  @Override
+public boolean isNewSentence() {
 
     return finder.startsSentence();
   }

@@ -1,20 +1,20 @@
 SpellChecker is a spell check add-on for RSyntaxTextArea.  For programming languages, it spell-checks text in comments, and when editing plain text files, the entire file is spell-checked.  Spelling errors are squiggle-underlined in the color of your choosing, and hovering the mouse over a misspelled word displays a tool tip with suggested fixes (if any).  You can configure the library to also use a "user dictionary" file, allowing the user to add extra words to the spell check white list.
 
-This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Indeed, 99% of the code is just Jazzy, ever-so-slightly modified for performance and bug fixes.
+This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Indeed, 99% of the code is just Jazzy, with changes made for performance, bug fixes, and Java 6 syntax.
 
-Included with this distribution is an English dictionary (both American and
+Included with this distribution is an English dictionary (both US and
 British).  The easiest method to add spell checking to RSTA is as follows:
 
 ```java
 import org.fife.ui.rsyntaxtextarea.spell.*;
 // ...
 File zip = new File("location/of/included/english_dic.zip");
-boolean american = true; // "false" will use British English
-SpellingParser parser = SpellingParser.createEnglishSpellingParser(zip, american);
+boolean usEnglish = true; // "false" will use British English
+SpellingParser parser = SpellingParser.createEnglishSpellingParser(zip, usEnglish);
 textArea.addParser(parser);
 ```
 
-See class org.fife.ui.rsyntaxtextarea.spell.demo.SpellingParserDemo for a working example.  
+See class `org.fife.ui.rsyntaxtextarea.spell.demo.SpellingParserDemo` for a working example.  
 
 Just like Jazzy itself, this add-on is licensed under the LGPL; see the included
 [SpellChecker.License.txt](https://github.com/bobbylight/SpellChecker/blob/master/src/main/dist/SpellChecker.License.txt) file.

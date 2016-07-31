@@ -65,9 +65,11 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 	 * This assumes the app will only be made visible once, which is certainly
 	 * true for our demo.
 	 */
+	@Override
 	public void addNotify() {
 		super.addNotify();
 		new Thread() {
+			@Override
 			public void run() {
 				parser = createSpellingParser();
 				if (parser!=null) {
@@ -84,6 +86,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 								se.getMessage());
 					}
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							textArea.addParser(parser);
 							toggleAction.setEnabled(true);
@@ -153,6 +156,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 	}
 
 
+	@Override
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if (e.getEventType()==HyperlinkEvent.EventType.ACTIVATED) {
 			URL url = e.getURL();
@@ -173,6 +177,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			putValue(NAME, "About Spell Checker...");
 		}
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			JOptionPane.showMessageDialog(DemoRootPane.this,
 				"<html><b>Spell Checker</b> - An add-on for RSyntaxTextArea" +
@@ -195,6 +200,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			enabled = true;
 		}
 
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			enabled = !enabled;
 			if (enabled) {

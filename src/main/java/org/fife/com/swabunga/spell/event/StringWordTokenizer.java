@@ -65,7 +65,7 @@ public class StringWordTokenizer extends AbstractWordTokenizer {
     finder.setText(s);
   }
 
-  
+
   //~ Methods .................................................................
 
   /**
@@ -74,6 +74,7 @@ public class StringWordTokenizer extends AbstractWordTokenizer {
    * interface specification.
    * @return the final text.
    */
+  @Deprecated
   public String getFinalText() {
 
     return getContext();
@@ -85,7 +86,8 @@ public class StringWordTokenizer extends AbstractWordTokenizer {
    * @param s the String to replace the current word.
    * @throws WordNotFoundException current word not yet set.
    */
-  public void replaceWord(String s) {
+  @Override
+public void replaceWord(String s) {
     finder.replace(s);
   }
 }

@@ -28,6 +28,7 @@ public class DefaultSpellCheckableTokenIdentifier
 	 * The default implementation of this method does nothing; this token
 	 * identifier does not have state.
 	 */
+	@Override
 	public void begin() {
 	}
 
@@ -36,6 +37,7 @@ public class DefaultSpellCheckableTokenIdentifier
 	 * The default implementation of this method does nothing; this token
 	 * identifier does not have state.
 	 */
+	@Override
 	public void end() {
 	}
 
@@ -45,6 +47,7 @@ public class DefaultSpellCheckableTokenIdentifier
 	 *
 	 * @return <code>true</code> only if the token is a comment.
 	 */
+	@Override
 	public boolean isSpellCheckable(Token t) {
 		return t.isComment();
 	}

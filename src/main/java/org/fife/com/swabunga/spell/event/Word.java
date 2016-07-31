@@ -126,7 +126,8 @@ public class Word {
    * Supply the text representing the word.
    * @return the text representing the word.
    */
-  public String toString() {
+  @Override
+public String toString() {
 
     return text;
   }

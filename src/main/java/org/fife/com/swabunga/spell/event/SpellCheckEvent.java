@@ -50,7 +50,7 @@ public interface SpellCheckEvent {
   /** Returns the list of suggested Word objects
    * @return A list of words phonetically close to the misspelt word
    */
-  public List getSuggestions();
+  public List<Word> getSuggestions();
 
   /** Returns the currently misspelt word
    * @return The text misspelt

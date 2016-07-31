@@ -151,7 +151,7 @@ public class GenericTransformator implements Transformator {
    */
   private char[] washAlphabetIntoReplaceList(char[] alphabet) {
 
-    HashMap letters = new HashMap(alphabet.length);
+    HashMap<String, Character> letters = new HashMap<String, Character>(alphabet.length);
 
     for (int i = 0; i < alphabet.length; i++) {
       String tmp = String.valueOf(alphabet[i]);
@@ -180,7 +180,7 @@ public class GenericTransformator implements Transformator {
   public char[] getCodeReplaceList() {
     char[] replacements;
     TransformationRule rule;
-    Vector tmp = new Vector();
+    Vector<String> tmp = new Vector<String>();
 
     if (ruleArray == null)
       return null;
@@ -191,7 +191,7 @@ public class GenericTransformator implements Transformator {
     }
     replacements = new char[tmp.size()];
     for (int i = 0; i < tmp.size(); i++) {
-      replacements[i] = ((String) tmp.elementAt(i)).charAt(0);
+      replacements[i] = tmp.elementAt(i).charAt(0);
     }
     return replacements;
   }
@@ -201,7 +201,8 @@ public class GenericTransformator implements Transformator {
    * alphabet tag in the phonetic file.
    * @return char[] An array of chars representing the alphabet or null if no alphabet was available.
    */
-  public char[] getReplaceList() {
+  @Override
+public char[] getReplaceList() {
     return alphabetString;
   }
 
@@ -210,7 +211,8 @@ public class GenericTransformator implements Transformator {
    * @param word the word to transform
    * @return the phonetic transformation of the word
    */
-  public String transform(String word) {
+  @Override
+public String transform(String word) {
 
     if (ruleArray == null)
       return null;
@@ -259,7 +261,7 @@ public class GenericTransformator implements Transformator {
   // Used to build up the transformastion table.
   private void buildRules(BufferedReader in) throws IOException {
     String read = null;
-    Vector ruleList = new Vector();
+    Vector<TransformationRule> ruleList = new Vector<TransformationRule>();
     while ((read = in.readLine()) != null) {
       buildRule(realTrimmer(read), ruleList);
     }
@@ -268,7 +270,7 @@ public class GenericTransformator implements Transformator {
   }
 
   // Here is where the real work of reading the phonetics file is done.
-  private void buildRule(String str, Vector ruleList) {
+  private void buildRule(String str, Vector<TransformationRule> ruleList) {
     if (str.length() < 1)
       return;
     for (int i = 0; i < IGNORED_KEYWORDS.length; i++) {
@@ -432,7 +434,8 @@ public class GenericTransformator implements Transformator {
     }
 
     // Just for debugging purposes.
-    public String toString() {
+    @Override
+	public String toString() {
       return "Match:" + String.valueOf(match) + " Replace:" + replace + " TakeOut:" + takeOut + " MatchLength:" + matchLength + " Start:" + start + " End:" + end;
     }
 

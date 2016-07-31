@@ -59,7 +59,8 @@ public class PropertyConfiguration extends Configuration {
   /**
    * @see org.fife.com.swabunga.spell.engine.Configuration#getBoolean(String)
    */
-  public boolean getBoolean(String key) {
+  @Override
+public boolean getBoolean(String key) {
 	  // robert: Avoid Boolean allocations
 	  return Boolean.parseBoolean(prop.getProperty(key));
   }
@@ -67,7 +68,8 @@ public class PropertyConfiguration extends Configuration {
   /**
    * @see org.fife.com.swabunga.spell.engine.Configuration#getInteger(String)
    */
-  public int getInteger(String key) {
+  @Override
+public int getInteger(String key) {
 	  // robert: Avoid Integer allocations
 	  return Integer.parseInt(prop.getProperty(key), 10);
   }
@@ -75,7 +77,8 @@ public class PropertyConfiguration extends Configuration {
   /**
    * @see org.fife.com.swabunga.spell.engine.Configuration#setBoolean(String, boolean)
    */
-  public void setBoolean(String key, boolean value) {
+  @Override
+public void setBoolean(String key, boolean value) {
     String string = null;
     if (value)
       string = "true";
@@ -89,7 +92,8 @@ public class PropertyConfiguration extends Configuration {
   /**
    * @see org.fife.com.swabunga.spell.engine.Configuration#setInteger(String, int)
    */
-  public void setInteger(String key, int value) {
+  @Override
+public void setInteger(String key, int value) {
     prop.setProperty(key, Integer.toString(value));
     save();
   }

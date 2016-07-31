@@ -24,37 +24,43 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Container for various methods that any <code>SpellDictionary</code> will use.
  * This class is based on the original Jazzy aspell port.
  * <p/>
- * Derived classes will need words list files as spell checking reference. 
- * Words list file is a dictionary with one word per line. There are many 
- * open source dictionary files, see: 
+ * Derived classes will need words list files as spell checking reference.
+ * Words list file is a dictionary with one word per line. There are many
+ * open source dictionary files, see:
  * <a href="http://wordlist.sourceforge.net/">
  * http://wordlist.sourceforge.net/</a>
  * <p/>
- * You can choose words lists form <a href="http://aspell.net/">aspell</a> 
- * many differents languages dictionaries. To grab some, install 
- * <code>aspell</code> and the dictionaries you require. Then run aspell 
- * specifying the name of the dictionary and the words list file to dump it 
+ * You can choose words lists form <a href="http://aspell.net/">aspell</a>
+ * many differents languages dictionaries. To grab some, install
+ * <code>aspell</code> and the dictionaries you require. Then run aspell
+ * specifying the name of the dictionary and the words list file to dump it
  * into, for example:
  * <pre>
  * aspell --master=fr-40 dump master > fr-40.txt
  * </pre>
  * Note: the number following the language is the size indicator. A bigger
- * number gives a more extensive language coverage. Size 40 is more than 
+ * number gives a more extensive language coverage. Size 40 is more than
  * adequate for many usages.
  * <p/>
- * For some languages, Aspell can also supply you with the phonetic file. 
- * On Windows, go into aspell <code>data</code> directory and copy the 
- * phonetic file corresponding to your language, for example the 
+ * For some languages, Aspell can also supply you with the phonetic file.
+ * On Windows, go into aspell <code>data</code> directory and copy the
+ * phonetic file corresponding to your language, for example the
  * <code>fr_phonet.dat</code> for the <code>fr</code> language. The phonetic
  * file should be in directory <code>/usr/share/aspell</code> on Unix.
  *
- * @see GenericTransformator GenericTransformator for information on 
+ * @see GenericTransformator GenericTransformator for information on
  * phonetic files.
  */
 public abstract class SpellDictionaryASpell implements SpellDictionary {
@@ -65,10 +71,10 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
   /**
    * Constructs a new SpellDictionaryASpell
-   * @param phonetic The file to use for phonetic transformation of the 
+   * @param phonetic The file to use for phonetic transformation of the
    * words list. If <code>phonetic</code> is null, the the transformation
    * uses {@link DoubleMeta} transformation.
-   * @throws java.io.IOException  indicates problems reading the phonetic 
+   * @throws java.io.IOException  indicates problems reading the phonetic
    * information
    */
   public SpellDictionaryASpell(File phonetic) throws IOException {
@@ -80,11 +86,11 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
   /**
    * Constructs a new SpellDictionaryASpell
-   * @param phonetic The file to use for phonetic transformation of the 
+   * @param phonetic The file to use for phonetic transformation of the
    * words list. If <code>phonetic</code> is null, the the transformation
    * uses {@link DoubleMeta} transformation.
    * @param encoding Uses the character set encoding specified
-   * @throws java.io.IOException  indicates problems reading the phonetic 
+   * @throws java.io.IOException  indicates problems reading the phonetic
    * information
    */
   public SpellDictionaryASpell(File phonetic, String encoding) throws IOException {
@@ -96,10 +102,10 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
   /**
    * Constructs a new SpellDictionaryASpell
-   * @param phonetic The Reader to use for phonetic transformation of the 
+   * @param phonetic The Reader to use for phonetic transformation of the
    * words list. If <code>phonetic</code> is null, the the transformation
    * uses {@link DoubleMeta} transformation.
-   * @throws java.io.IOException  indicates problems reading the phonetic 
+   * @throws java.io.IOException  indicates problems reading the phonetic
    * information
    */
   public SpellDictionaryASpell(Reader phonetic) throws IOException {
@@ -111,7 +117,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
   /**
    * Returns a list of Word objects that are the suggestions to an
-   * incorrect word. 
+   * incorrect word.
    * <p>
    * This method is only needed to provide backward compatibility.
    * @see #getSuggestions(String, int, int[][])
@@ -119,10 +125,9 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @param threshold The lower boundary of similarity to misspelt word
    * @return a List of suggestions
    */
-  public List getSuggestions(String word, int threshold) {
-  	
+  @Override
+  public List<Word> getSuggestions(String word, int threshold) {
   	return getSuggestions(word,threshold,null);
-  	
   }
 
   /**
@@ -132,31 +137,32 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @param word Suggestions for given misspelt word
    * @param threshold The lower boundary of similarity to misspelt word
    * @param matrix Two dimensional int array used to calculate
-   * edit distance. Allocating this memory outside of the function will greatly improve efficiency. 
+   * edit distance. Allocating this memory outside of the function will greatly improve efficiency.
    * @return a List of suggestions
    */
-  public List getSuggestions(String word, int threshold, int[][] matrix) {
+  @Override
+  public List<Word> getSuggestions(String word, int threshold, int[][] matrix) {
 
   	int i;
   	int j;
-  	
+
   	if(matrix == null)
   		matrix = new int[0][0];
-  	
-    Hashtable nearmisscodes = new Hashtable();
+
+    Hashtable<String, String> nearmisscodes = new Hashtable<String, String>();
     String code = getCode(word);
 
     // add all words that have the same phonetics
     nearmisscodes.put(code, code);
-    Vector phoneticList = getWordsFromCode(word, nearmisscodes);
+    Vector<Word> phoneticList = getWordsFromCode(word, nearmisscodes);
 
     // do some transformations to pick up more results
     //interchange
-    nearmisscodes = new Hashtable();
+    nearmisscodes = new Hashtable<String, String>();
     char[] charArray = word.toCharArray();
     char a;
     char b ;
-    
+
     for (i = 0; i < word.length() - 1; i++) {
       a = charArray[i];
       b = charArray[i + 1];
@@ -172,7 +178,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
     //change
     charArray = word.toCharArray();
-    char original; 
+    char original;
     for (i = 0; i < word.length(); i++) {
       original = charArray[i];
       for (j = 0; j < replacelist.length; j++) {
@@ -205,7 +211,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     for (int ix = 0; ix < charArray2.length; ix++) {
       charArray2[ix] = charArray[ix];
     }
-    
+
     a = charArray[charArray.length - 1];
     int ii = charArray2.length;
     while (true) {
@@ -221,7 +227,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
     nearmisscodes.remove(code); //already accounted for in phoneticList
 
-    Vector wordlist = getWordsFromCode(word, nearmisscodes);
+    Vector<Word> wordlist = getWordsFromCode(word, nearmisscodes);
 
     if (wordlist.size() == 0 && phoneticList.size() == 0)
       addBestGuess(word, phoneticList, matrix);
@@ -243,26 +249,25 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * When we don't come up with any suggestions (probably because the threshold was too strict),
    * then pick the best guesses from the those words that have the same phonetic code.
    * @param word - the word we are trying spell correct
-   * @param Two dimensional array of int used to calculate 
-   * edit distance. Allocating this memory outside of the function will greatly improve efficiency. 
+   * @param Two dimensional array of int used to calculate
+   * edit distance. Allocating this memory outside of the function will greatly improve efficiency.
    * @param wordList - the linked list that will get the best guess
    */
-  private void addBestGuess(String word, Vector wordList, int[][] matrix) {
+  private void addBestGuess(String word, Vector<Word> wordList, int[][] matrix) {
   	if(matrix == null)
   		matrix = new int[0][0];
-  	
+
     if (wordList.size() != 0)
       throw new InvalidParameterException("the wordList vector must be empty");
 
     int bestScore = Integer.MAX_VALUE;
-    
+
     String code = getCode(word);
-    List simwordlist = getWords(code);
+    List<String> simwordlist = getWords(code);
 
-    LinkedList candidates = new LinkedList();
+    LinkedList<Word> candidates = new LinkedList<Word>();
 
-    for (Iterator j = simwordlist.iterator(); j.hasNext();) {
-      String similar = (String) j.next();
+    for (String similar : simwordlist) {
       int distance = EditDistance.getDistance(word, similar, matrix);
       if (distance <= bestScore) {
         bestScore = distance;
@@ -272,26 +277,25 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     }
 
     //now, only pull out the guesses that had the best score
-    for (Iterator iter = candidates.iterator(); iter.hasNext();) {
-      Word candidate = (Word) iter.next();
+    for (Iterator<Word> iter = candidates.iterator(); iter.hasNext();) {
+      Word candidate = iter.next();
       if (candidate.getCost() == bestScore)
         wordList.add(candidate);
     }
 
   }
 
-  private Vector getWordsFromCode(String word, Hashtable codes) {
+  private Vector<Word> getWordsFromCode(String word, Hashtable<String, String> codes) {
     Configuration config = Configuration.getConfiguration();
-    Vector result = new Vector();
-    int[][] matrix = new int[0][0]; 
+    Vector<Word> result = new Vector<Word>();
+    int[][] matrix = new int[0][0];
     final int configDistance = config.getInteger(Configuration.SPELL_THRESHOLD);
 
-    for (Enumeration i = codes.keys(); i.hasMoreElements();) {
-      String code = (String) i.nextElement();
+    for (Enumeration<String> i = codes.keys(); i.hasMoreElements();) {
+      String code = i.nextElement();
 
-      List simwordlist = getWords(code);
-      for (Iterator iter = simwordlist.iterator(); iter.hasNext();) {
-        String similar = (String) iter.next();
+      List<String> simwordlist = getWords(code);
+      for (String similar : simwordlist) {
         int distance = EditDistance.getDistance(word, similar, matrix);
         if (distance < configDistance) {
           Word w = new Word(similar, distance);
@@ -316,13 +320,14 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @param phoneticCode The phonetic code common to the list of words
    * @return A list of words having the same phonetic code
    */
-  protected abstract List getWords(String phoneticCode);
+  protected abstract List<String> getWords(String phoneticCode);
 
   /**
    * Returns true if the word is correctly spelled against the current word list.
    */
-  public boolean isCorrect(String word) {
-    List possible = getWords(getCode(word));
+  @Override
+public boolean isCorrect(String word) {
+    List<String> possible = getWords(getCode(word));
     if (possible.contains(word))
       return true;
     //JMH should we always try the lowercase version. If I don't then
