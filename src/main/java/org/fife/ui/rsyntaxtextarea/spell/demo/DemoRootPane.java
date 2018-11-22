@@ -85,12 +85,9 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 						System.err.println("Can't open user dictionary: " +
 								se.getMessage());
 					}
-					SwingUtilities.invokeLater(new Runnable() {
-						@Override
-						public void run() {
-							textArea.addParser(parser);
-							toggleAction.setEnabled(true);
-						}
+					SwingUtilities.invokeLater(() -> {
+						textArea.addParser(parser);
+						toggleAction.setEnabled(true);
 					});
 				}
 			}
@@ -182,7 +179,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			JOptionPane.showMessageDialog(DemoRootPane.this,
 				"<html><b>Spell Checker</b> - An add-on for RSyntaxTextArea" +
 				"<br>that does spell checking in code comments." +
-				"<br>Version 2.5.4" +
+				"<br>Version 3.0.0" +
 				"<br>Licensed under the LGPL",
 				"About Spell Checker",
 				JOptionPane.INFORMATION_MESSAGE);

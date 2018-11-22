@@ -41,20 +41,17 @@ public class SpellingParserDemo extends JFrame {
 	 */
 	public static void main(String[] args) {
 
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					String laf = UIManager.getSystemLookAndFeelClassName();
+		SwingUtilities.invokeLater(() -> {
+			try {
+				String laf = UIManager.getSystemLookAndFeelClassName();
 //laf = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
-					UIManager.setLookAndFeel(laf);
-				} catch (RuntimeException re) { // FindBugs
-					throw re;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				new SpellingParserDemo().setVisible(true);
+				UIManager.setLookAndFeel(laf);
+			} catch (RuntimeException re) { // FindBugs
+				throw re;
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			new SpellingParserDemo().setVisible(true);
 		});
 
 	}

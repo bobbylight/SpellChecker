@@ -173,7 +173,7 @@ public class SpellingParser extends AbstractParser
 
 //		long start = System.currentTimeMillis();
 
-		SpellDictionaryHashMap dict = null;
+		SpellDictionaryHashMap dict;
 
 		ZipFile zf = new ZipFile(zip);
 
@@ -226,7 +226,7 @@ public class SpellingParser extends AbstractParser
 	 *
 	 * @param e The event.
 	 */
-	protected void fireSpellingParserEvent(SpellingParserEvent e) {
+	private void fireSpellingParserEvent(SpellingParserEvent e) {
 		// Guaranteed to return a non-null array
 		Object[] listeners = listenerList.getListenerList();
 		// Process the listeners last to first, notifying
@@ -277,7 +277,7 @@ public class SpellingParser extends AbstractParser
 	}
 
 
-	private final int getLineOfOffset(int offs) {
+	private int getLineOfOffset(int offs) {
 		return doc.getDefaultRootElement().getElementIndex(offs);
 	}
 
@@ -541,7 +541,7 @@ public class SpellingParser extends AbstractParser
 	 * @see #getUserDictionary()
 	 */
 	public void setUserDictionary(File dictionaryFile) throws IOException {
-		SpellDictionaryHashMap userDict = null;
+		SpellDictionaryHashMap userDict;
 		if (dictionaryFile!=null) {
 			if (!dictionaryFile.exists()) {
 				// The file must exist for Jazzy to be happy
@@ -656,7 +656,7 @@ public class SpellingParser extends AbstractParser
 
 			if (sp.getAllowIgnore()) {
 				String text = msg.getString("ErrorToolTip.IgnoreWord");
-				text = MessageFormat.format(text, new Object[] { word });
+				text = MessageFormat.format(text, word);
 				sb.append("<img src='cross.png' width='16' height='16'>&nbsp;").
 						append("<a href='").append(IGNORE).
 						append("://").append(word).append("'>").
@@ -664,17 +664,16 @@ public class SpellingParser extends AbstractParser
 			}
 
 			String firstLine = MessageFormat.format(
-									msg.getString("ErrorToolTip.DescHtml"),
-									new Object[] { word });
+					msg.getString("ErrorToolTip.DescHtml"),
+					word);
 			ComponentOrientation o = ComponentOrientation.getOrientation(
 												Locale.getDefault());
 			String dirAttr = o.isLeftToRight() ? "ltr" : "rtl";
 			String temp = MessageFormat.format(TOOLTIP_TEXT_FORMAT,
-							new Object[] {
-								dirAttr,
-								firstLine,
-								msg.getString("ErrorToolTip.SuggestionsHtml"),
-								sb.toString() });
+					dirAttr,
+					firstLine,
+					msg.getString("ErrorToolTip.SuggestionsHtml"),
+					sb.toString());
 
 			return temp;
 
