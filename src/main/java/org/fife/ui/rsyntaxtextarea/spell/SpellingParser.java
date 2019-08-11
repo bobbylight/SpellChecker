@@ -175,42 +175,32 @@ public class SpellingParser extends AbstractParser
 
 		SpellDictionaryHashMap dict;
 
-		ZipFile zf = new ZipFile(zip);
-
-		try {
+		try (ZipFile zf = new ZipFile(zip)) {
 
 			// Words common to American and British English
 			InputStream in = zf.getInputStream(zf.getEntry("eng_com.dic"));
-			BufferedReader r = new BufferedReader(new InputStreamReader(in));
-			try {
+			try (BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
 				dict = new SpellDictionaryHashMap(r);
-			} finally {
-				r.close();
 			}
 
-			String[] others = null;
+			String[] others;
 			if (american) {
-				others = new String[] { "color", "labeled", "center", "ize",
-										"yze" };
+				others = new String[]{"color", "labeled", "center", "ize",
+						"yze"};
 			}
 			else { // British
-				others = new String[] { "colour", "labelled", "centre",
-										"ise", "yse" };
+				others = new String[]{"colour", "labelled", "centre",
+						"ise", "yse"};
 			}
 
 			// Load words specific to the English dialect.
-			for (int i=0; i<others.length; i++) {
-				in = zf.getInputStream(zf.getEntry(others[i] + ".dic"));
-				r = new BufferedReader(new InputStreamReader(in));
-				try {
+			for (String other : others) {
+				in = zf.getInputStream(zf.getEntry(other + ".dic"));
+				try (BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
 					dict.addDictionary(r);
-				} finally {
-					r.close();
 				}
 			}
 
-		} finally {
-			zf.close();
 		}
 
 //		float secs = (System.currentTimeMillis() - start)/1000f;
@@ -328,9 +318,6 @@ public class SpellingParser extends AbstractParser
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void linkClicked(RSyntaxTextArea textArea, HyperlinkEvent e) {
 
@@ -341,40 +328,42 @@ public class SpellingParser extends AbstractParser
 			String operation = desc.substring(0, temp);
 			String[] tokens = desc.substring(temp + 3).split(",");
 
-			if (REPLACE.equals(operation)) {
-				int offs = Integer.parseInt(tokens[0]);
-				int len = Integer.parseInt(tokens[1]);
-				String replacement = tokens[2];
-				textArea.replaceRange(replacement, offs, offs+len);
-				textArea.setSelectionStart(offs);
-				textArea.setSelectionEnd(offs + replacement.length());
-			}
+			switch (operation) {
 
-			else if (ADD.equals(operation)) {
-				if (dictionaryFile==null) {
-					// TODO: Add callback for application to prompt to create
-					// a user dictionary
-					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-				}
-				String word = tokens[0];
-				if (sc.addToDictionary(word)) {
+				case REPLACE:
+					int offs = Integer.parseInt(tokens[0]);
+					int len = Integer.parseInt(tokens[1]);
+					String replacement = tokens[2];
+					textArea.replaceRange(replacement, offs, offs + len);
+					textArea.setSelectionStart(offs);
+					textArea.setSelectionEnd(offs + replacement.length());
+					break;
+
+				case ADD:
+					if (dictionaryFile == null) {
+						// TODO: Add callback for application to prompt to create
+						// a user dictionary
+						UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+					}
+					String word = tokens[0];
+					if (sc.addToDictionary(word)) {
+						textArea.forceReparsing(this);
+						SpellingParserEvent se = new SpellingParserEvent(this,
+								textArea, SpellingParserEvent.WORD_ADDED, word);
+						fireSpellingParserEvent(se);
+					} else { // IO error adding the word
+						UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+					}
+					break;
+
+				case IGNORE:
+					word = tokens[0];
+					sc.ignoreAll(word);
 					textArea.forceReparsing(this);
 					SpellingParserEvent se = new SpellingParserEvent(this,
-							textArea, SpellingParserEvent.WORD_ADDED, word);
+							textArea, SpellingParserEvent.WORD_IGNORED, word);
 					fireSpellingParserEvent(se);
-				}
-				else { // IO error adding the word
-					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-				}
-			}
-
-			else if (IGNORE.equals(operation)) {
-				String word = tokens[0];
-				sc.ignoreAll(word);
-				textArea.forceReparsing(this);
-				SpellingParserEvent se = new SpellingParserEvent(this,
-						textArea, SpellingParserEvent.WORD_IGNORED, word);
-				fireSpellingParserEvent(se);
+					break;
 			}
 
 		}
@@ -382,9 +371,6 @@ public class SpellingParser extends AbstractParser
 	}
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ParseResult parse(RSyntaxDocument doc, String style) {
 
@@ -589,7 +575,7 @@ public class SpellingParser extends AbstractParser
 		private String word;
 		private SpellChecker sc;
 
-		public SpellingParserNotice(SpellingParser parser, String msg,
+		SpellingParserNotice(SpellingParser parser, String msg,
 									int line, int offs, String word,
 									SpellChecker sc) {
 			super(parser, msg, line, offs, word.length());
@@ -616,6 +602,15 @@ public class SpellingParser extends AbstractParser
 				sb.append("</em><br><br>");
 			}
 			else {
+
+				// If the bad word started with an upper-case letter, make sure all our suggestions do.
+				if (Character.isUpperCase(word.charAt(0))) {
+					for (Word suggestion : suggestions) {
+						String oldSug = suggestion.getWord();
+						suggestion.setWord(Character.toUpperCase(oldSug.charAt(0)) + oldSug.substring(1));
+					}
+				}
+
 				sb.append("<center>");
 				sb.append("<table width='75%'>");
 				for (int i=0; i<suggestions.size(); i++) {
@@ -669,13 +664,12 @@ public class SpellingParser extends AbstractParser
 			ComponentOrientation o = ComponentOrientation.getOrientation(
 												Locale.getDefault());
 			String dirAttr = o.isLeftToRight() ? "ltr" : "rtl";
-			String temp = MessageFormat.format(TOOLTIP_TEXT_FORMAT,
+
+			return MessageFormat.format(TOOLTIP_TEXT_FORMAT,
 					dirAttr,
 					firstLine,
 					msg.getString("ErrorToolTip.SuggestionsHtml"),
 					sb.toString());
-
-			return temp;
 
 		}
 

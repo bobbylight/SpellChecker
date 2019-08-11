@@ -47,10 +47,19 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
    * event to fire.
    */
   public BasicSpellCheckEvent(String invalidWord, List<Word> suggestions, WordTokenizer tokenizer) {
-    this.invalidWord = invalidWord;
-    this.suggestions = suggestions;
-    this.startPosition = tokenizer.getCurrentWordPosition();
+    this(invalidWord, suggestions, tokenizer.getCurrentWordPosition());
   }
+
+    /**Constructs the SpellCheckEvent
+     * @param invalidWord The word that is misspelt
+     * @param suggestions A list of Word objects that are suggested to replace the currently misspelt word
+     * @param startPosition The position of the misspelled word.
+     */
+    public BasicSpellCheckEvent(String invalidWord, List<Word> suggestions, int startPosition) {
+        this.invalidWord = invalidWord;
+        this.suggestions = suggestions;
+        this.startPosition = startPosition;
+    }
 
   /** Returns the list of suggested Word objects
    * @return A list of words phonetically close to the misspelt word

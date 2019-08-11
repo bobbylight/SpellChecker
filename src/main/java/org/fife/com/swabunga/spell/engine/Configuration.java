@@ -86,6 +86,9 @@ public abstract class Configuration {
   /** Whether to ignore words that are a single letter (common in programming) */
   public static final String SPELL_IGNORESINGLELETTERS = "SPELL_IGNORESINGLELETTERS";
 
+  /** Whether to inspect {@code camelCase} words (common in programming) */
+  public static final String SPELL_ANALYZECAMELCASEWORDS = "SPELL_ANALYZECAMELCASEWORDS";
+
   /**
    * Gets one of the integer constants
    * @param key one of the integer constants defined in this class

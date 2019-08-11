@@ -1,6 +1,11 @@
-SpellChecker is a spell check add-on for RSyntaxTextArea.  For programming languages, it spell-checks text in comments, and when editing plain text files, the entire file is spell-checked.  Spelling errors are squiggle-underlined in the color of your choosing, and hovering the mouse over a misspelled word displays a tool tip with suggested fixes (if any).  You can configure the library to also use a "user dictionary" file, allowing the user to add extra words to the spell check white list.
+SpellChecker is a spell check add-on for `RSyntaxTextArea`.  For programming languages, it spell-checks text in
+comments, and when editing plain text files, the entire file is spell-checked.  Spelling errors are squiggle-underlined
+in the color of your choosing, and hovering the mouse over a misspelled word displays a tool tip with suggested fixes
+(if any).  You can configure the library to also use a "user dictionary" file, allowing the user to add extra words to
+the spell check white list.
 
-This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Indeed, 99% of the code is just Jazzy, with changes made for performance, bug fixes, and Java 6 syntax.
+This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Indeed, 99% of the code is just
+Jazzy, with changes made for performance, bug fixes, and Java 6 syntax.
 
 Included with this distribution is an English dictionary (both US and
 British).  The easiest method to add spell checking to RSTA is as follows:

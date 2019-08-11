@@ -48,7 +48,7 @@ import java.util.Vector;
  * specifying the name of the dictionary and the words list file to dump it
  * into, for example:
  * <pre>
- * aspell --master=fr-40 dump master > fr-40.txt
+ * aspell --master=fr-40 dump master &gt; fr-40.txt
  * </pre>
  * Note: the number following the language is the size indicator. A bigger
  * number gives a more extensive language coverage. Size 40 is more than

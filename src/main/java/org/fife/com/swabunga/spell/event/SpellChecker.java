@@ -495,7 +495,43 @@ public class SpellChecker {
     if (size == 0)
       cache = null;
    else
-     cache = new HashMap<String, List<Word>>((size + 2) / 3 * 4);
+     cache = new HashMap<>((size + 2) / 3 * 4);
+  }
+
+  public static List<String> splitMixedCaseWord(String mixedCaseWord) {
+
+    List<String> parts = new ArrayList<>();
+
+    int offs = 0;
+    int adjacentCaps = 0;
+
+    for (int i = 0; i < mixedCaseWord.length(); i++) {
+
+      char ch = mixedCaseWord.charAt(i);
+
+      if (i == 0) {
+        adjacentCaps = Character.isUpperCase(ch) ? 1 : 0;
+      }
+      else {
+        if (Character.isUpperCase(ch)) {
+
+          if (adjacentCaps == 0) {
+            parts.add(mixedCaseWord.substring(offs, i));
+            offs = i;
+          }
+
+          adjacentCaps++;
+        }
+        else if (adjacentCaps > 1) {
+          parts.add(mixedCaseWord.substring(offs, i - 1));
+          offs = i - 1;
+          adjacentCaps = 0;
+        }
+      }
+    }
+
+    parts.add(mixedCaseWord.substring(offs));
+    return parts;
   }
 
   /**
@@ -518,7 +554,32 @@ public class SpellChecker {
       String word = tokenizer.nextWord();
       //Check the spelling of the word
       if (!isCorrect(word)) {
-          if ((config.getBoolean(Configuration.SPELL_IGNOREMIXEDCASE) && isMixedCaseWord(word, tokenizer.isNewSentence())) ||
+
+        boolean isNewSentence = tokenizer.isNewSentence();
+        boolean isMixedCaseWord = isMixedCaseWord(word, isNewSentence);
+
+        // robert: If this is a mixed-case word, check spelling of each part
+        if (config.getBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS) && isMixedCaseWord) {
+
+          List<String> parts = splitMixedCaseWord(word);
+
+          int offs = 0;
+          for (String part : parts) {
+
+            String partLower = part.toLowerCase();
+            if (!isCorrect(partLower) && !isIgnored(partLower)) {
+              int wordOffs = tokenizer.getCurrentWordPosition() + offs;
+              SpellCheckEvent event = new BasicSpellCheckEvent(part, null, wordOffs);
+              terminated = fireAndHandleEvent(tokenizer, event);
+              if (terminated) {
+                break;
+              }
+            }
+
+            offs += part.length();
+          }
+        }
+        else if ((config.getBoolean(Configuration.SPELL_IGNOREMIXEDCASE) && isMixedCaseWord) ||
             (config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) && isUpperCaseWord(word)) ||
             (config.getBoolean(Configuration.SPELL_IGNORESINGLELETTERS) && word.length()==1) ||
             (config.getBoolean(Configuration.SPELL_IGNOREDIGITWORDS) && isDigitWord(word)) ||
