@@ -151,21 +151,21 @@ public class GenericTransformator implements Transformator {
    */
   private char[] washAlphabetIntoReplaceList(char[] alphabet) {
 
-    HashMap<String, Character> letters = new HashMap<String, Character>(alphabet.length);
+    HashMap<String, Character> letters = new HashMap<>(alphabet.length);
 
-    for (int i = 0; i < alphabet.length; i++) {
-      String tmp = String.valueOf(alphabet[i]);
-      String code = transform(tmp);
-      if (!letters.containsKey(code)) {
-        letters.put(code, new Character(alphabet[i]));
+      for (char c : alphabet) {
+          String tmp = String.valueOf(c);
+          String code = transform(tmp);
+          if (!letters.containsKey(code)) {
+              letters.put(code, c);
+          }
       }
-    }
 
     Object[] tmpCharacters = letters.values().toArray();
     char[] washedArray = new char[tmpCharacters.length];
 
     for (int i = 0; i < tmpCharacters.length; i++) {
-      washedArray[i] = ((Character) tmpCharacters[i]).charValue();
+      washedArray[i] = (Character)tmpCharacters[i];
     }
 
     return washedArray;
@@ -180,15 +180,15 @@ public class GenericTransformator implements Transformator {
   public char[] getCodeReplaceList() {
     char[] replacements;
     TransformationRule rule;
-    Vector<String> tmp = new Vector<String>();
+    Vector<String> tmp = new Vector<>();
 
     if (ruleArray == null)
       return null;
-    for (int i = 0; i < ruleArray.length; i++) {
-      rule = (TransformationRule) ruleArray[i];
-      if (rule.getReplaceExp().length() == 1)
-        tmp.addElement(rule.getReplaceExp());
-    }
+      for (Object o : ruleArray) {
+          rule = (TransformationRule)o;
+          if (rule.getReplaceExp().length() == 1)
+              tmp.addElement(rule.getReplaceExp());
+      }
     replacements = new char[tmp.size()];
     for (int i = 0; i < tmp.size(); i++) {
       replacements[i] = tmp.elementAt(i).charAt(0);
@@ -232,25 +232,25 @@ public String transform(String word) {
         continue;
       }
 
-      for (int i = 0; i < ruleArray.length; i++) {
-        //System.out.println("Testing rule#:"+i);
-        rule = (TransformationRule) ruleArray[i];
-        if (rule.startsWithExp() && startPos > 0)
-          continue;
-        if (startPos + rule.lengthOfMatch() > strLength) {
-          continue;
-        }
-        if (rule.isMatching(str, startPos)) {
-          String replaceExp = rule.getReplaceExp();
+        for (Object o : ruleArray) {
+            //System.out.println("Testing rule#:"+i);
+            rule = (TransformationRule)o;
+            if (rule.startsWithExp() && startPos > 0)
+                continue;
+            if (startPos + rule.lengthOfMatch() > strLength) {
+                continue;
+            }
+            if (rule.isMatching(str, startPos)) {
+                String replaceExp = rule.getReplaceExp();
 
-          add = replaceExp.length();
-          StringUtility.replace(str, startPos, startPos + rule.getTakeOut(), replaceExp);
-          strLength -= rule.getTakeOut();
-          strLength += add;
-          //System.out.println("Replacing with rule#:"+i+" add="+add);
-          break;
+                add = replaceExp.length();
+                StringUtility.replace(str, startPos, startPos + rule.getTakeOut(), replaceExp);
+                strLength -= rule.getTakeOut();
+                strLength += add;
+                //System.out.println("Replacing with rule#:"+i+" add="+add);
+                break;
+            }
         }
-      }
       startPos += add;
     }
     //System.out.println(word);
@@ -261,7 +261,7 @@ public String transform(String word) {
   // Used to build up the transformastion table.
   private void buildRules(BufferedReader in) throws IOException {
     String read = null;
-    Vector<TransformationRule> ruleList = new Vector<TransformationRule>();
+    Vector<TransformationRule> ruleList = new Vector<>();
     while ((read = in.readLine()) != null) {
       buildRule(realTrimmer(read), ruleList);
     }
@@ -273,10 +273,10 @@ public String transform(String word) {
   private void buildRule(String str, Vector<TransformationRule> ruleList) {
     if (str.length() < 1)
       return;
-    for (int i = 0; i < IGNORED_KEYWORDS.length; i++) {
-      if (str.startsWith(IGNORED_KEYWORDS[i]))
-        return;
-    }
+      for (String ignoredKeyword : IGNORED_KEYWORDS) {
+          if (str.startsWith(ignoredKeyword))
+              return;
+      }
 
     // A different alphabet is used for this language, will be read into
     // the alphabetString variable.
@@ -329,7 +329,7 @@ public String transform(String word) {
       }
     }
     if (replaceExp.toString().equals(REPLACEVOID)) {
-      replaceExp = new StringBuilder("");
+      replaceExp = new StringBuilder();
       //System.out.println("Changing _ to \"\" for "+matchExp.toString());
     }
     rule = new TransformationRule(matchExp.toString(), replaceExp.toString(), takeOutPart, matchLength, start, end);
@@ -386,32 +386,34 @@ public String transform(String word) {
       boolean matching = true, inMulti = false, multiMatch = false;
       char matchCh;
 
-      for (int matchPos = 0; matchPos < match.length; matchPos++) {
-        matchCh = match[matchPos];
-        if (matchCh == STARTMULTI || matchCh == ENDMULTI) {
-          inMulti = !inMulti;
-          if (!inMulti)
-            matching = matching & multiMatch;
-          else
-            multiMatch = false;
-        } else {
-          if (matchCh != word.charAt(wordPos)) {
-            if (inMulti)
-              multiMatch = multiMatch | false;
-            else
-              matching = false;
-          } else {
-            if (inMulti)
-              multiMatch = multiMatch | true;
-            else
-              matching = true;
-          }
-          if (!inMulti)
-            wordPos++;
-          if (!matching)
-            break;
+        for (char c : match) {
+            matchCh = c;
+            if (matchCh == STARTMULTI || matchCh == ENDMULTI) {
+                inMulti = !inMulti;
+                if (!inMulti)
+                    matching = matching & multiMatch;
+                else
+                    multiMatch = false;
+            }
+            else {
+                if (matchCh != word.charAt(wordPos)) {
+                    if (inMulti)
+                        multiMatch = multiMatch | false;
+                    else
+                        matching = false;
+                }
+                else {
+                    if (inMulti)
+                        multiMatch = multiMatch | true;
+                    else
+                        matching = true;
+                }
+                if (!inMulti)
+                    wordPos++;
+                if (!matching)
+                    break;
+            }
         }
-      }
       if (end && wordPos != word.length())
         matching = false;
       return matching;

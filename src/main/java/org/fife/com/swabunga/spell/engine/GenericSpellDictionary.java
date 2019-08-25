@@ -65,7 +65,7 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
    * The hashmap that contains the word dictionary. The map is hashed on the doublemeta
    * code. The map entry contains a LinkedList of words that have the same double meta code.
    */
-  protected HashMap<String, LinkedList<String>> mainDictionary = new HashMap<String, LinkedList<String>>(INITIAL_CAPACITY);
+  protected HashMap<String, LinkedList<String>> mainDictionary = new HashMap<>(INITIAL_CAPACITY);
 
   /** Holds the dictionary file for appending*/
   private File dictFile = null;
@@ -81,7 +81,7 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
    * list file
    */
   public GenericSpellDictionary(File wordList) throws FileNotFoundException, IOException {
-    this(wordList, (File) null);
+    this(wordList, null);
   }
 
   /**
@@ -157,7 +157,7 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
     if (list != null) {
       list.add(word);
     } else {
-      list = new LinkedList<String>();
+      list = new LinkedList<>();
       list.add(word);
       mainDictionary.put(code, list);
     }
@@ -173,7 +173,7 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
     //Check the main dictionary.
     List<String> mainDictResult = mainDictionary.get(code);
     if (mainDictResult == null)
-      return new Vector<String>();
+      return new Vector<>();
     return mainDictResult;
   }
 

@@ -46,7 +46,7 @@ public interface WordFinder {
    *
    * @return the (possibly modified) text being searched.
    */
-  public String getText();
+  String getText();
 
   /**
    * This method resets the text through which the WordFinder iterates.
@@ -54,7 +54,7 @@ public interface WordFinder {
    *
    * @param newText the new text to search.
    */
-  public void setText(String newText);
+  void setText(String newText);
 
   /**
    * This method should return the  Word object representing the current word
@@ -64,14 +64,14 @@ public interface WordFinder {
    * @return the current Word object.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public Word current();
+  Word current();
 
   /**
    * Tests the finder to see if any more words are available.
    *
    * @return true if more words are available.
    */
-  public boolean hasNext();
+  boolean hasNext();
 
   /**
    * This method should return the  Word object representing the next word
@@ -80,7 +80,7 @@ public interface WordFinder {
    * @return the next Word in the iteration.
    * @throws WordNotFoundException search string contains no more words.
    */
-  public Word next();
+  Word next();
 
   /**
    * This method should replace the current Word object with a Word object
@@ -89,14 +89,14 @@ public interface WordFinder {
    * @param newWord the word to replace the current word with.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public void replace(String newWord);
+  void replace(String newWord);
 
   /**
    * Indicates if the current word starts a new sentence.
    * @return true if the current word starts a new sentence.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public boolean startsSentence();
+  boolean startsSentence();
 
-  // public void setText();
+  // void setText();
 }

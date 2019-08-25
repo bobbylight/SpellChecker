@@ -144,11 +144,7 @@ public abstract class Configuration {
     if (className != null && className.length() > 0) {
       try {
         result = (Configuration) Class.forName(className).newInstance();
-      } catch (InstantiationException e) {
-        result = new PropertyConfiguration();
-      } catch (IllegalAccessException e) {
-        result = new PropertyConfiguration();
-      } catch (ClassNotFoundException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
         result = new PropertyConfiguration();
       }
     } else {

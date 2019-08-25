@@ -170,7 +170,7 @@ public class DoubleMeta implements Transformator {
    * @return
    */
   private final static boolean SlavoGermanic(String in) {
-    if ((in.indexOf("W") > -1) || (in.indexOf("K") > -1) || (in.indexOf("CZ") > -1) || (in.indexOf("WITZ") > -1))
+    if ((in.contains("W")) || (in.contains("K")) || (in.contains("CZ")) || (in.contains("WITZ")))
       return true;
     return false;
   }
@@ -215,10 +215,10 @@ public class DoubleMeta implements Transformator {
     if ((start < 0) || (start >= string.length()) || list.length == 0)
       return false;
     String substr = string.substring(start, start + length);
-    for (int i = 0; i < list.length; i++) {
-      if (list[i].equals(substr))
-        return true;
-    }
+      for (String s : list) {
+          if (s.equals(substr))
+              return true;
+      }
     return false;
   }
 

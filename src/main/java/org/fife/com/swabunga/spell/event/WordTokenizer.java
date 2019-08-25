@@ -45,40 +45,40 @@ public interface WordTokenizer {
    * changes that have been made).
    * @return the text being searched.
    */
-  public String getContext();
+  String getContext();
 
   /**
    * Returns the number of word tokens that have been processed thus far
    * @return the number of words found so far.
    */
-  public int getCurrentWordCount();
+  int getCurrentWordCount();
 
   /**
    * Returns an index representing the end location of the current word in the text.
    * @return index of the end of the current word in the text.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public int getCurrentWordEnd();
+  int getCurrentWordEnd();
 
   /**
    * Returns an index representing the start location of the current word in the text.
    * @return index of the start of the current word in the text.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public int getCurrentWordPosition();
+  int getCurrentWordPosition();
 
   /**
    * Returns true if the current word is at the start of a sentence
    * @return true if the current word starts a sentence.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public boolean isNewSentence();
+  boolean isNewSentence();
 
   /**
    * Indicates if there are more words left
    * @return true if more words can be found in the text.
    */
-  public boolean hasMoreWords();
+  boolean hasMoreWords();
 
   /**
    * This returns the next word in the iteration. Note that any implementation should return
@@ -87,7 +87,7 @@ public interface WordTokenizer {
    * @return the next word in the iteration.
    * @throws WordNotFoundException search string contains no more words.
    */
-  public String nextWord();
+  String nextWord();
 
   /**
    * Replaces the current word token
@@ -101,5 +101,5 @@ public interface WordTokenizer {
    * @param newWord the string which should replace the current word.
    * @throws WordNotFoundException current word has not yet been set.
    */
-  public void replaceWord(String newWord);
+  void replaceWord(String newWord);
 }

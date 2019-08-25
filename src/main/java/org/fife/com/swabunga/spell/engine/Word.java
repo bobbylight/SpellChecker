@@ -61,9 +61,7 @@ public class Word implements Comparator<Word> {
    */
   @Override
   public int compare(Word o1, Word o2) {
-    if (o1.getCost() < o2.getCost()) return -1;
-    if (o1.getCost() == o2.getCost()) return 0;
-    return 1;
+      return Integer.compare(o1.getCost(), o2.getCost());
   }
 
   /**

@@ -263,7 +263,7 @@ public String toString() {
    * original index if the ignore condition could not be met.
    */
   protected int ignore(int index, char startIgnore) {
-    return ignore(index, new Character(startIgnore), null);
+    return ignore(index, startIgnore, null);
   }
 
   /**
@@ -302,16 +302,16 @@ public String toString() {
     int newIndex = index;
 
     if (newIndex < text.length()) {
-      Character curChar = new Character(text.charAt(newIndex));
+      Character curChar = text.charAt(newIndex);
 
       if (curChar.equals(startIgnore)) {
         newIndex++;
         while (newIndex < text.length()) {
-          curChar = new Character(text.charAt(newIndex));
+          curChar = text.charAt(newIndex);
           if (endIgnore != null && curChar.equals(endIgnore)){
             newIndex++;
             break;
-          } else if (endIgnore == null && !Character.isLetterOrDigit(curChar.charValue())){
+          } else if (endIgnore == null && !Character.isLetterOrDigit(curChar)){
             break;
           }
           newIndex++;

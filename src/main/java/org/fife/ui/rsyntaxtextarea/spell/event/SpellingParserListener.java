@@ -33,7 +33,6 @@ public interface SpellingParserListener extends EventListener {
 	 *
 	 * @param e The event.
 	 */
-	public void spellingParserEvent(SpellingParserEvent e);
-
+	void spellingParserEvent(SpellingParserEvent e);
 
 }

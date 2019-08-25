@@ -166,7 +166,7 @@ public boolean addWord(String word) {
 
    private LinkedList<String> seqFind(String code, long p1, long p2) throws IOException {
      //System.out.println("seqFind("+code+","+p1+","+p2+")");
-     LinkedList<String> list = new LinkedList<String>();
+     LinkedList<String> list = new LinkedList<>();
     dictFile.seek(p1);
     while (dictFile.getFilePointer() < p2) {
       String l;
@@ -221,7 +221,7 @@ public boolean addWord(String word) {
       //System.out.println(list);
     } catch (IOException ex) {
       System.err.println("IOException: " + ex.getMessage());
-      list = new LinkedList<String>();
+      list = new LinkedList<>();
     }
     return list;
   }

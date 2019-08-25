@@ -135,18 +135,15 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
         loadIndex();
         ready = true;
       } else {
-        Thread t = new Thread() {
-          @Override
-		public void run() {
-            try {
-              buildNewDictionaryDatabase();
-              loadIndex();
-              ready = true;
-            } catch (Exception e) {
-              e.printStackTrace();
-            }
+        Thread t = new Thread(() -> {
+          try {
+            buildNewDictionaryDatabase();
+            loadIndex();
+            ready = true;
+          } catch (Exception e) {
+            e.printStackTrace();
           }
-        };
+        });
         t.start();
       }
     } else {
@@ -188,7 +185,7 @@ public boolean addWord(String word) {
    */
   @Override
 public List<String> getWords(String code) {
-    Vector<String> words = new Vector<String>();
+    Vector<String> words = new Vector<>();
 
     int[] posLen = getStartPosAndLen(code);
     if (posLen != null) {
@@ -201,10 +198,10 @@ public List<String> getWords(String code) {
 
         String data = new String(bytes);
         String[] lines = split(data, "\n");
-        for (int i = 0; i < lines.length; i++) {
-          String[] s = split(lines[i], ",");
-          if (s[0].equals(code)) words.addElement(s[1]);
-        }
+          for (String line : lines) {
+              String[] s = split(line, ",");
+              if (s[0].equals(code)) words.addElement(s[1]);
+          }
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -280,27 +277,19 @@ public List<String> getWords(String code) {
     return ready;
   }
 
-  private boolean newDictionaryFiles() throws FileNotFoundException, IOException {
+  private boolean newDictionaryFiles() throws IOException {
     /* load in contents file, which indicates the files and sizes of the last db build */
-    List<FileSize> contents = new ArrayList<FileSize>();
+    List<FileSize> contents = new ArrayList<>();
     File c = new File(db, FILE_CONTENTS);
     if (c.exists()) {
-      BufferedReader reader = null;
-      try {
-        reader = new BufferedReader(new FileReader(c));
-        String line;
-        while ((line = reader.readLine()) != null) {
-          // format of file should be [filename],[size]
-          String[] s = split(line, ",");
-          contents.add(new FileSize(s[0], Integer.parseInt(s[1])));
+        try (BufferedReader reader = new BufferedReader(new FileReader(c))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // format of file should be [filename],[size]
+                String[] s = split(line, ",");
+                contents.add(new FileSize(s[0], Integer.parseInt(s[1])));
+            }
         }
-      } catch (FileNotFoundException e) {
-        throw e;
-      } catch (IOException e) {
-        throw e;
-      } finally {
-        if (reader != null) reader.close();
-      }
     }
 
     /* compare this to the actual directory */
@@ -312,36 +301,36 @@ public List<String> getWords(String code) {
       changed = true;
     } else {
       // check and make sure that all the word files haven't changed on us
-      for (int i = 0; i < wordFiles.length; i++) {
-        FileSize fs = new FileSize(wordFiles[i].getName(), wordFiles[i].length());
-        if (!contents.contains(fs)) {
-          changed = true;
-          break;
+        for (File wordFile : wordFiles) {
+            FileSize fs = new FileSize(wordFile.getName(), wordFile.length());
+            if (!contents.contains(fs)) {
+                changed = true;
+                break;
+            }
         }
-      }
     }
 
     return changed;
   }
 
   private File buildSortedFile() throws FileNotFoundException, IOException {
-    List<String> w = new ArrayList<String>();
+    List<String> w = new ArrayList<>();
 
     /*
      * read every single word into the list. eeek. if this causes problems,
      * we may wish to explore disk-based sorting or more efficient memory-based storage
      */
     File[] wordFiles = words.listFiles();
-    for (int i = 0; i < wordFiles.length; i++) {
-      BufferedReader r = new BufferedReader(new FileReader(wordFiles[i]));
-      String word;
-      while ((word = r.readLine()) != null) {
-        if (!word.equals("")) {
-          w.add(word.trim());
-        }
+      for (File wordFile : wordFiles) {
+          BufferedReader r = new BufferedReader(new FileReader(wordFile));
+          String word;
+          while ((word = r.readLine()) != null) {
+              if (!word.equals("")) {
+                  w.add(word.trim());
+              }
+          }
+          r.close();
       }
-      r.close();
-    }
 
     Collections.sort(w);
 
@@ -349,21 +338,20 @@ public List<String> getWords(String code) {
     File file = File.createTempFile("jazzy", "sorted");
     BufferedWriter writer = new BufferedWriter(new FileWriter(file));
     String prev = null;
-    for (int i = 0; i < w.size(); i++) {
-      String word = w.get(i);
-      if (prev == null || !prev.equals(word)) {
-        writer.write(word);
-        writer.newLine();
+      for (String word : w) {
+          if (prev == null || !prev.equals(word)) {
+              writer.write(word);
+              writer.newLine();
+          }
+          prev = word;
       }
-      prev = word;
-    }
     writer.close();
 
     return file;
   }
 
   private void buildCodeDb(File sortedWords) throws FileNotFoundException, IOException {
-    List<CodeWord> codeList = new ArrayList<CodeWord>();
+    List<CodeWord> codeList = new ArrayList<>();
 
     BufferedReader reader = new BufferedReader(new FileReader(sortedWords));
     String word;
@@ -374,7 +362,7 @@ public List<String> getWords(String code) {
 
     Collections.sort(codeList);
 
-    List<Object[]> index = new ArrayList<Object[]>();
+    List<Object[]> index = new ArrayList<>();
 
     BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File(db, FILE_DB)));
     String currentCode = null;
@@ -406,15 +394,14 @@ public List<String> getWords(String code) {
       index.add(new Object[]{currentCode, new int[]{currentPosition, currentLength}});
 
     BufferedWriter writer = new BufferedWriter(new FileWriter(new File(db, FILE_INDEX)));
-    for (int i = 0; i < index.size(); i++) {
-      Object[] o = index.get(i);
-      writer.write(o[0].toString());
-      writer.write(",");
-      writer.write(String.valueOf(((int[]) o[1])[0]));
-      writer.write(",");
-      writer.write(String.valueOf(((int[]) o[1])[1]));
-      writer.newLine();
-    }
+      for (Object[] o : index) {
+          writer.write(o[0].toString());
+          writer.write(",");
+          writer.write(String.valueOf(((int[])o[1])[0]));
+          writer.write(",");
+          writer.write(String.valueOf(((int[])o[1])[1]));
+          writer.newLine();
+      }
     writer.close();
   }
 
@@ -422,12 +409,12 @@ public List<String> getWords(String code) {
     File[] wordFiles = words.listFiles();
     if (wordFiles.length > 0) {
       BufferedWriter writer = new BufferedWriter(new FileWriter(new File(db, FILE_CONTENTS)));
-      for (int i = 0; i < wordFiles.length; i++) {
-        writer.write(wordFiles[i].getName());
-        writer.write(",");
-        writer.write(String.valueOf(wordFiles[i].length()));
-        writer.newLine();
-      }
+        for (File wordFile : wordFiles) {
+            writer.write(wordFile.getName());
+            writer.write(",");
+            writer.write(String.valueOf(wordFile.length()));
+            writer.newLine();
+        }
       writer.close();
     } else {
       new File(db, FILE_CONTENTS).delete();
@@ -439,7 +426,7 @@ public List<String> getWords(String code) {
    * into the dictionary db file.
    */
   protected void loadIndex() throws IOException {
-    index = new HashMap<String, int[]>();
+    index = new HashMap<>();
     File idx = new File(db, FILE_INDEX);
     BufferedReader reader = new BufferedReader(new FileReader(idx));
     String line;
@@ -463,14 +450,13 @@ public List<String> getWords(String code) {
   }
 
   private String getIndexCode(String code, List<CodeWord> codes) {
-    if (indexCodeCache == null) indexCodeCache = new ArrayList<String>();
+    if (indexCodeCache == null) indexCodeCache = new ArrayList<>();
 
     if (code.length() <= 1) return code;
 
-    for (int i = 0; i < indexCodeCache.size(); i++) {
-      String c = indexCodeCache.get(i);
-      if (code.startsWith(c)) return c;
-    }
+      for (String c : indexCodeCache) {
+          if (code.startsWith(c)) return c;
+      }
 
     int foundSize = -1;
     boolean cacheable = false;

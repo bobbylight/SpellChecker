@@ -33,7 +33,7 @@ public interface Transformator {
    * @param word the word to transform
    * @return the phonetic transformation of the word
    */
-  public String transform(String word);
+  String transform(String word);
 
   /**
    * gets the list of characters that should be swapped in to the misspelled word
@@ -50,5 +50,5 @@ public interface Transformator {
    * <p/>
    * @return char[] misspelled words should try replacing with these characters to get more suggestions
    */
-  public char[] getReplaceList();
+  char[] getReplaceList();
 }

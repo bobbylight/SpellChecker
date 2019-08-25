@@ -55,15 +55,15 @@ public class SpellChecker {
   /** Flag indicating that the Spell Check completed due to user cancellation*/
   public static final int SPELLCHECK_CANCEL = -2;
 
-  private List<SpellCheckListener> eventListeners = new ArrayList<SpellCheckListener>();
-  private List<SpellDictionary> dictionaries = new ArrayList<SpellDictionary>();
+  private List<SpellCheckListener> eventListeners = new ArrayList<>();
+  private List<SpellDictionary> dictionaries = new ArrayList<>();
   private SpellDictionary userdictionary;
 
   private Configuration config = Configuration.getConfiguration();
 
   /**This variable holds all of the words that are to be always ignored */
-  private Set<String> ignoredWords = new HashSet<String>();
-  private Map<String, String> autoReplaceWords = new HashMap<String, String>();
+  private Set<String> ignoredWords = new HashSet<>();
+  private Map<String, String> autoReplaceWords = new HashMap<>();
 
   // added caching - bd
   // For cached operation a separate user dictionary is required
@@ -457,7 +457,7 @@ public class SpellChecker {
        suggestions = cache.get(word);
 
     if (suggestions == null) {
-       suggestions = new ArrayList<Word>();
+       suggestions = new ArrayList<>();
 
        for (SpellDictionary dictionary : dictionaries) {
            if (dictionary != userdictionary)
@@ -615,7 +615,7 @@ public class SpellChecker {
           // robert: StringBuilder and List instead of SBuf/Vector
           StringBuilder buf = new StringBuilder(word);
           buf.setCharAt(0, Character.toUpperCase(word.charAt(0)));
-          List<org.fife.com.swabunga.spell.event.Word> suggestions = new ArrayList<org.fife.com.swabunga.spell.event.Word>();
+          List<org.fife.com.swabunga.spell.event.Word> suggestions = new ArrayList<>();
           suggestions.add(new org.fife.com.swabunga.spell.event.Word(buf.toString(), 0));
           SpellCheckEvent event = new BasicSpellCheckEvent(word, suggestions, tokenizer);
           terminated = fireAndHandleEvent(tokenizer, event);

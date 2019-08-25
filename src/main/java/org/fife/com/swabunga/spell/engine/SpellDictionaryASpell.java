@@ -202,9 +202,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     word = word.trim();
     charArray = word.toCharArray();
     char[] charArray2 = new char[charArray.length - 1];
-    for (int ix = 0; ix < charArray2.length; ix++) {
-      charArray2[ix] = charArray[ix];
-    }
+    System.arraycopy(charArray, 0, charArray2, 0, charArray2.length);
 
     a = charArray[charArray.length - 1];
     int ii = charArray2.length;
@@ -232,8 +230,8 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     // to a tree set it has to be resorted. It's better to do this operation
     // once at the end.
 
-    Collections.sort(phoneticList, new Word()); //always sort phonetic matches along the top
-    Collections.sort(wordlist, new Word()); //the non-phonetic matches can be listed below
+    phoneticList.sort(new Word()); //always sort phonetic matches along the top
+    wordlist.sort(new Word()); //the non-phonetic matches can be listed below
 
     phoneticList.addAll(wordlist);
     return phoneticList;

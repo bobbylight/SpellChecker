@@ -33,14 +33,14 @@ public interface SpellDictionary {
    * @param word The word to add to the dictionary
    * @return Whether the word was successfully added.
    */
-  public boolean addWord(String word);
+  boolean addWord(String word);
 
   /**
    * Evaluates if the word is correctly spelled against the dictionary.
    * @param word The word to verify if it's spelling is OK.
    * @return Indicates if the word is present in the dictionary.
    */
-  public boolean isCorrect(String word);
+  boolean isCorrect(String word);
 
   /**
    * Returns a list of Word objects that are the suggestions to any word.
@@ -64,7 +64,7 @@ public interface SpellDictionary {
    * @see org.fife.com.swabunga.spell.engine.Word
    *
    */
-  public List<Word> getSuggestions(String sourceWord, int scoreThreshold);
+  List<Word> getSuggestions(String sourceWord, int scoreThreshold);
 
   /**
    * Returns a list of Word objects that are the suggestions to any word.
@@ -86,6 +86,6 @@ public interface SpellDictionary {
    * @return List a List of suggested words
    * @see org.fife.com.swabunga.spell.engine.Word
    */
-  public List<Word> getSuggestions(String sourceWord, int scoreThreshold , int[][] matrix);
+  List<Word> getSuggestions(String sourceWord, int scoreThreshold , int[][] matrix);
 
 }
