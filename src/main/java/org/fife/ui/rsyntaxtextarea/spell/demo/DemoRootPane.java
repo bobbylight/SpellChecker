@@ -37,8 +37,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 public class DemoRootPane extends JRootPane implements HyperlinkListener,
 											SyntaxConstants {
 
-	private RTextScrollPane scrollPane;
-	private RSyntaxTextArea textArea;
+    private RSyntaxTextArea textArea;
 	private SpellingParser parser;
 	private ToggleSpellCheckingAction toggleAction;
 
@@ -47,7 +46,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 
 	public DemoRootPane() {
 		textArea = createTextArea();
-		scrollPane = new RTextScrollPane(textArea, true);
+        RTextScrollPane scrollPane = new RTextScrollPane(textArea, true);
 		ErrorStrip es = new ErrorStrip(textArea);
 		JPanel temp = new JPanel(new BorderLayout());
 		temp.add(scrollPane);
@@ -68,30 +67,25 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 	@Override
 	public void addNotify() {
 		super.addNotify();
-		new Thread() {
-			@Override
-			public void run() {
-				parser = createSpellingParser();
-				if (parser!=null) {
-					try {
-						File userDict= File.createTempFile("spellDemo", ".txt");
-						parser.setUserDictionary(userDict);
-						System.out.println("User dictionary: " +
-											userDict.getAbsolutePath());
-					} catch (IOException ioe) { // Applets, IO errors
-						System.err.println("Can't open user dictionary: " +
-									ioe.getMessage());
-					} catch (SecurityException se) { // Applets
-						System.err.println("Can't open user dictionary: " +
-								se.getMessage());
-					}
-					SwingUtilities.invokeLater(() -> {
-						textArea.addParser(parser);
-						toggleAction.setEnabled(true);
-					});
-				}
-			}
-		}.start();
+		new Thread(() -> {
+            parser = createSpellingParser();
+            if (parser!=null) {
+                try {
+                    File userDict = File.createTempFile("spellDemo", ".txt");
+                    parser.setUserDictionary(userDict);
+                    System.out.println("User dictionary: " +
+                                        userDict.getAbsolutePath());
+                } catch (IOException | SecurityException e) {
+                    System.err.println("Can't open user dictionary: " +
+                                e.getMessage());
+                }
+
+                SwingUtilities.invokeLater(() -> {
+                    textArea.addParser(parser);
+                    toggleAction.setEnabled(true);
+                });
+            }
+        }).start();
 	}
 
 
@@ -132,7 +126,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 		ClassLoader cl = getClass().getClassLoader();
 		InputStream in = cl.getResourceAsStream(INPUT_FILE);
 		try {
-			BufferedReader r = null;
+			BufferedReader r;
 			if (in!=null) {
 				r = new BufferedReader(new InputStreamReader(in));
 			}
@@ -179,7 +173,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			JOptionPane.showMessageDialog(DemoRootPane.this,
 				"<html><b>Spell Checker</b> - An add-on for RSyntaxTextArea" +
 				"<br>that does spell checking in code comments." +
-				"<br>Version 3.0.0" +
+				"<br>Version 3.0.2" +
 				"<br>Licensed under the LGPL",
 				"About Spell Checker",
 				JOptionPane.INFORMATION_MESSAGE);

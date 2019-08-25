@@ -32,10 +32,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 /**
  * The SpellDictionaryHashMap holds the dictionary
@@ -61,7 +58,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * The hashmap that contains the word dictionary. The map is hashed on the doublemeta
    * code. The map entry contains a LinkedList of words that have the same double meta code.
    */
-  protected Hashtable<String, List<String>> mainDictionary = new Hashtable<String, List<String>>(INITIAL_CAPACITY);
+  private HashMap<String, List<String>> mainDictionary = new HashMap<>(INITIAL_CAPACITY);
 
   /** Holds the dictionary file for appending*/
   private File dictFile = null;
@@ -255,7 +252,7 @@ public boolean addWord(String word) {
     String code = getCode(word);
     List<String> list = mainDictionary.get(code);
     if (list == null) {
-      list = new ArrayList<String>();
+      list = new ArrayList<>();
       mainDictionary.put(code, list);
     }
     list.add(word);
@@ -273,22 +270,21 @@ public boolean addWord(String word) {
 
     if (list != null) {
 
-      boolean isAlready = false;
+        boolean isAlready = false;
 
-      for (int i = 0; i < list.size(); i++) {
-
-        if (word.equalsIgnoreCase(list.get(i))) {
-          isAlready = true;
-          break;
+        for (String s : list) {
+            if (word.equalsIgnoreCase(s)) {
+                isAlready = true;
+                break;
+            }
         }
-      }
 
       if (!isAlready)
         list.add(word);
 
     } else {
 
-      list = new ArrayList<String>();
+      list = new ArrayList<>();
       list.add(word);
       mainDictionary.put(code, list);
 

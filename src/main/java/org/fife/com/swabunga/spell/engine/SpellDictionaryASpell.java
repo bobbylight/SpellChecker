@@ -24,13 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.security.InvalidParameterException;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Container for various methods that any <code>SpellDictionary</code> will use.
@@ -67,7 +61,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
 
   /** The reference to a Transformator, used to transform a word into it's phonetic code. */
-  protected Transformator tf;
+  private Transformator tf;
 
   /**
    * Constructs a new SpellDictionaryASpell
@@ -149,16 +143,16 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
   	if(matrix == null)
   		matrix = new int[0][0];
 
-    Hashtable<String, String> nearmisscodes = new Hashtable<String, String>();
+    HashMap<String, String> nearmisscodes = new HashMap<>();
     String code = getCode(word);
 
     // add all words that have the same phonetics
     nearmisscodes.put(code, code);
-    Vector<Word> phoneticList = getWordsFromCode(word, nearmisscodes);
+    List<Word> phoneticList = getWordsFromCode(word, nearmisscodes);
 
     // do some transformations to pick up more results
     //interchange
-    nearmisscodes = new Hashtable<String, String>();
+    nearmisscodes = new HashMap<>();
     char[] charArray = word.toCharArray();
     char a;
     char b ;
@@ -227,7 +221,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
     nearmisscodes.remove(code); //already accounted for in phoneticList
 
-    Vector<Word> wordlist = getWordsFromCode(word, nearmisscodes);
+    List<Word> wordlist = getWordsFromCode(word, nearmisscodes);
 
     if (wordlist.size() == 0 && phoneticList.size() == 0)
       addBestGuess(word, phoneticList, matrix);
@@ -249,11 +243,11 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * When we don't come up with any suggestions (probably because the threshold was too strict),
    * then pick the best guesses from the those words that have the same phonetic code.
    * @param word - the word we are trying spell correct
-   * @param Two dimensional array of int used to calculate
+   * @param wordList Two dimensional array of int used to calculate
    * edit distance. Allocating this memory outside of the function will greatly improve efficiency.
    * @param wordList - the linked list that will get the best guess
    */
-  private void addBestGuess(String word, Vector<Word> wordList, int[][] matrix) {
+  private void addBestGuess(String word, List<Word> wordList, int[][] matrix) {
   	if(matrix == null)
   		matrix = new int[0][0];
 
@@ -265,41 +259,36 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     String code = getCode(word);
     List<String> simwordlist = getWords(code);
 
-    LinkedList<Word> candidates = new LinkedList<Word>();
+    LinkedList<Word> candidates = new LinkedList<>();
 
     for (String similar : simwordlist) {
       int distance = EditDistance.getDistance(word, similar, matrix);
       if (distance <= bestScore) {
         bestScore = distance;
-        Word goodGuess = new Word(similar, distance);
-        candidates.add(goodGuess);
+        candidates.add(new Word(similar, distance));
       }
     }
 
     //now, only pull out the guesses that had the best score
-    for (Iterator<Word> iter = candidates.iterator(); iter.hasNext();) {
-      Word candidate = iter.next();
+    for (Word candidate : candidates) {
       if (candidate.getCost() == bestScore)
         wordList.add(candidate);
     }
 
   }
 
-  private Vector<Word> getWordsFromCode(String word, Hashtable<String, String> codes) {
+  private List<Word> getWordsFromCode(String word, HashMap<String, String> codes) {
     Configuration config = Configuration.getConfiguration();
-    Vector<Word> result = new Vector<Word>();
+    List<Word> result = new ArrayList<>();
     int[][] matrix = new int[0][0];
     final int configDistance = config.getInteger(Configuration.SPELL_THRESHOLD);
 
-    for (Enumeration<String> i = codes.keys(); i.hasMoreElements();) {
-      String code = i.nextElement();
-
+    for (String code : codes.keySet()) {
       List<String> simwordlist = getWords(code);
       for (String similar : simwordlist) {
         int distance = EditDistance.getDistance(word, similar, matrix);
         if (distance < configDistance) {
-          Word w = new Word(similar, distance);
-          result.addElement(w);
+          result.add(new Word(similar, distance));
         }
       }
     }
