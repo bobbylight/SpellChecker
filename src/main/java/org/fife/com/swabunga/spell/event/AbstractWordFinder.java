@@ -222,9 +222,11 @@ public String toString() {
 
     switch (curr) {
       case '\'':
-      case '@':
-      case '.':
-      case '_':
+          // robert: Not sure why these are 'word characters'; they definitely mess
+          // things up for spell-checking code
+//      case '@':
+//      case '.':
+//      case '_':
         out = (Character.isLetterOrDigit(prev) && Character.isLetterOrDigit(next));
         break;
       default  :

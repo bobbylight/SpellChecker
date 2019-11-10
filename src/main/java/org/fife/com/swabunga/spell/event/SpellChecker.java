@@ -566,14 +566,17 @@ public class SpellChecker {
           int offs = 0;
           for (String part : parts) {
 
-            String partLower = part.toLowerCase();
-            if (!isCorrect(partLower) && !isIgnored(partLower)) {
-              int wordOffs = tokenizer.getCurrentWordPosition() + offs;
-              SpellCheckEvent event = new BasicSpellCheckEvent(part, null, wordOffs);
-              terminated = fireAndHandleEvent(tokenizer, event);
-              if (terminated) {
-                break;
-              }
+            // Ignore mixed-case word parts, if necessary
+            if (!config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) || !isUpperCaseWord(part)) {
+                String partLower = part.toLowerCase();
+                if (!isCorrect(partLower) && !isIgnored(partLower)) {
+                    int wordOffs = tokenizer.getCurrentWordPosition() + offs;
+                    SpellCheckEvent event = new BasicSpellCheckEvent(part, null, wordOffs);
+                    terminated = fireAndHandleEvent(tokenizer, event);
+                    if (terminated) {
+                        break;
+                    }
+                }
             }
 
             offs += part.length();
@@ -631,6 +634,15 @@ public class SpellChecker {
       return errors;
   }
 
+
+  private static boolean isAllUpperCase(String word) {
+      for (int i = 0; i < word.length(); i++) {
+          if (!Character.isUpperCase(word.charAt(i))) {
+              return false;
+          }
+      }
+      return true;
+  }
 
    private boolean isSupposedToBeCapitalized(String word, WordTokenizer wordTokenizer) {
      boolean configCapitalize = !config.getBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION);
