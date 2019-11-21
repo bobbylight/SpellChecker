@@ -208,7 +208,7 @@ public class SpellChecker {
    * @param  word  The word to analyze for digit.
    * @return       true if the word contains at least a digit.
    */
-  private final static boolean isDigitWord(String word) {
+  private final static boolean isDigitWord(CharSequence word) {
     for (int i = word.length() - 1; i >= 0; i--) {
       if (Character.isDigit(word.charAt(i))) {
         return true;
@@ -291,7 +291,7 @@ public class SpellChecker {
    * @param  word  The word to analyze for upper-cases characters
    * @return       true if this word contains all upper case characters
    */
-  private final static boolean isUpperCaseWord(String word) {
+  private final static boolean isUpperCaseWord(CharSequence word) {
     for (int i = word.length() - 1; i >= 0; i--) {
       if (Character.isLowerCase(word.charAt(i))) {
         return false;
@@ -310,7 +310,7 @@ public class SpellChecker {
    * @param startsSentence True if this word is at the start of a sentence
    * @return       true if this word contains mixed case characters
    */
-  private final static boolean isMixedCaseWord(String word, boolean startsSentence) {
+  private final static boolean isMixedCaseWord(CharSequence word, boolean startsSentence) {
     int strLen = word.length();
     boolean isUpper = Character.isUpperCase(word.charAt(0));
     //Ignore the first character if this word starts the sentence and the first
@@ -348,7 +348,6 @@ public class SpellChecker {
     //Work out what to do in response to the event.
     switch (event.getAction()) {
       case SpellCheckEvent.INITIAL:
-        break;
       case SpellCheckEvent.IGNORE:
         break;
       case SpellCheckEvent.IGNOREALL:
