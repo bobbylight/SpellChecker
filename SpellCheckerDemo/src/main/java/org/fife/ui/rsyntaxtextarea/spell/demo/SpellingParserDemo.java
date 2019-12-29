@@ -8,9 +8,7 @@
  */
 package org.fife.ui.rsyntaxtextarea.spell.demo;
 
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 
 /**
@@ -19,16 +17,16 @@ import javax.swing.UIManager;
  * @author Robert Futrell
  * @version 1.0
  */
-public class SpellingParserDemo extends JFrame {
+public final class SpellingParserDemo extends JFrame {
 
 
 	/**
 	 * Constructor.
 	 */
-	public SpellingParserDemo() {
+	private SpellingParserDemo() {
 		setRootPane(new DemoRootPane());
 		setTitle("Spelling Parser Demo");
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		pack();
 		setLocationRelativeTo(null);
 	}

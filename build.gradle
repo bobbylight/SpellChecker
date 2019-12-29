@@ -1,143 +1,58 @@
-['java', 'distribution', 'maven-publish', 'signing'].each { apply plugin: it }
-
-assert org.gradle.api.JavaVersion.current().isJava8Compatible()
-allprojects {
-	tasks.withType(Javadoc) {
-		options.addStringOption('Xdoclint:none', '-quiet')
-	}
-}
+//plugins {
+//    id 'com.github.spotbugs' version '2.0.1'
+//}
 
 group = 'com.fifesoft'
-archivesBaseName = 'spellchecker'
-ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
+// NOTE: Local Java 8:  /Library/Java/JavaVirtualMachines/jdk1.8.0_25.jdk/Contents/Home
 
-dependencies {
-    implementation files("${projectDir.absolutePath}/../RSyntaxTextArea/RSyntaxTextArea/build/classes/java/main")
-    implementation files("${projectDir.absolutePath}/../RSyntaxTextArea/RSyntaxTextArea/build/resources/main")
-    testImplementation 'junit:junit:4.12'
-}
 
-wrapper {
-    gradleVersion = '6.0.1'
-}
+allprojects {
 
-compileJava {
-	sourceCompatibility javaVersion
-	targetCompatibility javaVersion
-	options.debug = true
-	options.debugOptions.debugLevel = 'source,vars,lines'
-    options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked'
-}
-
-ext.sharedManifest = manifest {
-	attributes('Class-Path': 'rsyntaxtextarea.jar',
-		'Specification-Title': 'SpellChecker',
-		'Specification-Version': version,
-		'Implementation-Title': 'org.fife.ui',
-		'Implementation-Version': version)
-
-}
-jar {
-	manifest { from sharedManifest }
-}
-
-// We use "distributions" to create the zip files uploaded to SourceForge
-distributions {
-	main {
-        distributionBaseName = 'rsta_spellchecker'
-		contents {
-			from { [ 'build/libs' ] }
-			rename 'SpellChecker-.*\\.jar', 'rsta_spellchecker.jar'
-		}
-	}
-	src {
-        distributionBaseName = 'rsta_spellchecker'
-	}
-}
-distZip.classifier = null
-distZip.dependsOn jar
-srcDistZip.classifier = 'src'
-srcDistZip {
-	from projectDir
-	include 'src/**/*'
-	include 'build.gradle'
-	include '.classpath'
-	include '.project'
-	include 'gradle.properties'
-	include 'gradle/**/*'
-	include 'gradlew*'
-	include 'README.md'
-	include '.settings/**'
-}
-
-task buildSourceForgeZips {
-    doLast {
-        println 'Building zip files for SourceForge'
-    }
-}
-buildSourceForgeZips.dependsOn clean, jar, distZip, srcDistZip
-
-repositories {
-	mavenCentral()
-}
-publishing {
-	repositories {
+    repositories {
+        mavenCentral()
         maven {
-            def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-            def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
-            url = isReleaseVersion ? releasesRepoUrl : snapshotsRepoUrl
-            credentials { // Credentials usually kept in user's .gradle/gradle.properties
-                // We must defensively check for these properties so Travis CI build works
-                username = project.hasProperty('ossrhUsername') ? ossrhUsername : 'unknown'
-                password = project.hasProperty('ossrhPassword') ? ossrhPassword : 'unknown'
-            }
+            url 'https://oss.sonatype.org/content/repositories/snapshots'
         }
     }
-    publications {
-        maven(MavenPublication) {
 
-            groupId = 'com.fifesoft'
-            artifactId = 'spellchecker'
-            version = version
+    wrapper {
+        gradleVersion = '6.0.1'
+    }
 
-            from components.java
-
-            pom {
-
-                name = 'SpellChecker'
-                description = 'A simple spell checker add-on for RSyntaxTextArea. It will spell-check comments in source code, or the entire file if you are editing plain text. Spelling errors are squiggle-underlined with the color of your choice, and tooltips are available offering any spelling suggestions.'
-                url = 'http://www.fifesoft.com/rsyntaxtextarea/'
-                inceptionYear = '2003'
-                packaging = 'jar'
-                licenses {
-                    license {
-                        name = 'Modified BSD License'
-                        url = 'http://fifesoft.com/rsyntaxtextarea/RSyntaxTextArea.License.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        name = 'Robert Futrell'
-                    }
-                }
-                scm {
-                    url = 'https://github.com/bobbylight/SpellChecker'
-                    connection = 'scm:git:git://github.com/bobbylight/SpellChecker'
-                    developerConnection = 'scm:git:git@github.com:bobbylight/SpellChecker'
-                    if (!project.version.endsWith('-SNAPSHOT')) {
-                        tag = project.version
-                    }
-                }
-            }
-        }
-	}
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
 }
 
-signing {
-    // Don't require signing for e.g. ./gradlew install
-    required { gradle.taskGraph.hasTask('publish') && isReleaseVersion }
-    sign publishing.publications.maven
-}
-tasks.withType(Sign) {
-    onlyIf { isReleaseVersion }
+subprojects {
+
+    apply plugin: 'java'
+//    apply plugin: 'checkstyle'
+//    apply plugin: 'com.github.spotbugs'
+
+//    checkstyle {
+//        toolVersion = '8.27'
+//    }
+//
+//    tasks.withType(com.github.spotbugs.SpotBugsTask) {
+//        reports {
+//            xml.enabled = false
+//            html.enabled = true
+//        }
+//    }
+
+    dependencies {
+        // Paths are relative to submodules
+        implementation files("${projectDir.absolutePath}/../../RSyntaxTextArea/RSyntaxTextArea/build/classes/java/main")
+        implementation files("${projectDir.absolutePath}/../../RSyntaxTextArea/RSyntaxTextArea/build/resources/main")
+        testImplementation 'junit:junit:4.12'
+    }
+
+    compileJava {
+        sourceCompatibility javaVersion
+        targetCompatibility javaVersion
+        options.debug = true
+        options.debugOptions.debugLevel = 'source,vars,lines'
+        options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked'
+    }
 }

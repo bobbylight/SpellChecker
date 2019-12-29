@@ -1,0 +1,16 @@
+archivesBaseName = 'spellcheckerdemo'
+
+dependencies {
+    implementation project(':SpellChecker')
+}
+
+jar {
+    manifest {
+        attributes('Class-Path': 'rsyntaxtextarea.jar',
+                'Specification-Title': 'SpellCheckerDemo',
+                'Specification-Version': archiveVersion,
+                'Implementation-Title': 'org.fife.ui',
+                'Implementation-Version': archiveVersion,
+                'Main-Class': 'org.fife.rsta.ui.demo.RSTAUIDemoApp')
+    }
+}

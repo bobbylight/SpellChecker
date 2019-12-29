@@ -1,3 +1,4 @@
+# SpellChecker
 SpellChecker is a spell check add-on for `RSyntaxTextArea`.  For programming languages, it spell-checks text in
 comments, and when editing plain text files, the entire file is spell-checked.  Spelling errors are squiggle-underlined
 in the color of your choosing, and hovering the mouse over a misspelled word displays a tool tip with suggested fixes
@@ -7,6 +8,8 @@ the spell check white list.
 This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Indeed, 99% of the code is just
 Jazzy, with changes made for performance, bug fixes, and Java 6 syntax.
 
+## Usage
+The simplest way to get started is to use one of the dictionaries included in the source.
 Included with this distribution is an English dictionary (both US and
 British).  The easiest method to add spell checking to RSTA is as follows:
 
@@ -19,12 +22,12 @@ SpellingParser parser = SpellingParser.createEnglishSpellingParser(zip, usEnglis
 textArea.addParser(parser);
 ```
 
-See class `org.fife.ui.rsyntaxtextarea.spell.demo.SpellingParserDemo` for a working example.  
+See the `SpellCheckerDemo` submodule for a working example.  
 
 Just like Jazzy itself, this add-on is licensed under the LGPL; see the included
 [SpellChecker.License.txt](https://github.com/bobbylight/SpellChecker/blob/master/src/main/dist/SpellChecker.License.txt) file.
 
-# Sister Projects
+## Sister Projects
 
 * [RSyntaxTextArea](https://github.com/bobbylight/RSyntaxTextArea) provides syntax highlighting, code folding, and many other features out-of-the-box.
 * [AutoComplete](https://github.com/bobbylight/AutoComplete) - Adds code completion to RSyntaxTextArea (or any other JTextComponent).

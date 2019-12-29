@@ -8,7 +8,7 @@
  */
 package org.fife.ui.rsyntaxtextarea.spell.demo;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,6 +23,7 @@ import javax.swing.event.*;
 import org.fife.ui.rsyntaxtextarea.ErrorStrip;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
@@ -110,7 +111,16 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 
 
 	private SpellingParser createSpellingParser() {
-		File zip = new File("src/main/dist/english_dic.zip");
+
+	    // Allow for different starting directories when running through an IDE
+		File zip = new File("./SpellChecker/src/main/dist/english_dic.zip");
+		if (!zip.isFile()) {
+            zip = new File("../SpellChecker/src/main/dist/english_dic.zip");
+            if (!zip.isFile()) {
+                zip = new File("./SpellChecker/SpellChecker/src/main/dist/english_dic.zip");
+            }
+        }
+
 		try {
 			return SpellingParser.createEnglishSpellingParser(zip, true);
 		} catch (IOException ioe) {
@@ -143,6 +153,12 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 		textArea.addHyperlinkListener(this);
 		textArea.requestFocusInWindow();
 		textArea.setMarkOccurrences(true);
+		textArea.getSyntaxScheme().getStyle(TokenTypes.COMMENT_DOCUMENTATION).background = new java.awt.Color(255, 240, 240);
+//		textArea.setUseSelectedTextColor(true);
+//        textArea.setSelectionColor(SystemColor.textHighlight);
+//		textArea.setSelectedTextColor(SystemColor.textHighlightText);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
 		return textArea;
 	}
 
@@ -173,7 +189,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			JOptionPane.showMessageDialog(DemoRootPane.this,
 				"<html><b>Spell Checker</b> - An add-on for RSyntaxTextArea" +
 				"<br>that does spell checking in code comments." +
-				"<br>Version 3.0.2" +
+				"<br>Version 3.0.3" +
 				"<br>Licensed under the LGPL",
 				"About Spell Checker",
 				JOptionPane.INFORMATION_MESSAGE);
