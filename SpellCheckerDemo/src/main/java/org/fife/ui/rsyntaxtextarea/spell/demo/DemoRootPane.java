@@ -83,7 +83,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 
                 SwingUtilities.invokeLater(() -> {
                     textArea.addParser(parser);
-                    parser.addContextMenuSuggestions(textArea);
+                    parser.addPopupMenuSuggestions(textArea);
                     toggleAction.setEnabled(true);
                 });
             }

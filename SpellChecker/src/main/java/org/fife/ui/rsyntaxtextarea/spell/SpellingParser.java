@@ -429,7 +429,7 @@ public class SpellingParser extends AbstractParser
 	}
 
 
-	public void addContextMenuSuggestions(RSyntaxTextArea textArea){
+	public void addPopupMenuSuggestions(RSyntaxTextArea textArea){
 		//Remove all mouse listeners
 		MouseListener[] listeners = textArea.getMouseListeners();
 		Arrays.stream(listeners).forEach(m -> textArea.removeMouseListener(m));
