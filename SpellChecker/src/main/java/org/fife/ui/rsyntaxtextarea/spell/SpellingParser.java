@@ -24,7 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -161,6 +163,52 @@ public class SpellingParser extends AbstractParser
 		listenerList.add(SpellingParserListener.class, l);
 	}
 
+	/**
+	 * A utility method to easily create a parser for American or British
+	 * English.
+	 *
+	 * @param inputStream An input stream that contains the contents of the <code>english_dic.zip</code> file
+	 *        distributed with the spell checker add-on.
+	 * @param american Whether the parser should be for American (as opposed
+	 *        to British) English.
+	 * @return The parser.
+	 * @throws IOException If an error occurs reading the zip file.
+	 */
+	public static SpellingParser createEnglishSpellingParser(InputStream inputStream,
+															 boolean american) throws IOException {
+		//		long start = System.currentTimeMillis();
+
+		SpellDictionaryHashMap dict;
+
+
+		ZipInputStream zis = new ZipInputStream(inputStream);
+
+		List<String> others;
+		if (american) {
+			others = Arrays.asList(new String[]{"eng_com.dic", "color.dic", "labeled.dic", "center.dic", "ize.dic",
+					"yze.dic"});
+		}
+		else { // British
+			others = Arrays.asList(new String[]{"eng_com.dic", "colour.dic", "labelled.dic", "centre.dic",
+					"ise.dic", "yse.dic"});
+		}
+
+		dict = new SpellDictionaryHashMap();
+
+		ZipEntry entry  = zis.getNextEntry();
+		while(entry != null){
+			if(others.contains(entry.getName())){
+				BufferedReader r = new BufferedReader(new InputStreamReader(zis));
+				dict.addDictionary(r);
+			}
+			entry = zis.getNextEntry();
+		}
+
+//		float secs = (System.currentTimeMillis() - start)/1000f;
+//		System.out.println("Loading dictionary took " + secs + " seconds");
+
+		return new SpellingParser(dict);
+	}
 
 	/**
 	 * A utility method to easily create a parser for American or British
