@@ -55,7 +55,9 @@ public class PopupMenuMouseListener implements MouseListener {
                         JMenuItem item = new JMenuItem(w.getWord());
                         item.addActionListener(src -> {
                             try {
+                                textArea.beginAtomicEdit();
                                 document.replace(start, end - start, w.getWord(), null);
+                                textArea.endAtomicEdit();
                             } catch (BadLocationException ex) {
                                 ex.printStackTrace();
                             }
