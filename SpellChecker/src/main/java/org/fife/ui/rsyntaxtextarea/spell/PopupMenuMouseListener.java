@@ -34,37 +34,41 @@ public class PopupMenuMouseListener implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        for(int i = 0; i < count; i++){
-            textArea.getPopupMenu().remove(0);
-        }
-        count = 0;
+        if(e.isPopupTrigger()) {
 
-        int offset = textArea.viewToModel(e.getPoint());
-        try {
-            int start = Utilities.getWordStart(textArea, offset);
-            int end = Utilities.getWordEnd(textArea, offset);
-            String word = textArea.getText(start, end - start);
-            if(!spellChecker.isCorrect(word)) {
-                List<Word> words = spellChecker.getSuggestions(word, 10);
-                count = words.size();
 
-                words.stream().forEach(w -> {
-                    JMenuItem item = new JMenuItem(w.getWord());
-                    item.addActionListener(src -> {
-                        try {
-                            document.remove(start, end - start);
-                            document.insertString(start, w.getWord(), null);
-                        } catch (BadLocationException ex) {
-                            ex.printStackTrace();
-                        }
-                    });
-                    textArea.getPopupMenu().insert(item, 0);
-                });
+            for (int i = 0; i < count; i++) {
+                textArea.getPopupMenu().remove(0);
             }
+            count = 0;
 
-        }catch(Exception ee){
-            ee.printStackTrace();
+            int offset = textArea.viewToModel(e.getPoint());
+            try {
+                int start = Utilities.getWordStart(textArea, offset);
+                int end = Utilities.getWordEnd(textArea, offset);
+                String word = textArea.getText(start, end - start);
+                if (!spellChecker.isCorrect(word)) {
+                    List<Word> words = spellChecker.getSuggestions(word, 10);
+                    count = words.size();
+
+                    words.stream().forEach(w -> {
+                        JMenuItem item = new JMenuItem(w.getWord());
+                        item.addActionListener(src -> {
+                            try {
+                                document.replace(start, end - start, w.getWord(), null);
+                            } catch (BadLocationException ex) {
+                                ex.printStackTrace();
+                            }
+                        });
+                        textArea.getPopupMenu().insert(item, 0);
+                    });
+                }
+
+            } catch (Exception ee) {
+                ee.printStackTrace();
+            }
         }
+        //Allow anyone else to get their listeners processed.
         Arrays.stream(listeners).forEach(m -> m.mousePressed(e));
     }
 
