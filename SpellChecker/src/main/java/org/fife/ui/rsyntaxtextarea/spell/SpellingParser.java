@@ -97,7 +97,6 @@ public class SpellingParser extends AbstractParser
 	private EventListenerList listenerList;
 	private SpellCheckableTokenIdentifier spellCheckableTokenIdentifier;
 
-
 	/**
 	 * The "user dictionary."  If this is non-<code>null</code>, then the
 	 * user will be able to select "Add word to dictionary" for spelling
@@ -119,7 +118,7 @@ public class SpellingParser extends AbstractParser
 	 * The default maximum number of spelling errors to report for a document.
 	 */
 	private static final int DEFAULT_MAX_ERROR_COUNT			= 100;
-
+	private static boolean tooltipEnabled;
 
 	/**
 	 * Constructor.
@@ -429,6 +428,9 @@ public class SpellingParser extends AbstractParser
 	}
 
 
+	public void setTooltipEnabled(boolean enabled){
+		this.tooltipEnabled = enabled;
+	}
 	public void addPopupMenuSuggestions(RSyntaxTextArea textArea){
 		//Remove all mouse listeners
 		MouseListener[] listeners = textArea.getMouseListeners();
@@ -604,7 +606,9 @@ public class SpellingParser extends AbstractParser
 
 		@Override
 		public String getToolTipText() {
-
+			if(!tooltipEnabled){
+				return "";
+			}
 			StringBuilder sb = new StringBuilder();
 			String spacing = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 			int threshold = sc.getConfiguration().getInteger(Configuration.SPELL_THRESHOLD);
