@@ -4,6 +4,7 @@ import org.fife.com.swabunga.spell.engine.Word;
 import org.fife.com.swabunga.spell.event.SpellChecker;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserEvent;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -19,12 +20,27 @@ public class PopupMenuMouseListener implements MouseListener {
     private MouseListener[] listeners;
     private RSyntaxDocument document;
     private SpellChecker spellChecker;
+    private SpellingParser parser;
+    private String word = "";
 
-    public PopupMenuMouseListener(RSyntaxTextArea textArea, MouseListener[] listeners, SpellChecker spellChecker){
+    private JMenuItem addWord = new JMenuItem("Add word");
+    private JMenuItem ignoreWord = new JMenuItem("Ignore word");
+
+    public PopupMenuMouseListener(SpellingParser parser, RSyntaxTextArea textArea, MouseListener[] listeners, SpellChecker spellChecker){
         this.textArea = textArea;
         this.listeners = listeners;
         this.spellChecker = spellChecker;
+        this.parser = parser;
         document = (RSyntaxDocument) textArea.getDocument();
+
+        addWord.addActionListener(src -> {
+            addWordToUserDictionary(word);
+        });
+
+        ignoreWord.addActionListener(src -> {
+            addWordToUserDictionary(word);
+        });
+
     }
 
     @Override
@@ -45,7 +61,7 @@ public class PopupMenuMouseListener implements MouseListener {
             try {
                 int start = Utilities.getWordStart(textArea, offset);
                 int end = Utilities.getWordEnd(textArea, offset);
-                String word = textArea.getText(start, end - start);
+                word = textArea.getText(start, end - start);
                 if (!spellChecker.isCorrect(word)) {
                     List<Word> words = spellChecker.getSuggestions(word, 10);
                     count = words.size() + 1;
@@ -64,6 +80,19 @@ public class PopupMenuMouseListener implements MouseListener {
                         textArea.getPopupMenu().insert(item, 0);
                     });
                     textArea.getPopupMenu().insert(new JPopupMenu.Separator(), count - 1);
+                    if(parser.getAllowAdd() || parser.getAllowIgnore()){
+                        if(parser.getAllowAdd()){
+                            textArea.getPopupMenu().insert(addWord, count);
+
+                            count++;
+                        }
+                        if(parser.getAllowIgnore()){
+                            textArea.getPopupMenu().insert(ignoreWord, count);
+                            count++;
+                        }
+                        count++;
+                        textArea.getPopupMenu().insert(new JPopupMenu.Separator(), count - 1);
+                    }
                 }
 
             } catch (Exception ee) {
@@ -87,5 +116,30 @@ public class PopupMenuMouseListener implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
         Arrays.stream(listeners).forEach(m -> m.mouseExited(e));
+    }
+
+    private void addWordToUserDictionary(String word){
+        if (parser.getUserDictionary() == null) {
+            // TODO: Add callback for application to prompt to create
+            // a user dictionary
+            UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+        }
+
+        if (spellChecker.addToDictionary(word)) {
+            textArea.forceReparsing(parser);
+            SpellingParserEvent se = new SpellingParserEvent(parser,
+                    textArea, SpellingParserEvent.WORD_ADDED, word);
+            parser.fireSpellingParserEvent(se);
+        } else { // IO error adding the word
+            UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+        }
+    }
+
+    public void ignoreWord(String word){
+        spellChecker.ignoreAll(word);
+        textArea.forceReparsing(parser);
+        SpellingParserEvent se = new SpellingParserEvent(parser,
+                textArea, SpellingParserEvent.WORD_IGNORED, word);
+        parser.fireSpellingParserEvent(se);
     }
 }

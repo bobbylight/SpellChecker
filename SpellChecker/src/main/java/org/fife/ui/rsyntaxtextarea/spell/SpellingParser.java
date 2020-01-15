@@ -221,7 +221,7 @@ public class SpellingParser extends AbstractParser
 	 *
 	 * @param e The event.
 	 */
-	private void fireSpellingParserEvent(SpellingParserEvent e) {
+	void fireSpellingParserEvent(SpellingParserEvent e) {
 		// Guaranteed to return a non-null array
 		Object[] listeners = listenerList.getListenerList();
 		// Process the listeners last to first, notifying
@@ -437,7 +437,7 @@ public class SpellingParser extends AbstractParser
 		Arrays.stream(listeners).forEach(m -> textArea.removeMouseListener(m));
 
 		//Add our mouse listener
-		textArea.addMouseListener(new PopupMenuMouseListener(textArea, listeners, sc));
+		textArea.addMouseListener(new PopupMenuMouseListener(this, textArea, listeners, sc));
 	}
 	/**
 	 * Spell-checks a plain text document.
