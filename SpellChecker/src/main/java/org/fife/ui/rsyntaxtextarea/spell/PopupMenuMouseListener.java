@@ -36,7 +36,6 @@ public class PopupMenuMouseListener implements MouseListener {
     public void mousePressed(MouseEvent e) {
         if(e.isPopupTrigger()) {
 
-
             for (int i = 0; i < count; i++) {
                 textArea.getPopupMenu().remove(0);
             }
@@ -49,7 +48,7 @@ public class PopupMenuMouseListener implements MouseListener {
                 String word = textArea.getText(start, end - start);
                 if (!spellChecker.isCorrect(word)) {
                     List<Word> words = spellChecker.getSuggestions(word, 10);
-                    count = words.size();
+                    count = words.size() + 1;
 
                     words.stream().forEach(w -> {
                         JMenuItem item = new JMenuItem(w.getWord());
@@ -64,6 +63,7 @@ public class PopupMenuMouseListener implements MouseListener {
                         });
                         textArea.getPopupMenu().insert(item, 0);
                     });
+                    textArea.getPopupMenu().insert(new JPopupMenu.Separator(), count - 1);
                 }
 
             } catch (Exception ee) {
