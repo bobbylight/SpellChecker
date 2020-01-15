@@ -45,6 +45,9 @@ subprojects {
         // Paths are relative to submodules
         implementation files("${projectDir.absolutePath}/../../RSyntaxTextArea/RSyntaxTextArea/build/classes/java/main")
         implementation files("${projectDir.absolutePath}/../../RSyntaxTextArea/RSyntaxTextArea/build/resources/main")
+// https://mvnrepository.com/artifact/com.fifesoft/rsyntaxtextarea
+      //  compile group: 'com.fifesoft', name: 'rsyntaxtextarea', version: '3.0.8'
+
         testImplementation 'junit:junit:4.12'
     }
 
