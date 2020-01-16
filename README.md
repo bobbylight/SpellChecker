@@ -11,6 +11,7 @@ This is a fork of the offical RSyntaxTextArea SpellChecker.  There are three add
    boolean usEnglish = true;
    SpellingParser parser = SpellingParser.createEnglishSpellingParser(inputStream, usEnglish);
    parser.setTooltipEnabled(false); //Hide the tooltips for the spell checker
+   textArea.addParser(parser);
    ```
 3. Spelling suggestions can now be displayed in the right click PopupMenu instead of a tooltip.
    ```java
@@ -18,6 +19,7 @@ This is a fork of the offical RSyntaxTextArea SpellChecker.  There are three add
    SpellingParser parser = SpellingParser.createEnglishSpellingParser(inputStream, usEnglish);
    parser.addPopupMenuSuggestions(textArea); //Show the suggestions in PopupMenu
    parser.setTooltipEnabled(false); //Hide the tooltips for the spell checker
+   textArea.addParser(parser);
    ```
    
 SpellChecker is a spell check add-on for `RSyntaxTextArea`.  For programming languages, it spell-checks text in
