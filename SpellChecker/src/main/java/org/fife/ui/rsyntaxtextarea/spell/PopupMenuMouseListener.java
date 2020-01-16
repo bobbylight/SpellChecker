@@ -50,8 +50,7 @@ public class PopupMenuMouseListener implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(e.isPopupTrigger()) {
-
+        if(SwingUtilities.isRightMouseButton(e)) {
             for (int i = 0; i < count; i++) {
                 textArea.getPopupMenu().remove(0);
             }
