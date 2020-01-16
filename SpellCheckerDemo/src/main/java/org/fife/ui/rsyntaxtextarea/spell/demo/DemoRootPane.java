@@ -78,6 +78,8 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 
                 SwingUtilities.invokeLater(() -> {
                     textArea.addParser(parser);
+                    parser.addPopupMenuSuggestions(textArea);
+                    parser.setTooltipEnabled(false);
                     toggleAction.setEnabled(true);
                 });
             }
@@ -117,7 +119,9 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
         }
 
 		try {
-			return SpellingParser.createEnglishSpellingParser(new FileInputStream(zip), true);
+			SpellingParser p = SpellingParser.createEnglishSpellingParser(new FileInputStream(zip), true);
+			p.setSquiggleUnderlineColor(Color.RED);
+			return p;
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -150,10 +154,11 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 		textArea.setMarkOccurrences(true);
 		textArea.getSyntaxScheme().getStyle(TokenTypes.COMMENT_DOCUMENTATION).background = new java.awt.Color(255, 240, 240);
 //		textArea.setUseSelectedTextColor(true);
-//        textArea.setSelectionColor(SystemColor.textHighlight);
+//      textArea.setSelectionColor(SystemColor.textHighlight);
 //		textArea.setSelectedTextColor(SystemColor.textHighlightText);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
+
 		return textArea;
 	}
 

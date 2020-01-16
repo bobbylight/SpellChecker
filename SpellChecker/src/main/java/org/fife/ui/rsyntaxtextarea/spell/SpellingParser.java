@@ -10,6 +10,8 @@ package org.fife.ui.rsyntaxtextarea.spell;
 
 import java.awt.Color;
 import java.awt.ComponentOrientation;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,15 +20,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
+import javax.swing.text.Utilities;
 
 import org.fife.com.swabunga.spell.engine.Configuration;
 import org.fife.com.swabunga.spell.engine.SpellDictionary;
@@ -91,7 +99,6 @@ public class SpellingParser extends AbstractParser
 	private EventListenerList listenerList;
 	private SpellCheckableTokenIdentifier spellCheckableTokenIdentifier;
 
-
 	/**
 	 * The "user dictionary."  If this is non-<code>null</code>, then the
 	 * user will be able to select "Add word to dictionary" for spelling
@@ -113,7 +120,7 @@ public class SpellingParser extends AbstractParser
 	 * The default maximum number of spelling errors to report for a document.
 	 */
 	private static final int DEFAULT_MAX_ERROR_COUNT			= 100;
-
+	private static boolean tooltipEnabled;
 
 	/**
 	 * Constructor.
@@ -262,7 +269,7 @@ public class SpellingParser extends AbstractParser
 	 *
 	 * @param e The event.
 	 */
-	private void fireSpellingParserEvent(SpellingParserEvent e) {
+	void fireSpellingParserEvent(SpellingParserEvent e) {
 		// Guaranteed to return a non-null array
 		Object[] listeners = listenerList.getListenerList();
 		// Process the listeners last to first, notifying
@@ -419,7 +426,6 @@ public class SpellingParser extends AbstractParser
 
 	@Override
 	public ParseResult parse(RSyntaxDocument doc, String style) {
-
 //		long startTime = System.currentTimeMillis();
 
 		Element root = doc.getDefaultRootElement();
@@ -470,6 +476,17 @@ public class SpellingParser extends AbstractParser
 	}
 
 
+	public void setTooltipEnabled(boolean enabled){
+		this.tooltipEnabled = enabled;
+	}
+	public void addPopupMenuSuggestions(RSyntaxTextArea textArea){
+		//Remove all mouse listeners
+		MouseListener[] listeners = textArea.getMouseListeners();
+		Arrays.stream(listeners).forEach(m -> textArea.removeMouseListener(m));
+
+		//Add our mouse listener
+		textArea.addMouseListener(new PopupMenuMouseListener(this, textArea, listeners, sc));
+	}
 	/**
 	 * Spell-checks a plain text document.
 	 *
@@ -637,7 +654,9 @@ public class SpellingParser extends AbstractParser
 
 		@Override
 		public String getToolTipText() {
-
+			if(!tooltipEnabled){
+				return "";
+			}
 			StringBuilder sb = new StringBuilder();
 			String spacing = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 			int threshold = sc.getConfiguration().getInteger(Configuration.SPELL_THRESHOLD);
