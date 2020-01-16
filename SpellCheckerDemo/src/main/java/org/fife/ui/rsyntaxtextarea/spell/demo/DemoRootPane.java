@@ -10,12 +10,7 @@ package org.fife.ui.rsyntaxtextarea.spell.demo;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -122,7 +117,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
         }
 
 		try {
-			return SpellingParser.createEnglishSpellingParser(zip, true);
+			return SpellingParser.createEnglishSpellingParser(new FileInputStream(zip), true);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
