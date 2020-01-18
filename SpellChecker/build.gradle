@@ -1,8 +1,18 @@
+plugins {
+    id 'java-library'
+}
+
 ['distribution', 'maven-publish', 'signing'].each { apply plugin: it }
 
 assert JavaVersion.current().isJava8Compatible()
 
 archivesBaseName = 'spellchecker'
+
+dependencies {
+    api 'com.fifesoft:rsyntaxtextarea:3.0.8'
+    testImplementation 'junit:junit:4.12'
+}
+
 ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
 
 ext.sharedManifest = manifest {

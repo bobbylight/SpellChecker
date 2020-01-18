@@ -16,7 +16,7 @@ allprojects {
     }
 
     wrapper {
-        gradleVersion = '6.0.1'
+        gradleVersion = '6.1'
     }
 
     tasks.withType(Javadoc) {
@@ -40,13 +40,6 @@ subprojects {
 //            html.enabled = true
 //        }
 //    }
-
-    dependencies {
-        // Paths are relative to submodules
-        implementation files("${projectDir.absolutePath}/../../RSyntaxTextArea/RSyntaxTextArea/build/classes/java/main")
-        implementation files("${projectDir.absolutePath}/../../RSyntaxTextArea/RSyntaxTextArea/build/resources/main")
-        testImplementation 'junit:junit:4.12'
-    }
 
     compileJava {
         sourceCompatibility javaVersion
