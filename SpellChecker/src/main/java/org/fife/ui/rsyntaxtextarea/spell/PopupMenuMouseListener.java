@@ -66,11 +66,17 @@ public class PopupMenuMouseListener implements MouseListener {
                     count = words.size() + 1;
 
                     words.stream().forEach(w -> {
-                        JMenuItem item = new JMenuItem(w.getWord());
+                        String suggestion;
+                        if(Character.isUpperCase(word.charAt(0))){
+                            suggestion = w.getWord().substring(0,1).toUpperCase() + w.getWord().substring(1);
+                        }else{
+                            suggestion = w.getWord();
+                        }
+                        JMenuItem item = new JMenuItem(suggestion);
                         item.addActionListener(src -> {
                             try {
                                 textArea.beginAtomicEdit();
-                                document.replace(start, end - start, w.getWord(), null);
+                                document.replace(start, end - start, suggestion, null);
                                 textArea.endAtomicEdit();
                             } catch (BadLocationException ex) {
                                 ex.printStackTrace();
