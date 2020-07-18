@@ -2,14 +2,14 @@ plugins {
     id 'java-library'
 }
 
-['distribution', 'maven-publish', 'signing'].each { apply plugin: it }
+['maven-publish', 'signing'].each { apply plugin: it }
 
 assert JavaVersion.current().isJava8Compatible()
 
 archivesBaseName = 'spellchecker'
 
 dependencies {
-    api 'com.fifesoft:rsyntaxtextarea:3.1.0'
+    api 'com.fifesoft:rsyntaxtextarea:3.1.1'
     testImplementation 'junit:junit:4.13'
 }
 
@@ -31,42 +31,6 @@ java {
 jar {
 	manifest { from sharedManifest }
 }
-
-// We use "distributions" to create the zip files uploaded to SourceForge
-distributions {
-	main {
-        distributionBaseName = 'rsta_spellchecker'
-		contents {
-			from { [ 'build/libs' ] }
-			rename 'SpellChecker-.*\\.jar', 'rsta_spellchecker.jar'
-		}
-	}
-	src {
-        distributionBaseName = 'rsta_spellchecker'
-	}
-}
-distZip.classifier = null
-distZip.dependsOn jar
-srcDistZip.classifier = 'src'
-srcDistZip {
-	from projectDir
-	include 'src/**/*'
-	include 'build.gradle'
-	include '.classpath'
-	include '.project'
-	include 'gradle.properties'
-	include 'gradle/**/*'
-	include 'gradlew*'
-	include 'README.md'
-	include '.settings/**'
-}
-
-task buildSourceForgeZips {
-    doLast {
-        println 'Building zip files for SourceForge'
-    }
-}
-buildSourceForgeZips.dependsOn clean, jar, distZip, srcDistZip
 
 repositories {
 	mavenCentral()

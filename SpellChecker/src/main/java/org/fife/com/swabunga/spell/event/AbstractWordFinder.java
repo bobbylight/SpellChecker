@@ -216,10 +216,6 @@ public String toString() {
       return Character.isLetterOrDigit(curr);
     }
 
-    char prev = text.charAt(posn - 1);
-    char next = text.charAt(posn + 1);
-
-
     switch (curr) {
       case '\'':
           // robert: Not sure why these are 'word characters'; they definitely mess
@@ -227,6 +223,8 @@ public String toString() {
 //      case '@':
 //      case '.':
 //      case '_':
+        char prev = text.charAt(posn - 1);
+        char next = text.charAt(posn + 1);
         out = (Character.isLetterOrDigit(prev) && Character.isLetterOrDigit(next));
         break;
       default  :
@@ -235,23 +233,6 @@ public String toString() {
 
     return out;
   }
-
-  /**
-   * Indicates if the character at the specified character is acceptable as
-   * part of a word. To be acceptable, the character need to be a letter
-   * or a digit or a ' (an apostrophe).
-   * @param c The character to evaluates if it can be part of a word
-   * @return true if the character is a letter, digit or a ' (an apostrophe).
-   */
-//  protected boolean isWordChar(char c) {
-//    boolean out = false;
-//
-//    if (Character.isLetterOrDigit(c) || (c == '\'')) {
-//      out = true;
-//    }
-//
-//    return out;
-//  }
 
   /**
    * Ignores or skip over text starting from the index position specified 
