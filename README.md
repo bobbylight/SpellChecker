@@ -8,6 +8,10 @@ the spell check white list.
 This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Indeed, 99% of the code is just
 Jazzy, with changes made for performance, bug fixes, and Java 8 syntax.
 
+This library is built with Java 8.  Using a more recent version of Java will result in compile warnings,
+but the build should still complete.  Cleaning up these warnings is not a priority as long as this library targets
+Java 8.
+
 ## Getting a dictionary file
 While the `SpellingParser` class can take any implementation of the `SpellDictionary` interface,
 typically English users will use one of the `SpellingParser.createEnglishSpellingParser()`
