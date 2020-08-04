@@ -18,9 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.zip.ZipFile;
 
 import javax.swing.UIManager;
@@ -157,6 +155,26 @@ public class SpellingParser extends AbstractParser
 	}
 
 
+    /**
+     * A utility method to easily create a parser for American or British
+     * English.
+     *
+     * @param zip The location of the <code>english_dic.zip</code> file
+     *        distributed with the spell checker add-on.
+     * @param american Whether the parser should be for American (as opposed
+     *        to British) English.
+     * @return The parser.
+     * @throws IOException If an error occurs reading the zip file.
+     * @see #createEnglishSpellingParser(File, boolean, boolean)
+     */
+    public static SpellingParser createEnglishSpellingParser(File zip,
+                                                     boolean american) throws IOException {
+        // Including programming words by default seems counterintuitive, but it's how we always
+        // behaved previously, and this component is typically used in code editors anyway.
+        return createEnglishSpellingParser(zip, american, true);
+    }
+
+
 	/**
 	 * A utility method to easily create a parser for American or British
 	 * English.
@@ -165,11 +183,13 @@ public class SpellingParser extends AbstractParser
 	 *        distributed with the spell checker add-on.
 	 * @param american Whether the parser should be for American (as opposed
 	 *        to British) English.
+     * @param programming Whether to include programming-related words and acronyms.
 	 * @return The parser.
 	 * @throws IOException If an error occurs reading the zip file.
+     * @see #createEnglishSpellingParser(File, boolean)
 	 */
 	public static SpellingParser createEnglishSpellingParser(File zip,
-									boolean american) throws IOException {
+									boolean american, boolean programming) throws IOException {
 
 //		long start = System.currentTimeMillis();
 
@@ -183,17 +203,22 @@ public class SpellingParser extends AbstractParser
 				dict = new SpellDictionaryHashMap(r);
 			}
 
-			String[] others;
+            // Load words specific to the English dialect.
+			List<String> others;
 			if (american) {
-				others = new String[]{"color", "labeled", "center", "ize",
-						"yze"};
+				others = new ArrayList<>(Arrays.asList("color", "labeled", "center", "ize",
+						"yze"));
 			}
 			else { // British
-				others = new String[]{"colour", "labelled", "centre",
-						"ise", "yse"};
+				others = new ArrayList<>(Arrays.asList("colour", "labelled", "centre",
+						"ise", "yse"));
 			}
 
-			// Load words specific to the English dialect.
+			// Miscellaneous
+            if (programming) {
+                others.add("programming");
+            }
+
 			for (String other : others) {
 				in = zf.getInputStream(zf.getEntry(other + ".dic"));
 				try (BufferedReader r = new BufferedReader(new InputStreamReader(in))) {

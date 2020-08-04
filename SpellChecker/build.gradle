@@ -32,6 +32,13 @@ jar {
 	manifest { from sharedManifest }
 }
 
+task createDictionaryZip(type: Zip) {
+    archiveFileName = 'english_dic.zip'
+    destinationDirectory = file('src/main/dist')
+    from 'src/main/dist/english_dic'
+}
+build.dependsOn createDictionaryZip
+
 repositories {
 	mavenCentral()
 }
