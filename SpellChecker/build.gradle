@@ -9,8 +9,8 @@ assert JavaVersion.current().isJava8Compatible()
 archivesBaseName = 'spellchecker'
 
 dependencies {
-    api 'com.fifesoft:rsyntaxtextarea:3.1.1'
-    testImplementation 'junit:junit:4.13'
+    api 'com.fifesoft:rsyntaxtextarea:3.1.2'
+    testImplementation 'junit:junit:4.13.1'
 }
 
 ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
