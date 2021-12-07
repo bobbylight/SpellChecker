@@ -1,63 +1,66 @@
 package org.fife.com.swabunga.spell.event;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 /**
  * Unit tests for the {@code SpellChecker} class.
  */
-public class SpellCheckerTest {
+class SpellCheckerTest {
 
     @Test
-    public void testSplitMixedCaseWord_happyPath_notCamelCaseWord() {
+    void testSplitMixedCaseWord_happyPath_notCamelCaseWord() {
 
         List<String> actual = SpellChecker.splitMixedCaseWord("archer");
-        Assert.assertEquals(1, actual.size());
-        Assert.assertEquals("archer", actual.get(0));
+        Assertions.assertEquals(1, actual.size());
+        Assertions.assertEquals("archer", actual.get(0));
     }
 
     @Test
-    public void testSplitMixedCaseWord_happyPath_allValidWords() {
+    void testSplitMixedCaseWord_happyPath_allValidWords() {
 
         List<String> actual = SpellChecker.splitMixedCaseWord("camelCaseWord");
-        Assert.assertEquals(3, actual.size());
-        Assert.assertEquals("camel", actual.get(0));
-        Assert.assertEquals("Case", actual.get(1));
-        Assert.assertEquals("Word", actual.get(2));
+        Assertions.assertEquals(3, actual.size());
+        Assertions.assertEquals("camel", actual.get(0));
+        Assertions.assertEquals("Case", actual.get(1));
+        Assertions.assertEquals("Word", actual.get(2));
     }
 
     @Test
-    public void testSplitMixedCaseWord_happyPath_oneWordWithAllCaps() {
+    void testSplitMixedCaseWord_happyPath_oneWordWithAllCaps() {
 
         List<String> actual = SpellChecker.splitMixedCaseWord("HTMLValidator");
-        Assert.assertEquals("Unexpected split word count, actual = " + String.join(", ", actual), 2, actual.size());
-        Assert.assertEquals("HTML", actual.get(0));
-        Assert.assertEquals("Validator", actual.get(1));
+        Assertions.assertEquals(2, actual.size(),
+                "Unexpected split word count, actual = " + String.join(", ", actual));
+        Assertions.assertEquals("HTML", actual.get(0));
+        Assertions.assertEquals("Validator", actual.get(1));
     }
 
     @Test
-    public void testSplitMixedCaseWord_happyPath_multipleWordsWithAllCaps() {
+    void testSplitMixedCaseWord_happyPath_multipleWordsWithAllCaps() {
 
         List<String> actual = SpellChecker.splitMixedCaseWord("HTMLToXMLValidator");
-        Assert.assertEquals("Unexpected split word count, actual = " + String.join(", ", actual), 4, actual.size());
-        Assert.assertEquals("HTML", actual.get(0));
-        Assert.assertEquals("To", actual.get(1));
-        Assert.assertEquals("XML", actual.get(2));
-        Assert.assertEquals("Validator", actual.get(3));
+        Assertions.assertEquals(4, actual.size(),
+                "Unexpected split word count, actual = " + String.join(", ", actual));
+        Assertions.assertEquals("HTML", actual.get(0));
+        Assertions.assertEquals("To", actual.get(1));
+        Assertions.assertEquals("XML", actual.get(2));
+        Assertions.assertEquals("Validator", actual.get(3));
     }
 
     @Test
-    public void testSplitMixedCaseWord_happyPath_multipleWordsWithAllCaps2() {
+    void testSplitMixedCaseWord_happyPath_multipleWordsWithAllCaps2() {
 
         List<String> actual = SpellChecker.splitMixedCaseWord("weDONTWantTODoTHIS");
-        Assert.assertEquals("Unexpected split word count, actual = " + String.join(", ", actual), 6, actual.size());
-        Assert.assertEquals("we", actual.get(0));
-        Assert.assertEquals("DONT", actual.get(1));
-        Assert.assertEquals("Want", actual.get(2));
-        Assert.assertEquals("TO", actual.get(3));
-        Assert.assertEquals("Do", actual.get(4));
-        Assert.assertEquals("THIS", actual.get(5));
+        Assertions.assertEquals(6, actual.size(),
+                "Unexpected split word count, actual = " + String.join(", ", actual));
+        Assertions.assertEquals("we", actual.get(0));
+        Assertions.assertEquals("DONT", actual.get(1));
+        Assertions.assertEquals("Want", actual.get(2));
+        Assertions.assertEquals("TO", actual.get(3));
+        Assertions.assertEquals("Do", actual.get(4));
+        Assertions.assertEquals("THIS", actual.get(5));
     }
 }
