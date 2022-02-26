@@ -10,6 +10,7 @@
 package org.fife.ui.rsyntaxtextarea.spell;
 
 import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 
 /**
@@ -49,7 +50,11 @@ public class DefaultSpellCheckableTokenIdentifier
 	 */
 	@Override
 	public boolean isSpellCheckable(Token t) {
-		return t.isComment();
+		// COMMENT_MARKUP represents e.g. Javadoc markup like
+		// "<pre>method()</pre>", thus shouldn't be spellchecked.
+		// MARKUP_COMMENT, however represents comments in markup
+		// languages, and so should be spellchecked.
+		return t.isComment() && TokenTypes.COMMENT_MARKUP != t.getType();
 	}
 
 
