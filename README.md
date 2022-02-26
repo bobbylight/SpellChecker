@@ -1,4 +1,7 @@
 # SpellChecker
+![Build](https://github.com/bobbylight/SpellChecker/actions/workflows/gradle.yml/badge.svg)
+![CodeQL](https://github.com/bobbylight/SpellChecker/actions/workflows/codeql-analysis.yml/badge.svg)
+
 SpellChecker is a spell check add-on for `RSyntaxTextArea`.  For programming languages, it spell-checks text in
 comments, and when editing plain text files, the entire file is spell-checked.  Spelling errors are squiggle-underlined
 in the color of your choosing, and hovering the mouse over a misspelled word displays a tool tip with suggested fixes
