@@ -40,7 +40,7 @@ textArea.addParser(parser);
 See the `SpellCheckerDemo` submodule for a working example.  
 
 Just like Jazzy itself, this add-on is licensed under the LGPL; see the included
-[LICENSE.md](https://github.com/bobbylight/SpellChecker/blob/master/SpellChecker/LICENSE.md) file.
+[LICENSE.md](https://github.com/bobbylight/SpellChecker/blob/master/LICENSE.md) file.
 
 ## Sister Projects
 
