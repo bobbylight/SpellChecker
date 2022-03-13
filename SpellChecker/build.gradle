@@ -9,7 +9,7 @@ assert JavaVersion.current().isJava8Compatible()
 archivesBaseName = 'spellchecker'
 
 dependencies {
-    api 'com.fifesoft:rsyntaxtextarea:3.1.7-SNAPSHOT'
+    api 'com.fifesoft:rsyntaxtextarea:3.2.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
@@ -69,7 +69,7 @@ publishing {
 
                 name = 'SpellChecker'
                 description = 'A simple spell checker add-on for RSyntaxTextArea. It will spell-check comments in source code, or the entire file if you are editing plain text. Spelling errors are squiggle-underlined with the color of your choice, and tooltips are available offering any spelling suggestions.'
-                url = 'http://www.fifesoft.com/rsyntaxtextarea/'
+                url = 'https://github.com/bobbylight/SpellChecker'
                 inceptionYear = '2003'
                 packaging = 'jar'
                 licenses {

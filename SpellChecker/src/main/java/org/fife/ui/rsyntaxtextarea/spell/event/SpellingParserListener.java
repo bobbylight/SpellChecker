@@ -4,7 +4,7 @@
  * SpellingParserListener.java - Listens for events from a spelling parser.
  * 
  * This library is distributed under the LGPL.  See the included
- * SpellChecker.License.txt file for details.
+ * LICENSE.md file for details.
  */
 package org.fife.ui.rsyntaxtextarea.spell.event;
 

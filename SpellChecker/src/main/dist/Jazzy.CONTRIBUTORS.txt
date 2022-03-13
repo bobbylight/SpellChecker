@@ -1,0 +1,20 @@
+Jazzy Spell Checker could not have been possible without the involvment of the 
+following people. 
+
+Thanks!
+
+Author (Initial contributor)
+
+Mindaugas Idzelis (min123 AT gmail DOT com)
+	
+Other contributors 
+
+Ben Galbraith (ben AT galbraiths DOT org)
+Damien Guillaume
+Robert Gustavsson (robert AT lindesign DOT se)
+Jason Height (jheight AT chariot DOT net DOT au)
+Anthony Roy  (ajr AT antroy DOT co DOT uk)
+Stig Tanggaard
+Don Vail
+Matthew Demerath (mdemerat AT umich DOT edu | Matthew AT Demerath DOT com)
+Tony Chan (htchan AT umich DOT edu)
