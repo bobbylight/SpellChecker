@@ -12,6 +12,7 @@ configs
 css
 csv
 ctrl
+def
 dir
 git
 guid
@@ -26,12 +27,17 @@ min
 ol
 printf
 println
+refactor
+refactored
+refactoring
+refactors
 regex
 regexes
 td
 tr
 txt
 ul
+upsert
+upserts
 uuid
 xml
-ptions i
