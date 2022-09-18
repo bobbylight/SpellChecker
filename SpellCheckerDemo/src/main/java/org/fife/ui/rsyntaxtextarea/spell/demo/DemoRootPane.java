@@ -172,7 +172,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			}
 			else {
 				JOptionPane.showMessageDialog(this,
-									"URL clicked:\n" + url.toString());
+									"URL clicked:\n" + url);
 			}
 		}
 	}
