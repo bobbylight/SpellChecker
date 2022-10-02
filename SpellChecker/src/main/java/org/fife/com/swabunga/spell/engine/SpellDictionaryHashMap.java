@@ -250,11 +250,7 @@ public boolean addWord(String word) {
    */
   protected void putWord(String word) {
     String code = getCode(word);
-    List<String> list = mainDictionary.get(code);
-    if (list == null) {
-      list = new ArrayList<>();
-      mainDictionary.put(code, list);
-    }
+    List<String> list = mainDictionary.computeIfAbsent(code, k -> new ArrayList<>());
     list.add(word);
   }
 

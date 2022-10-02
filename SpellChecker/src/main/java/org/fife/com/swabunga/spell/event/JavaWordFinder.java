@@ -22,7 +22,7 @@ package org.fife.com.swabunga.spell.event;
 
 /**
  * A word finder Java source files, which searches text for sequences of 
- * letters formated as Java comments.
+ * letters formatted as Java comments.
  *
  * @author Anthony Roy  (ajr@antroy.co.uk)
  */
@@ -61,7 +61,7 @@ public class JavaWordFinder extends AbstractWordFinder {
    * @throws WordNotFoundException search string contains no more words.
    */
   @Override
-public Word next() {
+  public Word next() {
 
     if (nextWord == null) {
       throw new WordNotFoundException("No more words found.");
@@ -131,9 +131,7 @@ public Word next() {
    */
 
   @Override
-protected void init() {
-//    sentenceIterator = BreakIterator.getSentenceInstance();
-//    sentenceIterator.setText(text);
+  protected void init() {
     super.init();
     inComment = false;
   }

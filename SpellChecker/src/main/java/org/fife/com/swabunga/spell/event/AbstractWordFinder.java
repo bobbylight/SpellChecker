@@ -355,7 +355,7 @@ public String toString() {
   } //}}}
 
   /**
-   * Initializes the sentenseIterator
+   * Initializes the sentenceIterator
    */
   protected void init() {
     sentenceIterator = BreakIterator.getSentenceInstance();

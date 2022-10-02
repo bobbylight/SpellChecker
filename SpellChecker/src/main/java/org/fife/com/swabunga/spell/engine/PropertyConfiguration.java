@@ -50,7 +50,7 @@ public class PropertyConfiguration extends Configuration {
       filename = getClass().getClassLoader().getResource("org/fife/com/swabunga/spell/engine/configuration.properties");
       InputStream in = filename.openStream();
       prop.load(in);
-    } catch (Exception e) {
+    } catch (IOException e) {
       System.err.println("Could not load Properties file :");
       e.printStackTrace();
     }
