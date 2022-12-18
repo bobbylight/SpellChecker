@@ -6,6 +6,7 @@ applet's
 applets
 arg
 args
+backend
 com
 config
 configs
@@ -14,6 +15,9 @@ csv
 ctrl
 def
 dir
+doc
+foo
+frontend
 git
 guid
 hotfix
@@ -21,7 +25,9 @@ hotfixes
 href
 html
 int
+javadoc
 li
+localhost
 microservice
 min
 ol
@@ -34,6 +40,8 @@ refactors
 regex
 regexes
 td
+todo
+toolbar
 tr
 txt
 ul
