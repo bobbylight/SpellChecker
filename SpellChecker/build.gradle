@@ -4,8 +4,6 @@ plugins {
 
 ['base', 'maven-publish', 'signing'].each { apply plugin: it }
 
-assert JavaVersion.current().isJava8Compatible()
-
 base {
     archivesName = 'spellchecker'
 }

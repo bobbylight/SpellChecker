@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.spell.engine;
 
-import java.security.AccessControlException;
 
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * The various settings used to control how a spell checker works are read from here.
@@ -122,13 +122,9 @@ public abstract class Configuration {
    * @return Configuration
    */
   public static final Configuration getConfiguration() {
-  	try {
-  		String config = System.getProperty("jazzy.config"); // added by bd
-  		if (config != null && config.length() > 0)
-  			return getConfiguration(config);
-  	} catch (AccessControlException e) {
-  		e.printStackTrace();
-  	} 
+    String config = System.getProperty("jazzy.config"); // added by bd
+    if (config != null && config.length() > 0)
+        return getConfiguration(config);
     return getConfiguration(null);
   }
 
@@ -143,8 +139,9 @@ public abstract class Configuration {
 
     if (className != null && className.length() > 0) {
       try {
-        result = (Configuration) Class.forName(className).newInstance();
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+        result = (Configuration) Class.forName(className).getDeclaredConstructor().newInstance();
+      } catch (InstantiationException | InvocationTargetException | IllegalAccessException |
+               ClassNotFoundException | NoSuchMethodException e) {
         result = new PropertyConfiguration();
       }
     } else {
