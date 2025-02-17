@@ -11,12 +11,12 @@ allprojects {
     repositories {
         mavenCentral()
         maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots'
+            url = 'https://oss.sonatype.org/content/repositories/snapshots'
         }
     }
 
     wrapper {
-        gradleVersion = '7.6'
+        gradleVersion = '8.12.1'
     }
 
     tasks.withType(Javadoc) {
@@ -29,6 +29,10 @@ subprojects {
     apply plugin: 'java'
 //    apply plugin: 'checkstyle'
 //    apply plugin: 'com.github.spotbugs'
+
+    test {
+        useJUnitPlatform()
+    }
 
 //    checkstyle {
 //        toolVersion = '9.3'
@@ -57,8 +61,8 @@ subprojects {
 //    }
 
     compileJava {
-        sourceCompatibility javaVersion.toString()
-        targetCompatibility javaVersion.toString()
+        sourceCompatibility = javaVersion.toString()
+        targetCompatibility = javaVersion.toString()
         options.debug = true
         options.debugOptions.debugLevel = 'source,vars,lines'
         options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked'

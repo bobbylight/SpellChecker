@@ -1,4 +1,10 @@
-archivesBaseName = 'spellcheckerdemo'
+plugins {
+    id 'base'
+}
+
+base {
+    archivesName = 'spellcheckerdemo'
+}
 
 dependencies {
     implementation project(':SpellChecker')

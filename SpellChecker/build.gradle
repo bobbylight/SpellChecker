@@ -2,35 +2,36 @@ plugins {
     id 'java-library'
 }
 
-['maven-publish', 'signing'].each { apply plugin: it }
+['base', 'maven-publish', 'signing'].each { apply plugin: it }
 
 assert JavaVersion.current().isJava8Compatible()
 
-archivesBaseName = 'spellchecker'
+base {
+    archivesName = 'spellchecker'
+}
 
 dependencies {
     api 'com.fifesoft:rsyntaxtextarea:3.3.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
-
-ext.sharedManifest = manifest {
-	attributes('Class-Path': 'rsyntaxtextarea.jar',
-		'Specification-Title': 'SpellChecker',
-		'Specification-Version': version,
-		'Implementation-Title': 'org.fife.ui',
-		'Implementation-Version': version)
-
-}
 
 java {
     withSourcesJar()
     withJavadocJar()
 }
 jar {
-	manifest { from sharedManifest }
+    manifest {
+        attributes('Class-Path': 'rsyntaxtextarea.jar',
+                'Specification-Title': 'SpellChecker',
+                'Specification-Version': version,
+                'Implementation-Title': 'org.fife.ui',
+                'Implementation-Version': version)
+
+    }
 }
 
 task createDictionaryZip(type: Zip) {
@@ -98,7 +99,7 @@ publishing {
 
 signing {
     // Don't require signing for e.g. ./gradlew install
-    required { gradle.taskGraph.hasTask('publish') && isReleaseVersion }
+    required = { gradle.taskGraph.hasTask('publish') && isReleaseVersion }
     sign publishing.publications.maven
 }
 tasks.withType(Sign) {
