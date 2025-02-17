@@ -264,7 +264,7 @@ public String toString() {
    * original index if the ignore condition could not be met.
    */
   protected int ignore(int index, char startIgnore, char endIgnore) {
-    return ignore(index, new Character(startIgnore), new Character(endIgnore));
+    return ignore(index, Character.valueOf(startIgnore), Character.valueOf(endIgnore));
   }
 
   /**
