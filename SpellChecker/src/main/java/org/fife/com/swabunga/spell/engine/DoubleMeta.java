@@ -291,7 +291,7 @@ public final String transform(String word) {
             current += 2;
             break;
           }
-          if (stringAt(in, current, 2, LIST_19)) {
+          if (stringAt(in, current, 3, LIST_19)) {
             metaphAdd(primary, 'X');
             current += 2;
             break;
@@ -689,9 +689,6 @@ public final String transform(String word) {
     return primary.toString();
   }
 
-  /**
-   * @see org.fife.com.swabunga.spell.engine.Transformator#getReplaceList()
-   */
   @Override
 public char[] getReplaceList() {
     return replaceList;

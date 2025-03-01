@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.spell.engine;
 
-
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +38,13 @@ import org.fife.com.swabunga.util.StringUtility;
  * The <em>match expression</em> describe letters to associate with a syllable.
  * The second group is the <em>replacement expression</em> giving the phonetic
  * equivalent of the <em>match expression</em>.
+ * <p>
+ * More useful links:
+ * <ul>
+ *   <li><a href="https://github.com/dyne/AutOrg/blob/master/spell/aspell-0.60.6.1/manual/aspell.info">
+ *       aspell manual</a></li>
+ *   <li><a href="https://ftp.gnu.org/gnu/aspell/dict/">aspell dictionary repository</a></li>
+ * </ul>
  *
  * @author Robert Gustavsson (robert@lindesign.se)
  * @see SpellDictionaryASpell SpellDictionaryASpell for information on getting phonetic files for aspell.
@@ -75,7 +81,6 @@ public class GenericTransformator implements Transformator {
   public static final String KEYWORD_ALPHBET = "alphabet";
   /**
    * Phonetic file lines starting with the keywords are skipped.
-   * The key words are: version, followup, collapse_result.
    * Comments, starting with '#', are also skipped to the end of line.
    */
   public static final String[] IGNORED_KEYWORDS = {"version", "followup", "collapse_result"};
@@ -172,32 +177,6 @@ public class GenericTransformator implements Transformator {
     return washedArray;
   }
 
-
-  /**
-   * Takes out all single character replacements and put them in a char array.
-   * This array can later be used for adding or changing letters in getSuggestion().
-   *
-   * @return char[] An array of chars with replacements characters
-   */
-  public char[] getCodeReplaceList() {
-    char[] replacements;
-    TransformationRule rule;
-    Vector<String> tmp = new Vector<>();
-
-    if (ruleArray == null)
-      return null;
-      for (Object o : ruleArray) {
-          rule = (TransformationRule)o;
-          if (rule.getReplaceExp().length() == 1)
-              tmp.addElement(rule.getReplaceExp());
-      }
-    replacements = new char[tmp.size()];
-    for (int i = 0; i < tmp.size(); i++) {
-      replacements[i] = tmp.elementAt(i).charAt(0);
-    }
-    return replacements;
-  }
-
   /**
    * Builds up an char array with the chars in the alphabet of the language as it was read from the
    * alphabet tag in the phonetic file.
@@ -218,10 +197,6 @@ public char[] getReplaceList() {
   @Override
 public String transform(String word) {
 
-    if (ruleArray == null)
-      return null;
-
-    TransformationRule rule;
     // robert: Use StringBuilder
     StringBuilder str = new StringBuilder(word.toUpperCase());
     int strLength = str.length();
@@ -239,7 +214,7 @@ public String transform(String word) {
 
         for (Object o : ruleArray) {
             //System.out.println("Testing rule#:"+i);
-            rule = (TransformationRule)o;
+            TransformationRule rule = (TransformationRule)o;
             if (rule.startsWithExp() && startPos > 0)
                 continue;
             if (startPos + rule.lengthOfMatch() > strLength) {
@@ -278,10 +253,10 @@ public String transform(String word) {
   private void buildRule(String str, Vector<TransformationRule> ruleList) {
     if (str.length() < 1)
       return;
-      for (String ignoredKeyword : IGNORED_KEYWORDS) {
-          if (str.startsWith(ignoredKeyword))
-              return;
-      }
+    for (String ignoredKeyword : IGNORED_KEYWORDS) {
+      if (str.startsWith(ignoredKeyword))
+        return;
+    }
 
     // A different alphabet is used for this language, will be read into
     // the alphabetString variable.
@@ -295,7 +270,7 @@ public String transform(String word) {
     }
 
     // str contains two groups of characters separated by white space(s).
-    // The fisrt group is the "match expression". The second group is the
+    // The first group is the "match expression". The second group is the
     // "replacement expression" giving the phonetic equivalent of the
     // "match expression".
     TransformationRule rule = null;

@@ -19,9 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.spell.engine;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 /**
  * This class is based on Levenshtein Distance algorithms, and it calculates how similar two words are. If the words
  * are identical, then the distance is 0. The more that the words have in common, the lower the distance value.
@@ -118,7 +115,7 @@ public final class EditDistance {
       matrix[i][0] = matrix[i - 1][0] + COST_OF_INSERTING_SOURCE_CHARACTER; //initialize the first column
 
     for (j = 1; j != bSize; ++j)
-      matrix[0][j] = matrix[0][j - 1] + COST_OF_DELETING_SOURCE_CHARACTER; //initalize the first row
+      matrix[0][j] = matrix[0][j - 1] + COST_OF_DELETING_SOURCE_CHARACTER; //initialize the first row
 
     for (i = 1; i != aSize; ++i) {
       sourceChar = word.charAt(i-1);
@@ -183,27 +180,29 @@ public final class EditDistance {
     return mi;
   }
 
-  /**
+  /*
    * For testing edit distances.
    *
    * @param args an array of two strings we want to evaluate their distances.
    * @throws java.lang.Exception when problems occurs during reading args.
    */
+  /*
   public static void main(String[] args) throws Exception {
     BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
     //int[][] matrix = new int[0][0];
     while (true) {
 
       String input1 = stdin.readLine();
-      if (input1 == null || input1.length() == 0)
+      if (input1 == null || input1.isEmpty())
         break;
 
       String input2 = stdin.readLine();
-      if (input2 == null || input2.length() == 0)
+      if (input2 == null || input2.isEmpty())
         break;
 
       //System.out.println(EditDistance.getDistance(input1, input2,matrix));
     }
     //System.out.println("done");
   }
+  */
 }

@@ -189,23 +189,6 @@ public class SpellChecker {
 
 
   /**
-   * Checks the text string.
-   * <p>
-   * Returns the corrected string.
-   *
-   * @param text The text that need to be spelled checked
-   * @return The text after spell checking
-   * @deprecated use checkSpelling(WordTokenizer)
-   */
-  @Deprecated
-  public String checkString(String text) {
-    StringWordTokenizer tokens = new StringWordTokenizer(text);
-    checkSpelling(tokens);
-    return tokens.getContext();
-  }
-
-
-  /**
    * Verifies if the word that is being spell checked contains at least a
    * digit.
    * Returns true if this word contains a digit.
@@ -485,13 +468,6 @@ public class SpellChecker {
     //float secs = time/1000f;
     //System.out.println("[DEBUG]: Suggestions for '" + word + "' took " + secs + " seconds");
     return suggestions;
-  }
-
-  /**
-   * Activates a cache with the maximum number of entries set to 300.
-   */
-  public void setCache() {
-    setCache(300);
   }
 
   /**
