@@ -90,7 +90,6 @@ public abstract class AbstractWordFinder implements WordFinder {
    */
   @Override
   public String getText() {
-
     return text;
   }
 
@@ -113,11 +112,9 @@ public abstract class AbstractWordFinder implements WordFinder {
    */
   @Override
   public Word current() {
-
     if (currentWord == null) {
       throw new WordNotFoundException("No Words in current String");
     }
-
     return currentWord;
   }
 
@@ -128,9 +125,7 @@ public abstract class AbstractWordFinder implements WordFinder {
    */
   @Override
   public boolean hasNext() {
-
     return nextWord != null;
-
   }
 
   /**
@@ -171,11 +166,9 @@ public abstract class AbstractWordFinder implements WordFinder {
    */
   @Override
   public boolean startsSentence() {
-
     if (currentWord == null) {
       throw new WordNotFoundException("No Words in current String");
     }
-
     return startsSentence;
   }
 
@@ -187,7 +180,6 @@ public abstract class AbstractWordFinder implements WordFinder {
    */
   @Override
   public String toString() {
-
     return text;
   }
 
@@ -222,7 +214,7 @@ public abstract class AbstractWordFinder implements WordFinder {
    */
   //Added more intelligent character recognition (11 Feb '03)
   protected boolean isWordChar(int posn) {
-    boolean out = false;
+    boolean out;
 
     char curr = text.charAt(posn);
 
@@ -322,58 +314,6 @@ public abstract class AbstractWordFinder implements WordFinder {
 
     return newIndex;
   }
-
-  /**
-   * Ignores or skip over text starting from the index position specified
-   * if it contains the <code>startIgnore</code> string, and until the
-   * <code>endIgnore</code> string is encountered or end of text is
-   * detected.
-   *
-   * @param index The start position in text.
-   * @param startIgnore The string that should be at <code>index</code>
-   *        position to start skipping through.
-   * @param endIgnore   The string which mark the end of skipping through.
-   * @return The index position pointing after the skipped characters or the
-   *         original index if the ignore condition could not be met.
-   */
-  protected int ignore(int index, String startIgnore, String endIgnore) {
-
-    //{{{
-    int newIndex = index;
-    int len = text.length();
-    int slen = startIgnore.length();
-    int elen = endIgnore.length();
-
-    if (!((newIndex + slen) >= len)) {
-      String seg = text.substring(newIndex, newIndex + slen);
-
-      //System.out.println(seg + ":" + seg.length()+ ":" + startIgnore + ":" + slen);
-      if (seg.equals(startIgnore)) {
-        newIndex += slen;
-        cycle:
-        while (true) {
-
-          if (newIndex == (text.length() - elen)) {
-
-            break cycle;
-          }
-
-          String ss = text.substring(newIndex, newIndex + elen);
-
-          if (ss.equals(endIgnore)) {
-            newIndex += elen;
-
-            break cycle;
-          }
-          else {
-            newIndex++;
-          }
-        }
-      }
-    }
-
-    return newIndex;
-  } //}}}
 
   /**
    * Initializes the sentenceIterator.

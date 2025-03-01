@@ -35,137 +35,137 @@ import java.text.BreakIterator;
  */
 public abstract class AbstractWordTokenizer implements WordTokenizer {
 
-  //~ Instance/static variables ...............................................
+    //~ Instance/static variables ...............................................
 
-  /** The word being analyzed. */
-  protected Word currentWord;
-  /** The word finder used to filter out words which are non pertinent to spell checking. */
-  protected WordFinder finder;
-  /** An iterator to work through the sentence. */
-  protected BreakIterator sentenceIterator;
+    /**
+     * The word being analyzed.
+     */
+    protected Word currentWord;
+    /**
+     * The word finder used to filter out words which are non pertinent to spell checking.
+     */
+    protected WordFinder finder;
+    /**
+     * An iterator to work through the sentence.
+     */
+    protected BreakIterator sentenceIterator;
 
-  /** The cumulative word count that have been processed. */
-  protected int wordCount;
+    /**
+     * The cumulative word count that have been processed.
+     */
+    private int wordCount;
 
-  //~ Constructors ............................................................
+    //~ Constructors ............................................................
 
-  /**
-   * Creates a new AbstractWordTokenizer object.
-   *
-   * @param text the text to process.
-   */
-  public AbstractWordTokenizer(String text) {
-    this(new DefaultWordFinder(text));
-  }
-
-  /**
-   * Creates a new AbstractWordTokenizer object.
-   *
-   * @param wf the custom WordFinder to use in searching for words.
-   */
-  public AbstractWordTokenizer(WordFinder wf) {
-    this.finder = wf;
-  }
-
-  //~ Methods .................................................................
-
-  /**
-   * Returns the current number of words that have been processed.
-   *
-   * @return number of words so far iterated.
-   */
-  @Override
-public int getCurrentWordCount() {
-
-    return wordCount;
-  }
-
-  /**
-   * Returns the end of the current word in the text.
-   *
-   * @return index in string of the end of the current word.
-   * @throws WordNotFoundException current word has not yet been set.
-   */
-  @Override
-public int getCurrentWordEnd() {
-
-    if (currentWord == null) {
-      throw new WordNotFoundException("No Words in current String");
+    /**
+     * Creates a new AbstractWordTokenizer object.
+     *
+     * @param text the text to process.
+     */
+    public AbstractWordTokenizer(String text) {
+        this(new DefaultWordFinder(text));
     }
 
-    return currentWord.getEnd();
-  }
-
-  /**
-   * Returns the index of the start of the current word in the text.
-   *
-   * @return index in string of the start of the current word.
-   * @throws WordNotFoundException current word has not yet been set.
-   */
-  @Override
-public int getCurrentWordPosition() {
-
-    if (currentWord == null) {
-      throw new WordNotFoundException("No Words in current String");
+    /**
+     * Creates a new AbstractWordTokenizer object.
+     *
+     * @param wf the custom WordFinder to use in searching for words.
+     */
+    public AbstractWordTokenizer(WordFinder wf) {
+        this.finder = wf;
     }
 
-    return currentWord.getStart();
-  }
+    //~ Methods .................................................................
 
-  /**
-   * Returns true if there are more words that can be processed in the string.
-   *
-   * @return true if there are further words in the text.
-   */
-  @Override
-public boolean hasMoreWords() {
+    /**
+     * Returns the current number of words that have been processed.
+     *
+     * @return number of words so far iterated.
+     */
+    @Override
+    public int getCurrentWordCount() {
+        return wordCount;
+    }
 
-    return finder.hasNext();
-  }
+    /**
+     * Returns the end of the current word in the text.
+     *
+     * @return index in string of the end of the current word.
+     * @throws WordNotFoundException current word has not yet been set.
+     */
+    @Override
+    public int getCurrentWordEnd() {
+        if (currentWord == null) {
+            throw new WordNotFoundException("No Words in current String");
+        }
+        return currentWord.getEnd();
+    }
 
-  /**
-   * Returns searches for the next word in the text, and returns that word.
-   *
-   * @return the string representing the current word.
-   * @throws WordNotFoundException search string contains no more words.
-   */
-  @Override
-public String nextWord() {
-    currentWord = finder.next();
+    /**
+     * Returns the index of the start of the current word in the text.
+     *
+     * @return index in string of the start of the current word.
+     * @throws WordNotFoundException current word has not yet been set.
+     */
+    @Override
+    public int getCurrentWordPosition() {
+        if (currentWord == null) {
+            throw new WordNotFoundException("No Words in current String");
+        }
+        return currentWord.getStart();
+    }
 
-    return currentWord.getText();
-  }
+    /**
+     * Returns whether there are more words that can be processed in the string.
+     *
+     * @return Whether there are further words in the text.
+     */
+    @Override
+    public boolean hasMoreWords() {
+        return finder.hasNext();
+    }
 
-  /**
-   * Replaces the current word token.
-   *
-   * @param newWord replacement word.
-   * @throws WordNotFoundException current word has not yet been set.
-   */
-  @Override
-public abstract void replaceWord(String newWord);
+    /**
+     * Returns searches for the next word in the text, and returns that word.
+     *
+     * @return the string representing the current word.
+     * @throws WordNotFoundException search string contains no more words.
+     */
+    @Override
+    public String nextWord() {
+        currentWord = finder.next();
+        wordCount++;
+        return currentWord.getText();
+    }
 
-  /**
-   * Returns the current text that is being tokenized (includes any changes
-   * that have been made).
-   *
-   * @return the text being tokenized.
-   */
-  @Override
-public String getContext() {
+    /**
+     * Replaces the current word token.
+     *
+     * @param newWord replacement word.
+     * @throws WordNotFoundException current word has not yet been set.
+     */
+    @Override
+    public abstract void replaceWord(String newWord);
 
-    return finder.toString();
-  }
+    /**
+     * Returns the current text that is being tokenized (includes any changes
+     * that have been made).
+     *
+     * @return the text being tokenized.
+     */
+    @Override
+    public String getContext() {
+        return finder.toString();
+    }
 
-  /**
-   * returns true if the current word is at the start of a sentence.
-   *
-   * @return true if the current word starts a sentence.
-   * @throws WordNotFoundException current word has not yet been set.
-   */
-  @Override
-public boolean isNewSentence() {
-
-    return finder.startsSentence();
-  }
+    /**
+     * Returns whether the current word is at the start of a sentence.
+     *
+     * @return Whether the current word starts a sentence.
+     * @throws WordNotFoundException current word has not yet been set.
+     */
+    @Override
+    public boolean isNewSentence() {
+        return finder.startsSentence();
+    }
 }

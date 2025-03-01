@@ -54,8 +54,9 @@ public class XMLWordFinder extends AbstractWordFinder {
   @Override
 public Word next() {
 
-    if (currentWord == null)
-      throw new WordNotFoundException("No more words found.");
+    if (currentWord == null || nextWord == null) {
+        throw new WordNotFoundException("No more words found.");
+    }
 
     currentWord.copy(nextWord);
 
@@ -65,20 +66,19 @@ public Word next() {
     boolean finished = false;
     boolean started = false;
 
-    search:      /* Find words. */
-    while (i < text.length() && !finished) {
+    while (i < text.length()) {
       if (!started && isWordChar(i)) {
         nextWord.setStart(i++);
         started = true;
-        continue search;
+        continue;
       } else if (started) {
         if (isWordChar(i)) {
           i++;
-          continue search;
+          continue;
         } else {
           nextWord.setText(text.substring(nextWord.getStart(), i));
           finished = true;
-          break search;
+          break;
         }
       }
 
