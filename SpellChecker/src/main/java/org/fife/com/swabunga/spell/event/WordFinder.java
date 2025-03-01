@@ -33,6 +33,7 @@ package org.fife.com.swabunga.spell.event;
  *
  * <P>A call to <CODE>next()</CODE> when <CODE>hasMoreWords()</CODE> returns false
  * should throw a <CODE>WordNotFoundException</CODE>.</P>
+ *
  * @author Jason Height (jheight@chariot.net.au)
  */
 
@@ -75,7 +76,7 @@ public interface WordFinder {
 
   /**
    * This method should return the  Word object representing the next word
-   * in the iteration (the first word if next() has not yet been called.)
+   * in the iteration (the first word if next() has not yet been called).
    *
    * @return the next Word in the iteration.
    * @throws WordNotFoundException search string contains no more words.
@@ -93,6 +94,7 @@ public interface WordFinder {
 
   /**
    * Indicates if the current word starts a new sentence.
+   *
    * @return true if the current word starts a new sentence.
    * @throws WordNotFoundException current word has not yet been set.
    */

@@ -54,14 +54,14 @@ import java.util.Vector;
  * @since 0.5
  */
 public class SpellDictionaryDisk extends SpellDictionaryASpell {
-  private final static String DIRECTORY_WORDS = "words";
-  private final static String DIRECTORY_DB = "db";
-  private final static String FILE_CONTENTS = "contents";
-  private final static String FILE_DB = "words.db";
-  private final static String FILE_INDEX = "words.idx";
+  private static final String DIRECTORY_WORDS = "words";
+  private static final String DIRECTORY_DB = "db";
+  private static final String FILE_CONTENTS = "contents";
+  private static final String FILE_DB = "words.db";
+  private static final String FILE_INDEX = "words.idx";
 
   /* maximum number of words an index entry can represent */
-  private final static int INDEX_SIZE_MAX = 200;
+  private static final int INDEX_SIZE_MAX = 200;
 
   private File base;
   private File words;
@@ -73,8 +73,8 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
    */
   protected boolean ready;
 
-  /* used at time of creation of index to speed up determining the number of words per index entry */
-  private List<String> indexCodeCache = null;
+  /* used at time of creation of index to speed up determining the number of words per index entry. */
+  private List<String> indexCodeCache;
 
   /**
    * Construct a spell dictionary on disk.
@@ -107,17 +107,15 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
    * external locking mechanism may be created that handles this scenario gracefully.
    *
    * @param base the base directory in which <code>SpellDictionaryDisk</code> can expect to find
-   * its necessary files.
+   *        its necessary files.
    * @param phonetic the phonetic file used by the spellchecker.
    * @param block if a new word db needs to be created, there can be a considerable delay before
-   * the constructor returns. If block is true, this method will block while the db is created
-   * and return when done. If block is false, this method will create a thread to create the new
-   * dictionary and return immediately.
-   * @throws java.io.FileNotFoundException indicates problems locating the
-   * files on the system
-   * @throws java.io.IOException indicates problems reading the files
+   *        the constructor returns. If block is true, this method will block while the db is created
+   *        and return when done. If block is false, this method will create a thread to create the new
+   *        dictionary and return immediately.
+   * @throws IOException indicates problems reading the files
    */
-  public SpellDictionaryDisk(File base, File phonetic, boolean block) throws FileNotFoundException, IOException {
+  public SpellDictionaryDisk(File base, File phonetic, boolean block) throws IOException {
     super(phonetic);
     this.ready = false;
 
@@ -171,6 +169,7 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
   /**
    * Adds another word to the dictionary. <em>This method is  not yet implemented
    * for this class</em>.
+   *
    * @param word The word to add.
    */
   @Override
@@ -180,6 +179,7 @@ public boolean addWord(String word) {
 
   /**
    * Returns a list of words that have the same phonetic code.
+   *
    * @param code The phonetic code common to the list of words
    * @return A list of words having the same phonetic code
    */
@@ -211,9 +211,9 @@ public List<String> getWords(String code) {
   }
 
 
-// robert: Faster getWords() implementation (buffering and re-using stream,
-// otherwise just micro-optimizations).
-/*
+  // robert: Faster getWords() implementation (buffering and re-using stream,
+  // otherwise just micro-optimizations).
+  /*
   BufferedInputStream input;
   byte[] bytes;
     public List getWords(String code) {
@@ -266,11 +266,12 @@ public List<String> getWords(String code) {
 
       return words;
     }
-*/
+  */
 
   /**
    * Indicates if the initial preparation or loading of the on disk dictionary
    * is complete.
+   *
    * @return the indication that the dictionary initial setup is done.
    */
   public boolean isReady() {
@@ -300,7 +301,7 @@ public List<String> getWords(String code) {
       // means we've definitely got to reindex
       changed = true;
     } else {
-      // check and make sure that all the word files haven't changed on us
+        // check and make sure that all the word files haven't changed on us
         for (File wordFile : wordFiles) {
             FileSize fs = new FileSize(wordFile.getName(), wordFile.length());
             if (!contents.contains(fs)) {
@@ -313,7 +314,7 @@ public List<String> getWords(String code) {
     return changed;
   }
 
-  private File buildSortedFile() throws FileNotFoundException, IOException {
+  private File buildSortedFile() throws IOException {
     List<String> w = new ArrayList<>();
 
     /*
@@ -325,7 +326,7 @@ public List<String> getWords(String code) {
           BufferedReader r = new BufferedReader(new FileReader(wordFile));
           String word;
           while ((word = r.readLine()) != null) {
-              if (!word.equals("")) {
+              if (!"".equals(word)) {
                   w.add(word.trim());
               }
           }
@@ -371,7 +372,7 @@ public List<String> getWords(String code) {
     for (int i = 0; i < codeList.size(); i++) {
       CodeWord cw = codeList.get(i);
       String thisCode = cw.getCode();
-//            if (thisCode.length() > 3) thisCode = thisCode.substring(0, 3);
+      //      if (thisCode.length() > 3) thisCode = thisCode.substring(0, 3);
       thisCode = getIndexCode(thisCode, codeList);
       String toWrite = cw.getCode() + "," + cw.getWord() + "\n";
       byte[] bytes = toWrite.getBytes();
@@ -504,7 +505,7 @@ public List<String> getWords(String code) {
     private String code;
     private String word;
 
-    public CodeWord(String code, String word) {
+    CodeWord(String code, String word) {
       this.code = code;
       this.word = word;
     }
@@ -544,7 +545,7 @@ public List<String> getWords(String code) {
     private String filename;
     private long size;
 
-    public FileSize(String filename, long size) {
+    FileSize(String filename, long size) {
       this.filename = filename;
       this.size = size;
     }

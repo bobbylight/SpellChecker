@@ -1,0 +1,3 @@
+# This is purposely sparse since the original Jazzy source has a lot of inconsistencies.
+[*.java]
+trim_trailing_whitespace = true

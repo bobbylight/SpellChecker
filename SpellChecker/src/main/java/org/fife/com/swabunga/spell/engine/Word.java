@@ -34,6 +34,7 @@ public class Word implements Comparator<Word> {
 
   /**
    * Constructs a new Word.
+   *
    * @param word The text of a word.
    * @param score The word's distance cost
    */
@@ -52,12 +53,12 @@ public class Word implements Comparator<Word> {
 
   /**
    * Compares two words, mostly for the purpose of sorting words.
+   *
    * @param o1 the first word
    * @param o2 the second word
    * @return -1 if the first word is more similar to the misspelled word
-   * <br>1 if the second word is more similar to the misspelled word
-   * <br>0 if both words are equally similar
-   *
+   *         <br>1 if the second word is more similar to the misspelled word
+   *         <br>0 if both words are equally similar
    */
   @Override
   public int compare(Word o1, Word o2) {
@@ -66,6 +67,7 @@ public class Word implements Comparator<Word> {
 
   /**
    * Indicates if this word is equal to another one.
+   *
    * @param o The other word to compare
    * @return The indication of equality
    */
@@ -77,8 +79,9 @@ public class Word implements Comparator<Word> {
   }
 
   /**
-   * gets suggested spelling
-   * @return the actual text of the suggest spelling
+   * Gets suggested spelling.
+   *
+   * @return the actual text of the suggest spelling.
    */
   public String getWord() {
     return word;
@@ -96,7 +99,8 @@ public class Word implements Comparator<Word> {
 
 
   /**
-   * sets suggested spelling
+   * Sets suggested spelling.
+   *
    * @param word The text to set for suggested spelling
    */
   public void setWord(String word) {
@@ -104,7 +108,8 @@ public class Word implements Comparator<Word> {
   }
 
   /**
-   * A cost measures how close a match this word was to the original word
+   * A cost measures how close a match this word was to the original word.
+   *
    * @return 0 if an exact match. Higher numbers are worse matches.
    * @see EditDistance
    */
@@ -113,7 +118,8 @@ public class Word implements Comparator<Word> {
   }
 
   /**
-   * returns the suggested spelling
+   * Returns the suggested spelling.
+   *
    * @return The word's text
    */
   @Override

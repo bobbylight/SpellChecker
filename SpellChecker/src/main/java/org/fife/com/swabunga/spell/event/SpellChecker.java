@@ -46,13 +46,16 @@ import org.fife.com.swabunga.util.VectorUtility;
  * to persist the added word, the user dictionary will have the possibility to
  * grow and be available across different invocations of the spell checker.
  *
- * @author     Jason Height (jheight@chariot.net.au)
- * 19 June 2002
+ * @author Jason Height (jheight@chariot.net.au) 19 June 2002
  */
 public class SpellChecker {
-  /** Flag indicating that the Spell Check completed without any errors present*/
+  /**
+   * Flag indicating that the Spell Check completed without any errors present.
+   */
   public static final int SPELLCHECK_OK = -1;
-  /** Flag indicating that the Spell Check completed due to user cancellation*/
+  /**
+   * Flag indicating that the Spell Check completed due to user cancellation.
+   */
   public static final int SPELLCHECK_CANCEL = -2;
 
   private List<SpellCheckListener> eventListeners = new ArrayList<>();
@@ -61,15 +64,17 @@ public class SpellChecker {
 
   private Configuration config = Configuration.getConfiguration();
 
-  /**This variable holds all of the words that are to be always ignored */
+  /**
+   * This variable holds all of the words that are to be always ignored.
+   */
   private Set<String> ignoredWords = new HashSet<>();
   private Map<String, String> autoReplaceWords = new HashMap<>();
 
   // added caching - bd
   // For cached operation a separate user dictionary is required
   private Map<String, List<Word>> cache;
-  private int threshold = 0;
-  private int cacheSize = 0;
+  private int threshold;
+  private int cacheSize;
 
 
   /**
@@ -86,7 +91,7 @@ public class SpellChecker {
   /**
    * Constructs the SpellChecker. The default threshold is used
    *
-   * @param  dictionary  The dictionary used for looking up words.
+   * @param dictionary The dictionary used for looking up words.
    */
   public SpellChecker(SpellDictionary dictionary) {
     this();
@@ -95,11 +100,11 @@ public class SpellChecker {
 
 
   /**
-   * Constructs the SpellChecker with a threshold
+   * Constructs the SpellChecker with a threshold.
    *
-   * @param  dictionary  the dictionary used for looking up words.
-   * @param  threshold   the cost value above which any suggestions are
-   *                     thrown away
+   * @param dictionary the dictionary used for looking up words.
+   * @param threshold  the cost value above which any suggestions are
+   *           thrown away
    */
   public SpellChecker(SpellDictionary dictionary, int threshold) {
     this(dictionary);
@@ -124,7 +129,7 @@ public class SpellChecker {
    * Registers the user dictionary to which words are added.
    *
    * @param dictionary the dictionary to use when the user specify a new word
-   * to add.
+   *           to add.
    */
   public void setUserDictionary(SpellDictionary dictionary) {
     userdictionary = dictionary;
@@ -143,7 +148,7 @@ public class SpellChecker {
   /**
    * Adds a SpellCheckListener to the listeners list.
    *
-   * @param  listener  The feature to be added to the SpellCheckListener attribute
+   * @param listener The feature to be added to the SpellCheckListener attribute
    */
   public void addSpellCheckListener(SpellCheckListener listener) {
     eventListeners.add(listener);
@@ -153,7 +158,7 @@ public class SpellChecker {
   /**
    * Removes a SpellCheckListener from the listeners list.
    *
-   * @param  listener  The listener to be removed from the listeners list.
+   * @param listener The listener to be removed from the listeners list.
    */
   public void removeSpellCheckListener(SpellCheckListener listener) {
     eventListeners.remove(listener);
@@ -163,8 +168,8 @@ public class SpellChecker {
   /**
    * Fires off a spell check event to the listeners.
    *
-   * @param  event  The event that need to be processed by the spell checking
-   * system.
+   * @param event The event that need to be processed by the spell checking
+   *        system.
    */
   protected void fireSpellCheckEvent(SpellCheckEvent event) {
     for (int i = eventListeners.size() - 1; i >= 0; i--) {
@@ -175,7 +180,7 @@ public class SpellChecker {
 
   /**
    * This method clears the words that are currently being remembered as
-   *  <code>Ignore All</code> words and <code>Replace All</code> words.
+   * <code>Ignore All</code> words and <code>Replace All</code> words.
    */
   public void reset() {
     ignoredWords.clear();
@@ -185,12 +190,12 @@ public class SpellChecker {
 
   /**
    * Checks the text string.
-   *  <p>
-   *  Returns the corrected string.
+   * <p>
+   * Returns the corrected string.
    *
-   * @param  text   The text that need to be spelled checked
-   * @return        The text after spell checking
-   * @deprecated    use checkSpelling(WordTokenizer)
+   * @param text The text that need to be spelled checked
+   * @return The text after spell checking
+   * @deprecated use checkSpelling(WordTokenizer)
    */
   @Deprecated
   public String checkString(String text) {
@@ -205,10 +210,10 @@ public class SpellChecker {
    * digit.
    * Returns true if this word contains a digit.
    *
-   * @param  word  The word to analyze for digit.
-   * @return       true if the word contains at least a digit.
+   * @param word The word to analyze for digit.
+   * @return true if the word contains at least a digit.
    */
-  private final static boolean isDigitWord(CharSequence word) {
+  private static boolean isDigitWord(CharSequence word) {
     for (int i = word.length() - 1; i >= 0; i--) {
       if (Character.isDigit(word.charAt(i))) {
         return true;
@@ -229,69 +234,67 @@ public class SpellChecker {
    * <li>ftps://</li>
    * <li>www.</li>
    * </ul>
-   *
+   * <p>
    * One limitation is that this method cannot currently recognize email
    * addresses. Since the 'word' that is passed in, may in fact contain
    * the rest of the document to be checked, it is not (yet!) a good
    * idea to scan for the @ character.
    *
-   * @param  word  The word to analyze for an Internet address.
-   * @return       true if this word looks like an Internet address.
+   * @param word The word to analyze for an Internet address.
+   * @return true if this word looks like an Internet address.
    * @see #isINETWord(String)
    */
-  /*
-   * robert: In standard Jazzy distributions, this is "isINETWord(String)".
-   */
-    public final static boolean beginsAsINETWord(String word) {
-    	// robert: Since "word" may be the entire rest of the document (line), we'll try
-    	// to micro-optimize a little here and just get the smallest lower-case String
-    	// we need.
-        //String lowerCaseWord = word.toLowerCase();
-    	int last = Math.min(8, word.length());
-    	String lowerCaseWord = word.substring(0, last);
-        return lowerCaseWord.startsWith("http://") ||
-              lowerCaseWord.startsWith("www.") ||
-              lowerCaseWord.startsWith("ftp://") ||
-              lowerCaseWord.startsWith("https://") ||
-              lowerCaseWord.startsWith("ftps://");
+  public static boolean beginsAsINETWord(String word) {
+    // robert: In standard Jazzy distributions, this is "isINETWord(String)".
+    // robert: Since "word" may be the entire rest of the document (line), we'll try
+    // to micro-optimize a little here and just get the smallest lower-case String
+    // we need.
+    //String lowerCaseWord = word.toLowerCase();
+    int last = Math.min(8, word.length());
+    String lowerCaseWord = word.substring(0, last);
+    return lowerCaseWord.startsWith("http://") ||
+        lowerCaseWord.startsWith("www.") ||
+        lowerCaseWord.startsWith("ftp://") ||
+        lowerCaseWord.startsWith("https://") ||
+        lowerCaseWord.startsWith("ftps://");
   }
 
 
-    /**
-     * Checks if the word that is being spell checked contains an Internet
-     * address. This method look for typical protocol or the habitual string
-     * in the word:
-     * <ul>
-     * <li>http://</li>
-     * <li>ftp://</li>
-     * <li>https://</li>
-     * <li>ftps://</li>
-     * <li>www.</li>
-     * <li>anything@anythingelse</li>
-     * </ul>
-     *
-     * It is assumed that <code>word</code> is just the word to scan, without
-     * any trailing characters.  This is different from the standard Jazzy
-     * distribution's implementation (which has been renamed to
-     * <code>beginsAsINETWord(String)</code>).
-     *
-     * @param  word  The word to analyze for an Internet address.
-     * @return       true if this word looks like an Internet address.
-     * @see #beginsAsINETWord(String)
-     */
-    public static final boolean isINETWord(String word) {
-    	return beginsAsINETWord(word) || word.indexOf('@')>0;
-    }
+  /**
+   * Checks if the word that is being spell checked contains an Internet
+   * address. This method look for typical protocol or the habitual string
+   * in the word:
+   * <ul>
+   * <li>http://</li>
+   * <li>ftp://</li>
+   * <li>https://</li>
+   * <li>ftps://</li>
+   * <li>www.</li>
+   * <li>anything@anythingelse</li>
+   * </ul>
+   * <p>
+   * It is assumed that <code>word</code> is just the word to scan, without
+   * any trailing characters.  This is different from the standard Jazzy
+   * distribution's implementation (which has been renamed to
+   * <code>beginsAsINETWord(String)</code>).
+   *
+   * @param word The word to analyze for an Internet address.
+   * @return true if this word looks like an Internet address.
+   * @see #beginsAsINETWord(String)
+   */
+  public static final boolean isINETWord(String word) {
+    return beginsAsINETWord(word) || word.indexOf('@') > 0;
+  }
 
 
   /**
    * Verifies if the word that is being spell checked contains all
    * upper-cases characters.
    *
-   * @param  word  The word to analyze for upper-cases characters
-   * @return       true if this word contains all upper case characters
+   * @param word The word to analyze for upper-cases characters
+   * @return true if this word contains all upper case characters
    */
-  private final static boolean isUpperCaseWord(CharSequence word) {
+  private static boolean isUpperCaseWord(CharSequence word) {
     for (int i = word.length() - 1; i >= 0; i--) {
       if (Character.isLowerCase(word.charAt(i))) {
         return false;
@@ -306,11 +309,11 @@ public class SpellChecker {
    * upper cased characters. Note that a phrase beginning with an upper cased
    * character is not considered a mixed case word.
    *
-   * @param  word  The word to analyze for mixed cases characters
+   * @param word       The word to analyze for mixed cases characters
    * @param startsSentence True if this word is at the start of a sentence
-   * @return       true if this word contains mixed case characters
+   * @return true if this word contains mixed case characters
    */
-  private final static boolean isMixedCaseWord(CharSequence word, boolean startsSentence) {
+  private static boolean isMixedCaseWord(CharSequence word, boolean startsSentence) {
     int strLen = word.length();
     boolean isUpper = Character.isUpperCase(word.charAt(0));
     //Ignore the first character if this word starts the sentence and the first
@@ -323,7 +326,8 @@ public class SpellChecker {
           return true;
         }
       }
-    } else {
+    }
+    else {
       for (int i = word.length() - 1; i > 0; i--) {
         if (Character.isUpperCase(word.charAt(i))) {
           return true;
@@ -336,11 +340,12 @@ public class SpellChecker {
 
   /**
    * This method will fire the spell check event and then handle the event
-   *  action that has been selected by the user.
+   * action that has been selected by the user.
    *
-   * @param  tokenizer        Description of the Parameter
-   * @param  event            The event to handle
-   * @return                  Returns true if the event action is to cancel the current spell checking, false if the spell checking should continue
+   * @param tokenizer Description of the Parameter
+   * @param event   The event to handle
+   * @return Returns true if the event action is to cancel the current spell checking, false if the spell checking
+   *         should continue
    */
   protected boolean fireAndHandleEvent(WordTokenizer tokenizer, SpellCheckEvent event) {
     fireSpellCheckEvent(event);
@@ -378,31 +383,35 @@ public class SpellChecker {
   }
 
   /**
-   * Adds a word to the list of ignored words
+   * Adds a word to the list of ignored words.
+   *
    * @param word The text of the word to ignore
    */
   public void ignoreAll(String word) {
-	  ignoredWords.add(word);
+    ignoredWords.add(word);
   }
 
   /**
-   * Adds a word to the user dictionary
+   * Adds a word to the user dictionary.
+   *
    * @param word The text of the word to add
    * @return Whether the word was successfully added
    */
   public boolean addToDictionary(String word) {
-	  if (!userdictionary.isCorrect(word)) {
-		  return userdictionary.addWord(word);
-	  }
-	  return false;
+    if (!userdictionary.isCorrect(word)) {
+      return userdictionary.addWord(word);
+    }
+    return false;
   }
 
   /**
-   * Indicates if a word is in the list of ignored words
+   * Indicates if a word is in the list of ignored words.
+   *
    * @param word The text of the word check
+   * @return Whether the word is ignored.
    */
-  public boolean isIgnored(String word){
-  	return ignoredWords.contains(word);
+  public boolean isIgnored(String word) {
+    return ignoredWords.contains(word);
   }
 
   /**
@@ -438,65 +447,72 @@ public class SpellChecker {
    * {@link SpellChecker#addDictionary}</li>
    * </ul>
    *
-   * @param word The word for which we want to gather suggestions
+   * @param word    The word for which we want to gather suggestions
    * @param threshold the cost value above which any suggestions are
-   *                  thrown away
+   *          thrown away
    * @return the list of words suggested
    */
   public List<Word> getSuggestions(String word, int threshold) {
-//long start = System.currentTimeMillis();
-	  if (this.threshold != threshold && cache != null) {
-       this.threshold = threshold;
-       cache.clear();
+    //long start = System.currentTimeMillis();
+    if (this.threshold != threshold && cache != null) {
+      this.threshold = threshold;
+      cache.clear();
     }
 
     List<Word> suggestions = null;
 
     if (cache != null)
-       suggestions = cache.get(word);
+      suggestions = cache.get(word);
 
     if (suggestions == null) {
-       suggestions = new ArrayList<>();
+      suggestions = new ArrayList<>();
 
-       for (SpellDictionary dictionary : dictionaries) {
-           if (dictionary != userdictionary)
-              VectorUtility.addAll(suggestions, dictionary.getSuggestions(word, threshold), false);
-       }
+      for (SpellDictionary dictionary : dictionaries) {
+        if (dictionary != userdictionary)
+          VectorUtility.addAll(suggestions, dictionary.getSuggestions(word, threshold), false);
+      }
 
-       if (cache != null && cache.size() < cacheSize)
-         cache.put(word, suggestions);
+      if (cache != null && cache.size() < cacheSize)
+        cache.put(word, suggestions);
     }
 
     VectorUtility.addAll(suggestions, userdictionary.getSuggestions(word, threshold), false);
     if (suggestions instanceof ArrayList) {
-    	((ArrayList<Word>)suggestions).trimToSize();
+      ((ArrayList<Word>)suggestions).trimToSize();
     }
 
-//long time = System.currentTimeMillis() - start;
-//float secs = time/1000f;
-//System.out.println("[DEBUG]: Suggestions for '" + word + "' took " + secs + " seconds");
+    //long time = System.currentTimeMillis() - start;
+    //float secs = time/1000f;
+    //System.out.println("[DEBUG]: Suggestions for '" + word + "' took " + secs + " seconds");
     return suggestions;
   }
 
   /**
-  * Activates a cache with the maximum number of entries set to 300
-  */
+   * Activates a cache with the maximum number of entries set to 300.
+   */
   public void setCache() {
     setCache(300);
   }
 
   /**
-  * Activates a cache with specified size
-  * @param size - max. number of cache entries (0 to disable cache)
-  */
+   * Activates a cache with specified size.
+   *
+   * @param size - max. number of cache entries (0 to disable cache)
+   */
   public void setCache(int size) {
     cacheSize = size;
     if (size == 0)
       cache = null;
-   else
-     cache = new HashMap<>((size + 2) / 3 * 4);
+    else
+      cache = new HashMap<>((size + 2) / 3 * 4);
   }
 
+  /**
+   * Does something.
+   *
+   * @param mixedCaseWord The word to split.
+   * @return The split result.
+   */
   public static List<String> splitMixedCaseWord(String mixedCaseWord) {
 
     List<String> parts = new ArrayList<>();
@@ -540,15 +556,15 @@ public class SpellChecker {
    * For each invalid word the action listeners will be informed with a new
    * SpellCheckEvent.<p>
    *
-   * @param  tokenizer  The media containing the text to analyze.
+   * @param tokenizer The media containing the text to analyze.
    * @return Either SPELLCHECK_OK, SPELLCHECK_CANCEL or the number of errors found. The number of errors are those that
-   * are found BEFORE any corrections are made.
+   *         are found BEFORE any corrections are made.
    */
   public final int checkSpelling(WordTokenizer tokenizer) {
     int errors = 0;
     boolean terminated = false;
     //Keep track of the previous word
-//    String previousWord = null;
+    //  String previousWord = null;
     while (tokenizer.hasMoreWords() && !terminated) {
       String word = tokenizer.nextWord();
       //Check the spelling of the word
@@ -567,15 +583,15 @@ public class SpellChecker {
 
             // Ignore mixed-case word parts, if necessary
             if (!config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) || !isUpperCaseWord(part)) {
-                String partLower = part.toLowerCase();
-                if (!isCorrect(partLower) && !isIgnored(partLower)) {
-                    int wordOffs = tokenizer.getCurrentWordPosition() + offs;
-                    SpellCheckEvent event = new BasicSpellCheckEvent(part, null, wordOffs);
-                    terminated = fireAndHandleEvent(tokenizer, event);
-                    if (terminated) {
-                        break;
-                    }
+              String partLower = part.toLowerCase();
+              if (!isCorrect(partLower) && !isIgnored(partLower)) {
+                int wordOffs = tokenizer.getCurrentWordPosition() + offs;
+                SpellCheckEvent event = new BasicSpellCheckEvent(part, null, wordOffs);
+                terminated = fireAndHandleEvent(tokenizer, event);
+                if (terminated) {
+                  break;
                 }
+              }
             }
 
             offs += part.length();
@@ -583,12 +599,13 @@ public class SpellChecker {
         }
         else if ((config.getBoolean(Configuration.SPELL_IGNOREMIXEDCASE) && isMixedCaseWord) ||
             (config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) && isUpperCaseWord(word)) ||
-            (config.getBoolean(Configuration.SPELL_IGNORESINGLELETTERS) && word.length()==1) ||
+            (config.getBoolean(Configuration.SPELL_IGNORESINGLELETTERS) && word.length() == 1) ||
             (config.getBoolean(Configuration.SPELL_IGNOREDIGITWORDS) && isDigitWord(word)) ||
             (config.getBoolean(Configuration.SPELL_IGNOREINTERNETADDRESSES) && isINETWord(word))) {
           //Null event. Since we are ignoring this word due
           //to one of the above cases.
-        } else {
+        }
+        else {
           //We can't ignore this misspelled word
           //For this invalid word are we ignoring the misspelling?
           if (!isIgnored(word)) {
@@ -596,18 +613,20 @@ public class SpellChecker {
             //Is this word being automagically replaced
             if (autoReplaceWords.containsKey(word)) {
               tokenizer.replaceWord(autoReplaceWords.get(word));
-            } else {
-				// robert: Don't calculate suggestions until mouseover for speed.
-				List<org.fife.com.swabunga.spell.event.Word> suggestions = null;
+            }
+            else {
+              // robert: Don't calculate suggestions until mouseover for speed.
+              List<org.fife.com.swabunga.spell.event.Word> suggestions = null;
               SpellCheckEvent event = new BasicSpellCheckEvent(word, suggestions, tokenizer);
               terminated = fireAndHandleEvent(tokenizer, event);
             }
           }
         }
-      } else {
+      }
+      else {
         //This is a correctly spelled word. However perform some extra checks
         /*
-         *  JMH TBD          //Check for multiple words
+         *  JMH TBD      //Check for multiple words
          *  if (!ignoreMultipleWords &&) {
          *  }
          */
@@ -635,17 +654,17 @@ public class SpellChecker {
 
 
   private static boolean isAllUpperCase(String word) {
-      for (int i = 0; i < word.length(); i++) {
-          if (!Character.isUpperCase(word.charAt(i))) {
-              return false;
-          }
+    for (int i = 0; i < word.length(); i++) {
+      if (!Character.isUpperCase(word.charAt(i))) {
+        return false;
       }
-      return true;
+    }
+    return true;
   }
 
-   private boolean isSupposedToBeCapitalized(String word, WordTokenizer wordTokenizer) {
-     boolean configCapitalize = !config.getBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION);
-     return configCapitalize && wordTokenizer.isNewSentence() && Character.isLowerCase(word.charAt(0));
+  private boolean isSupposedToBeCapitalized(String word, WordTokenizer wordTokenizer) {
+    boolean configCapitalize = !config.getBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION);
+    return configCapitalize && wordTokenizer.isNewSentence() && Character.isLowerCase(word.charAt(0));
   }
 
 

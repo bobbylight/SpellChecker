@@ -21,7 +21,6 @@ package org.fife.com.swabunga.spell.engine;
 
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.LinkedList;
@@ -41,94 +40,84 @@ import java.util.List;
  */
 public class SpellDictionaryDichoDisk extends SpellDictionaryASpell {
 
-  /** Holds the dictionary file for reading*/
-  private RandomAccessFile dictFile = null;
+  /** Holds the dictionary file for reading. */
+  private RandomAccessFile dictFile;
 
-  /** dictionary and phonetic file encoding */
-  private String encoding = null;
+  /** dictionary and phonetic file encoding. */
+  private String encoding;
 
   /**
    * Dictionary convenience Constructor.
+   *
    * @param wordList The file containing the words list for the dictionary
-   * @throws java.io.FileNotFoundException indicates problems locating the
-   * words list file on the system
-   * @throws java.io.IOException indicates problems reading the words list
-   * file
+   * @throws IOException indicates problems reading the words list file.
    */
-  public SpellDictionaryDichoDisk(File wordList)
-    throws FileNotFoundException, IOException {
+  public SpellDictionaryDichoDisk(File wordList) throws IOException {
     super((File) null);
     dictFile = new RandomAccessFile(wordList, "r");
   }
 
   /**
    * Dictionary convenience Constructor.
+   *
    * @param wordList The file containing the words list for the dictionary
    * @param encoding Uses the character set encoding specified
-   * @throws java.io.FileNotFoundException indicates problems locating the
-   * words list file on the system
-   * @throws java.io.IOException indicates problems reading the words list
-   * file
+   * @throws IOException indicates problems reading the words list file.
    */
-  public SpellDictionaryDichoDisk(File wordList, String encoding)
-    throws FileNotFoundException, IOException {
+  public SpellDictionaryDichoDisk(File wordList, String encoding) throws IOException {
     super((File) null);
     this.encoding = encoding;
     dictFile = new RandomAccessFile(wordList, "r");
   }
 
   /**
-  * Dictionary constructor that uses an aspell phonetic file to
-  * build the transformation table.
-  * @param wordList The file containing the words list for the dictionary
-  * @param phonetic The file to use for phonetic transformation of the
-  * wordlist.
-  * @throws java.io.FileNotFoundException indicates problems locating the
-  * file on the system
-  * @throws java.io.IOException indicates problems reading the words list
-  * file
-  */
-  public SpellDictionaryDichoDisk(File wordList, File phonetic)
-    throws FileNotFoundException, IOException {
+   * Dictionary constructor that uses an aspell phonetic file to
+   * build the transformation table.
+   *
+   * @param wordList The file containing the words list for the dictionary
+   * @param phonetic The file to use for phonetic transformation of the
+   *        wordlist.
+   * @throws IOException indicates problems reading the words list file.
+   */
+  public SpellDictionaryDichoDisk(File wordList, File phonetic) throws IOException {
     super(phonetic);
     dictFile = new RandomAccessFile(wordList, "r");
   }
 
   /**
-  * Dictionary constructor that uses an aspell phonetic file to
-  * build the transformation table.
-  * @param wordList The file containing the words list for the dictionary
-  * @param phonetic The file to use for phonetic transformation of the
-  * wordlist.
-  * @param encoding Uses the character set encoding specified
-  * @throws java.io.FileNotFoundException indicates problems locating the
-  * file on the system
-  * @throws java.io.IOException indicates problems reading the words list
-  * file
-  */
+   * Dictionary constructor that uses an aspell phonetic file to
+   * build the transformation table.
+   *
+   * @param wordList The file containing the words list for the dictionary
+   * @param phonetic The file to use for phonetic transformation of the
+   *        wordlist.
+   * @param encoding Uses the character set encoding specified
+   * @throws IOException indicates problems reading the words list file.
+   */
   public SpellDictionaryDichoDisk(File wordList, File phonetic, String encoding)
-    throws FileNotFoundException, IOException {
+    throws IOException {
     super(phonetic, encoding);
     this.encoding = encoding;
     dictFile = new RandomAccessFile(wordList, "r");
   }
 
   /**
-   * Add a word permanently to the dictionary (and the dictionary file).
-   * <i>not implemented !</i>
+   * Add a word permanently to the dictionary (and the dictionary file).<p>
+   * <i>This method is not implemented !</i>
+   *
    * @param word The word to add.
+   * @return Whether the word was added (always {@code false}).
    */
   @Override
-public boolean addWord(String word) {
-    System.err.println("error: addWord is not implemented for SpellDictionaryDichoDisk");
+  public boolean addWord(String word) {
     return false;
   }
 
   /**
-    * Search the dictionary file for the words corresponding to the code
-    * within positions p1 - p2
-    */
-   private LinkedList<String> dichoFind(String code, long p1, long p2) throws IOException {
+   * Search the dictionary file for the words corresponding to the code
+   * within positions p1 - p2.
+   */
+  private LinkedList<String> dichoFind(String code, long p1, long p2) throws IOException {
      //System.out.println("dichoFind("+code+","+p1+","+p2+")");
      long pm = (p1 + p2) / 2;
     dictFile.seek(pm);
@@ -187,8 +176,8 @@ public boolean addWord(String word) {
    }
 
    /**
-     * Read a line of dictFile with a specific encoding
-     */
+    * Read a line of dictFile with a specific encoding.
+    */
    private String dictReadLine() throws IOException {
      int max = 255;
      byte b=0;
@@ -209,22 +198,22 @@ public boolean addWord(String word) {
 
   /**
    * Returns a list of strings (words) for the code.
+   *
    * @param code The phonetic code common to the list of words
    * @return A list of words having the same phonetic code
    */
   @Override
   public List<String> getWords(String code) {
-     //System.out.println("getWords("+code+")");
+    //System.out.println("getWords("+code+")");
     LinkedList<String> list;
     try {
       list = dichoFind(code, 0, dictFile.length()-1);
       //System.out.println(list);
     } catch (IOException ex) {
-      System.err.println("IOException: " + ex.getMessage());
+      ex.printStackTrace();
       list = new LinkedList<>();
     }
     return list;
   }
 
 }
-

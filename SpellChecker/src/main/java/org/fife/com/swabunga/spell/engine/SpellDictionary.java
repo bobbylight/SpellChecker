@@ -30,6 +30,7 @@ public interface SpellDictionary {
 
   /**
    * Add a word permanently to the dictionary.
+   *
    * @param word The word to add to the dictionary
    * @return Whether the word was successfully added.
    */
@@ -37,6 +38,7 @@ public interface SpellDictionary {
 
   /**
    * Evaluates if the word is correctly spelled against the dictionary.
+   *
    * @param word The word to verify if it's spelling is OK.
    * @return Indicates if the word is present in the dictionary.
    */
@@ -56,13 +58,12 @@ public interface SpellDictionary {
    * If you set the threshold value too low, you may get no suggestions for a given word.
    * <p>
    * This method is only needed to provide backward compatibility.
-   * @see #getSuggestions(String, int, int[][])
    *
    * @param sourceWord the string that we want to get a list of spelling suggestions for
    * @param scoreThreshold Any words that have score less than this number are returned.
    * @return List a List of suggested words
    * @see org.fife.com.swabunga.spell.engine.Word
-   *
+   * @see #getSuggestions(String, int, int[][])
    */
   List<Word> getSuggestions(String sourceWord, int scoreThreshold);
 
@@ -79,10 +80,11 @@ public interface SpellDictionary {
    * an appropriately low threshold value.
    * If you set the threshold value too low, you may get no suggestions for a given word.
    * <p>
+   *
    * @param sourceWord the string that we want to get a list of spelling suggestions for
    * @param scoreThreshold Any words that have score less than this number are returned.
    * @param matrix Two dimensional int array used to calculate edit distance. Allocating
-   * this memory outside of the function will greatly improve efficiency.
+   *        this memory outside of the function will greatly improve efficiency.
    * @return List a List of suggested words
    * @see org.fife.com.swabunga.spell.engine.Word
    */
