@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
 }
 
-['base', 'maven-publish', 'signing'].each { apply plugin: it }
+['base', 'jacoco', 'maven-publish', 'signing'].each { apply plugin: it }
 
 base {
     archivesName = 'spellchecker'
@@ -16,6 +16,13 @@ dependencies {
 }
 
 ext.isReleaseVersion = !project.version.endsWith('SNAPSHOT')
+
+jacocoTestReport {
+    reports {
+        xml.required = true // codecov depends on xml format report
+        html.required = true
+    }
+}
 
 java {
     withSourcesJar()
