@@ -68,7 +68,7 @@ jobs:
       # Note: Assumes we're running on Ubuntu
       # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md
     - name: Build with Gradle
-      run: xvfb-run ./gradlew build -xsign -xpublish --warning-mode all
+      run: xvfb-run ./gradlew build jacocoTestReport -xsign -xpublish --warning-mode all
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
