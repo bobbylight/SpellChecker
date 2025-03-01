@@ -2,7 +2,7 @@
  * 08/29/2009
  *
  * SpellingParserEvent.java - An event fired by the spelling parser.
- * 
+ *
  * This library is distributed under the LGPL.  See the included
  * LICENSE.md file for details.
  */

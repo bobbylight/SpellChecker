@@ -21,14 +21,10 @@ package org.fife.com.swabunga.spell.engine;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * The SpellDictionary class holds the instance of the dictionary.
@@ -46,57 +42,45 @@ import java.util.Vector;
  */
 public class GenericSpellDictionary extends SpellDictionaryASpell {
 
-//tech_monkey: the alphabet / replace list stuff has been moved into the Transformator classes,
-//since they are so closely tied to how the phonetic transformations are done.
-//    /**
-//     * This replace list is used if no phonetic file is supplied or it doesn't
-//     * contain the alphabet.
-//     */
-//    protected static final char[] englishAlphabet =
-
-
-  /** A field indicating the initial hash map capacity (16KB) for the main
-   *  dictionary hash map. Interested to see what the performance of a
-   *  smaller initial capacity is like.
+  /**
+   * A field indicating the initial hash map capacity (16KB) for the main
+   * dictionary hash map. Interested to see what the performance of a
+   * smaller initial capacity is like.
    */
-  private final static int INITIAL_CAPACITY = 16 * 1024;
+  private static final int INITIAL_CAPACITY = 16 * 1024;
 
   /**
    * The hashmap that contains the word dictionary. The map is hashed on the doublemeta
    * code. The map entry contains a LinkedList of words that have the same double meta code.
    */
-  protected HashMap<String, LinkedList<String>> mainDictionary = new HashMap<>(INITIAL_CAPACITY);
+  private Map<String, LinkedList<String>> mainDictionary = new HashMap<>(INITIAL_CAPACITY);
 
-  /** Holds the dictionary file for appending*/
-  private File dictFile = null;
+  /** Holds the dictionary file for appending. */
+  private File dictFile;
 
 
   /**
    * Dictionary constructor that uses the DoubleMeta class with the
    * English alphabet.
+   *
    * @param wordList The file containing dictionary as a words list.
-   * @throws java.io.FileNotFoundException when the words list file could not
-   * be located on the system.
-   * @throws java.io.IOException when problems occurs while reading the words
-   * list file
+   * @throws IOException when problems occurs while reading the words list file.
    */
-  public GenericSpellDictionary(File wordList) throws FileNotFoundException, IOException {
+  public GenericSpellDictionary(File wordList) throws IOException {
     this(wordList, null);
   }
 
   /**
    * Dictionary constructor that uses an aspell phonetic file to
    * build the transformation table.
-   * If phonetic is null, then DoubleMeta is used with the English alphabet
+   * If phonetic is null, then DoubleMeta is used with the English alphabet.
+   *
    * @param wordList The file containing dictionary as a words list.
-   * @param phonetic The file containing the phonetic transformation
-   * information.
-   * @throws java.io.FileNotFoundException when the words list or phonetic
-   * file could not be located on the system
-   * @throws java.io.IOException when problems occurs while reading the
-   * words list or phonetic file
+   * @param phonetic The file containing the phonetic transformation information.
+   * @throws IOException when problems occurs while reading the
+   *         words list or phonetic file
    */
-  public GenericSpellDictionary(File wordList, File phonetic) throws FileNotFoundException, IOException {
+  public GenericSpellDictionary(File wordList, File phonetic) throws IOException {
 
     super(phonetic);
     dictFile = wordList;
@@ -107,6 +91,7 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
   /**
    * Add a word permanently to the dictionary (and the dictionary file).
    * <p>This needs to be made thread safe (synchronized)</p>
+   *
    * @param word The word to add to the dictionary
    * @return Whether the word was successfully added.
    */
@@ -121,7 +106,6 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
 	      w.write("\n");
 	      w.close();
 	    } catch (IOException ex) {
-	      System.out.println("Error writing to dictionary file");
 	      ex.printStackTrace();
 	      return false;
 	    }
@@ -149,7 +133,7 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
   }
 
   /**
-   * Allocates a word in the dictionary
+   * Allocates a word in the dictionary.
    */
   protected void putWord(String word) {
     String code = getCode(word);
@@ -165,6 +149,7 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
 
   /**
    * Returns a list of strings (words) for the code.
+   *
    * @param code The phonetic code we want to find words for
    * @return the list of words having the same phonetic code
    */
@@ -179,6 +164,7 @@ public class GenericSpellDictionary extends SpellDictionaryASpell {
 
   /**
    * Returns true if the word is correctly spelled against the current word list.
+   *
    * @param word The word to checked in the dictionary
    * @return indication if the word is in the dictionary
    */

@@ -21,7 +21,7 @@ package org.fife.com.swabunga.spell.event;
 
 /**
  * A basic word finder, which searches text for sequences of letters.
- * 
+ *
  * @author Anthony Roy  (ajr@antroy.co.uk)
  */
 public class DefaultWordFinder extends AbstractWordFinder {
@@ -32,7 +32,7 @@ public class DefaultWordFinder extends AbstractWordFinder {
 
   /**
    * Creates a new DefaultWordFinder object.
-   * 
+   *
    * @param inText the String to search
    */
   public DefaultWordFinder(String inText) {
@@ -51,7 +51,7 @@ public class DefaultWordFinder extends AbstractWordFinder {
   /**
    * This method scans the text from the end of the last word,  and returns a
    * new Word object corresponding to the next word.
-   * 
+   *
    * @return the next word.
    * @throws WordNotFoundException search string contains no more words.
    */
@@ -91,7 +91,7 @@ public Word next() {
     // If we're dealing with a possible 'internet word' we need to provide
     // some special handling
     //if (SpellChecker.isINETWord(text.substring(startPos))) {
-	  // robert: trying to be smarter avoiding email addresses (see SpellChecker changes)
+    // robert: trying to be smarter avoiding email addresses (see SpellChecker changes)
     if (SpellChecker.beginsAsINETWord(text.substring(startPos))) {
       for (int i = startPos; i < text.length(); i++) {
         char ch = text.charAt(i);

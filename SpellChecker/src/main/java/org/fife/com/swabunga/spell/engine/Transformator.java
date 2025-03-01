@@ -30,6 +30,7 @@ public interface Transformator {
 
   /**
    * Take the given word, and return the best phonetic hash for it.
+   *
    * @param word the word to transform
    * @return the phonetic transformation of the word
    */
@@ -47,7 +48,7 @@ public interface Transformator {
    * if l is the size of the string, and n is the size of this list.
    * <p/>
    * In addition to that, each of these letters is added to the misspelled word.
-   * <p/>
+   *
    * @return char[] misspelled words should try replacing with these characters to get more suggestions
    */
   char[] getReplaceList();

@@ -22,27 +22,26 @@ package org.fife.com.swabunga.spell.engine;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.fife.com.swabunga.util.StringUtility;
 
 /**
- * A Generic implementation of a transformator takes an 
+ * A Generic implementation of a transformator takes an
  * <a href="http://aspell.net/man-html/Phonetic-Code.html">
- * aspell phonetics file</a> and constructs some sort of transformation 
+ * aspell phonetics file</a> and constructs some sort of transformation
  * table using the inner class TransformationRule.
- * </p>
+ * <p>
  * Basically, each transformation rule represent a line in the phonetic file.
  * One line contains two groups of characters separated by white space(s).
- * The first group is the <em>match expression</em>. 
+ * The first group is the <em>match expression</em>.
  * The <em>match expression</em> describe letters to associate with a syllable.
- * The second group is the <em>replacement expression</em> giving the phonetic 
+ * The second group is the <em>replacement expression</em> giving the phonetic
  * equivalent of the <em>match expression</em>.
  *
- * @see SpellDictionaryASpell SpellDictionaryASpell for information on getting
- * phonetic files for aspell.
- *
  * @author Robert Gustavsson (robert@lindesign.se)
+ * @see SpellDictionaryASpell SpellDictionaryASpell for information on getting phonetic files for aspell.
  */
 public class GenericTransformator implements Transformator {
 
@@ -51,28 +50,31 @@ public class GenericTransformator implements Transformator {
    * This replace list is used if no phonetic file is supplied or it doesn't
    * contain the alphabet.
    */
-  private static final char[] defaultEnglishAlphabet = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+  private static final char[] DEFAULT_ENGLISH_ALPHABET = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+          'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
   /**
    * The alphabet start marker.
+   *
    * @see GenericTransformator#KEYWORD_ALPHBET KEYWORD_ALPHBET
    */
   public static final char ALPHABET_START = '[';
   /**
    * The alphabet end marker.
+   *
    * @see GenericTransformator#KEYWORD_ALPHBET KEYWORD_ALPHBET
    */
   public static final char ALPHABET_END = ']';
   /**
-   * Phonetic file keyword indicating that a different alphabet is used 
+   * Phonetic file keyword indicating that a different alphabet is used
    * for this language. The keyword must be followed an
-   * {@link GenericTransformator#ALPHABET_START ALPHABET_START} marker, 
+   * {@link GenericTransformator#ALPHABET_START ALPHABET_START} marker,
    * a list of characters defining the alphabet and a
    * {@link GenericTransformator#ALPHABET_END ALPHABET_END} marker.
    */
   public static final String KEYWORD_ALPHBET = "alphabet";
   /**
-   * Phonetic file lines starting with the keywords are skipped. 
+   * Phonetic file lines starting with the keywords are skipped.
    * The key words are: version, followup, collapse_result.
    * Comments, starting with '#', are also skipped to the end of line.
    */
@@ -99,27 +101,27 @@ public class GenericTransformator implements Transformator {
    */
   public static final String REPLACEVOID = "_";
 
-  private Object[] ruleArray = null;
-  private char[] alphabetString = defaultEnglishAlphabet;
+  private Object[] ruleArray;
+  private char[] alphabetString = DEFAULT_ENGLISH_ALPHABET;
 
   /**
-   * Construct a transformation table from the phonetic file
+   * Construct a transformation table from the phonetic file.
+   *
    * @param phonetic the phonetic file as specified in aspell
    * @throws java.io.IOException indicates a problem while reading
-   * the phonetic file
+   *         the phonetic file
    */
   public GenericTransformator(File phonetic) throws IOException {
     buildRules(new BufferedReader(new FileReader(phonetic)));
     alphabetString = washAlphabetIntoReplaceList(getReplaceList());
-
   }
 
   /**
-   * Construct a transformation table from the phonetic file
+   * Construct a transformation table from the phonetic file.
+   *
    * @param phonetic the phonetic file as specified in aspell
    * @param encoding the character set required
-   * @throws java.io.IOException indicates a problem while reading
-   * the phonetic file
+   * @throws IOException indicates a problem while reading the phonetic file.
    */
   public GenericTransformator(File phonetic, String encoding) throws IOException {
     buildRules(new BufferedReader(new InputStreamReader(new FileInputStream(phonetic), encoding)));
@@ -127,11 +129,10 @@ public class GenericTransformator implements Transformator {
   }
 
   /**
-   * Construct a transformation table from the phonetic file
-   * @param phonetic the phonetic file as specified in aspell. The file is
-   * supplied as a reader.
-   * @throws java.io.IOException indicates a problem while reading
-   * the phonetic information
+   * Construct a transformation table from the phonetic file.
+   *
+   * @param phonetic the phonetic file as specified in aspell.
+   * @throws IOException indicates a problem while reading the phonetic information.
    */
   public GenericTransformator(Reader phonetic) throws IOException {
     buildRules(new BufferedReader(phonetic));
@@ -151,7 +152,7 @@ public class GenericTransformator implements Transformator {
    */
   private char[] washAlphabetIntoReplaceList(char[] alphabet) {
 
-    HashMap<String, Character> letters = new HashMap<>(alphabet.length);
+    Map<String, Character> letters = new HashMap<>(alphabet.length);
 
       for (char c : alphabet) {
           String tmp = String.valueOf(c);
@@ -175,6 +176,7 @@ public class GenericTransformator implements Transformator {
   /**
    * Takes out all single character replacements and put them in a char array.
    * This array can later be used for adding or changing letters in getSuggestion().
+   *
    * @return char[] An array of chars with replacements characters
    */
   public char[] getCodeReplaceList() {
@@ -199,6 +201,7 @@ public class GenericTransformator implements Transformator {
   /**
    * Builds up an char array with the chars in the alphabet of the language as it was read from the
    * alphabet tag in the phonetic file.
+   *
    * @return char[] An array of chars representing the alphabet or null if no alphabet was available.
    */
   @Override
@@ -208,6 +211,7 @@ public char[] getReplaceList() {
 
   /**
    * Builds the phonetic code of the word.
+   *
    * @param word the word to transform
    * @return the phonetic transformation of the word
    */
@@ -221,7 +225,8 @@ public String transform(String word) {
     // robert: Use StringBuilder
     StringBuilder str = new StringBuilder(word.toUpperCase());
     int strLength = str.length();
-    int startPos = 0, add = 1;
+    int startPos = 0;
+    int add = 1;
 
     while (startPos < strLength) {
 
@@ -290,19 +295,19 @@ public String transform(String word) {
     }
 
     // str contains two groups of characters separated by white space(s).
-    // The fisrt group is the "match expression". The second group is the 
-    // "replacement expression" giving the phonetic equivalent of the 
+    // The fisrt group is the "match expression". The second group is the
+    // "replacement expression" giving the phonetic equivalent of the
     // "match expression".
     TransformationRule rule = null;
     // robert: Prefer StringBuilder here
     StringBuilder matchExp = new StringBuilder();
     StringBuilder replaceExp = new StringBuilder();
-    boolean start = false,
-        end = false;
-    int takeOutPart = 0,
-        matchLength = 0;
-    boolean match = true,
-        inMulti = false;
+    boolean start = false;
+    boolean end = false;
+    int takeOutPart = 0;
+    int matchLength = 0;
+    boolean match = true;
+    boolean inMulti = false;
     for (int i = 0; i < str.length(); i++) {
       if (Character.isWhitespace(str.charAt(i))) {
         match = false;
@@ -353,7 +358,6 @@ public String transform(String word) {
     return row.trim();
   }
 
-  // Inner Classes
   /*
   * Holds the match string and the replace string and all the rule attributes.
   * Is responsible for indicating matches.
@@ -364,11 +368,12 @@ public String transform(String word) {
     private char[] match;
     // takeOut=number of chars to replace;
     // matchLength=length of matching string counting multies as one.
-    private int takeOut, matchLength;
-    private boolean start, end;
+    private int takeOut;
+    private int matchLength;
+    private boolean start;
+    private boolean end;
 
-    // Constructor
-    public TransformationRule(String match, String replace, int takeout, int matchLength, boolean start, boolean end) {
+    TransformationRule(String match, String replace, int takeout, int matchLength, boolean start, boolean end) {
       this.match = match.toCharArray();
       this.replace = replace;
       this.takeOut = takeout;
@@ -383,7 +388,9 @@ public String transform(String word) {
     */
     // robert: Prefer CharSequence interface here
     public boolean isMatching(CharSequence word, int wordPos) {
-      boolean matching = true, inMulti = false, multiMatch = false;
+      boolean matching = true;
+      boolean inMulti = false;
+      boolean multiMatch = false;
       char matchCh;
 
         for (char c : match) {
@@ -438,7 +445,8 @@ public String transform(String word) {
     // Just for debugging purposes.
     @Override
 	public String toString() {
-      return "Match:" + String.valueOf(match) + " Replace:" + replace + " TakeOut:" + takeOut + " MatchLength:" + matchLength + " Start:" + start + " End:" + end;
+      return "Match:" + String.valueOf(match) + " Replace:" + replace + " TakeOut:" + takeOut +
+              " MatchLength:" + matchLength + " Start:" + start + " End:" + end;
     }
 
   }

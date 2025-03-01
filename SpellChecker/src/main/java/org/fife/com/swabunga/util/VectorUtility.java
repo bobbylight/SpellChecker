@@ -22,18 +22,44 @@ package org.fife.com.swabunga.util;
 import java.util.List;
 
 
-public class VectorUtility {
+/**
+ * Utility methods for lists.
+ */
+public final class VectorUtility {
 
-	public static <T> List<T> addAll(List<T> dest, List<T> src) {
-		return addAll(dest, src, true);
-	}
+    /**
+     * Private constructor to prevent instantiation.
+     */
+    private VectorUtility() {
+        // Do nothing
+    }
 
-	public static <T> List<T> addAll(List<T> dest, List<T> src, boolean allowDuplicates) {
-		for (T value : src) {
-			if (allowDuplicates || !dest.contains(value))
-				dest.add(value);
-		}
-		return dest;
-	}
+    /**
+     * Adds all, allowing duplicates.
+     *
+     * @param <T>  The type of data in the lists.
+     * @param dest The destination list.
+     * @param src  The source list.
+     * @return The destination list.
+     */
+    public static <T> List<T> addAll(List<T> dest, List<T> src) {
+        return addAll(dest, src, true);
+    }
 
+    /**
+     * Adds all entries from one list to another.
+     *
+     * @param <T>             The type of data in the lists.
+     * @param dest            The destination list.
+     * @param src             The source list.
+     * @param allowDuplicates Whether to allow duplicates.
+     * @return The destination list.
+     */
+    public static <T> List<T> addAll(List<T> dest, List<T> src, boolean allowDuplicates) {
+        for (T value : src) {
+            if (allowDuplicates || !dest.contains(value))
+                dest.add(value);
+        }
+        return dest;
+    }
 }

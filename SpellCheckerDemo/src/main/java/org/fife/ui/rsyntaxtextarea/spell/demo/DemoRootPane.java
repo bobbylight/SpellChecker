@@ -2,7 +2,7 @@
  * 07/21/2009
  *
  * DemoRootPane.java - Root pane for the demo.
- * 
+ *
  * This library is distributed under the LGPL.  See the included
  * LICENSE.md file for details.
  */
@@ -30,7 +30,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
  * The root pane used by the demo.  This allows both the applet and the
- * stand-alone application to share the same UI. 
+ * stand-alone application to share the same UI.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -112,7 +112,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 
 	private SpellingParser createSpellingParser() {
 
-	    // Allow for different starting directories when running through an IDE
+		// Allow for different starting directories when running through an IDE
 		File zip = new File("./SpellChecker/src/main/dist/english_dic.zip");
 		if (!zip.isFile()) {
             zip = new File("../SpellChecker/src/main/dist/english_dic.zip");
@@ -153,12 +153,12 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 		textArea.addHyperlinkListener(this);
 		textArea.requestFocusInWindow();
 		textArea.setMarkOccurrences(true);
-		textArea.getSyntaxScheme().getStyle(TokenTypes.COMMENT_DOCUMENTATION).background = new java.awt.Color(255, 240, 240);
-//		textArea.setUseSelectedTextColor(true);
-//        textArea.setSelectionColor(SystemColor.textHighlight);
-//		textArea.setSelectedTextColor(SystemColor.textHighlightText);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
+		textArea.getSyntaxScheme().getStyle(TokenTypes.COMMENT_DOCUMENTATION).background = new Color(255, 240, 240);
+		//textArea.setUseSelectedTextColor(true);
+		//textArea.setSelectionColor(SystemColor.textHighlight);
+		//textArea.setSelectedTextColor(SystemColor.textHighlightText);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
 		return textArea;
 	}
 
@@ -180,7 +180,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 
 	private class AboutAction extends AbstractAction {
 
-		public AboutAction() {
+		AboutAction() {
 			putValue(NAME, "About Spell Checker...");
 		}
 
@@ -202,7 +202,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 
 		private boolean enabled;
 
-		public ToggleSpellCheckingAction() {
+		ToggleSpellCheckingAction() {
 			putValue(NAME, "Toggle Spell Checking");
 			enabled = true;
 		}

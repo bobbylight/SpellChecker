@@ -34,6 +34,7 @@ package org.fife.com.swabunga.spell.event;
  *
  * <P>A call to <CODE>next()</CODE> when <CODE>hasMoreWords()</CODE> returns false
  * should throw a <CODE>WordNotFoundException</CODE>.</P>
+ *
  * @author Jason Height (jheight@chariot.net.au)
  */
 public interface WordTokenizer {
@@ -41,20 +42,22 @@ public interface WordTokenizer {
   //~ Methods .................................................................
 
   /**
-   * Returns the context text that is being tokenized (should include any
-   * changes that have been made).
+   * Returns the context text that is being tokenized (should include any changes that have been made).
+   *
    * @return the text being searched.
    */
   String getContext();
 
   /**
-   * Returns the number of word tokens that have been processed thus far
+   * Returns the number of word tokens that have been processed thus far.
+   *
    * @return the number of words found so far.
    */
   int getCurrentWordCount();
 
   /**
    * Returns an index representing the end location of the current word in the text.
+   *
    * @return index of the end of the current word in the text.
    * @throws WordNotFoundException current word has not yet been set.
    */
@@ -62,20 +65,23 @@ public interface WordTokenizer {
 
   /**
    * Returns an index representing the start location of the current word in the text.
+   *
    * @return index of the start of the current word in the text.
    * @throws WordNotFoundException current word has not yet been set.
    */
   int getCurrentWordPosition();
 
   /**
-   * Returns true if the current word is at the start of a sentence
+   * Returns true if the current word is at the start of a sentence.
+   *
    * @return true if the current word starts a sentence.
    * @throws WordNotFoundException current word has not yet been set.
    */
   boolean isNewSentence();
 
   /**
-   * Indicates if there are more words left
+   * Indicates if there are more words left.
+   *
    * @return true if more words can be found in the text.
    */
   boolean hasMoreWords();
@@ -84,6 +90,7 @@ public interface WordTokenizer {
    * This returns the next word in the iteration. Note that any implementation should return
    * the current word, and then replace the current word with the next word found in the
    * input text (if one exists).
+   *
    * @return the next word in the iteration.
    * @throws WordNotFoundException search string contains no more words.
    */
@@ -91,13 +98,12 @@ public interface WordTokenizer {
 
   /**
    * Replaces the current word token
-   *
    * <p/>
    * When a word is replaced care should be taken that the WordTokenizer
    * repositions itself such that the words that were added aren't rechecked.
    * Of course this is not mandatory, maybe there is a case when an
    * application doesn't need to do this.
-   * <p/>
+   *
    * @param newWord the string which should replace the current word.
    * @throws WordNotFoundException current word has not yet been set.
    */

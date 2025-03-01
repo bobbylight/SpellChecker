@@ -55,7 +55,7 @@ import java.util.*;
  * file should be in directory <code>/usr/share/aspell</code> on Unix.
  *
  * @see GenericTransformator GenericTransformator for information on
- * phonetic files.
+ *      phonetic files.
  */
 public abstract class SpellDictionaryASpell implements SpellDictionary {
 
@@ -64,12 +64,12 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
   private Transformator tf;
 
   /**
-   * Constructs a new SpellDictionaryASpell
+   * Constructs a new SpellDictionaryASpell.
+   *
    * @param phonetic The file to use for phonetic transformation of the
-   * words list. If <code>phonetic</code> is null, the the transformation
-   * uses {@link DoubleMeta} transformation.
-   * @throws java.io.IOException  indicates problems reading the phonetic
-   * information
+   *        words list. If <code>phonetic</code> is null, the transformation
+   *        uses {@link DoubleMeta} transformation.
+   * @throws IOException  indicates problems reading the phonetic information.
    */
   public SpellDictionaryASpell(File phonetic) throws IOException {
     if (phonetic == null)
@@ -79,28 +79,30 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
   }
 
   /**
-   * Constructs a new SpellDictionaryASpell
+   * Constructs a new SpellDictionaryASpell.
+   *
    * @param phonetic The file to use for phonetic transformation of the
-   * words list. If <code>phonetic</code> is null, the the transformation
-   * uses {@link DoubleMeta} transformation.
+   *        words list. If <code>phonetic</code> is null, the transformation
+   *        uses {@link DoubleMeta} transformation.
    * @param encoding Uses the character set encoding specified
-   * @throws java.io.IOException  indicates problems reading the phonetic
-   * information
+   * @throws IOException  indicates problems reading the phonetic information.
    */
   public SpellDictionaryASpell(File phonetic, String encoding) throws IOException {
-    if (phonetic == null)
-      tf = new DoubleMeta();
-    else
+    if (phonetic == null) {
+        tf = new DoubleMeta();
+    }
+    else {
       tf = new GenericTransformator(phonetic, encoding);
+    }
   }
 
   /**
-   * Constructs a new SpellDictionaryASpell
+   * Constructs a new SpellDictionaryASpell.
+   *
    * @param phonetic The Reader to use for phonetic transformation of the
-   * words list. If <code>phonetic</code> is null, the the transformation
-   * uses {@link DoubleMeta} transformation.
-   * @throws java.io.IOException  indicates problems reading the phonetic
-   * information
+   *        words list. If <code>phonetic</code> is null, the the transformation
+   *        uses {@link DoubleMeta} transformation.
+   * @throws IOException  indicates problems reading the phonetic information.
    */
   public SpellDictionaryASpell(Reader phonetic) throws IOException {
     if (phonetic == null)
@@ -114,10 +116,11 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * incorrect word.
    * <p>
    * This method is only needed to provide backward compatibility.
-   * @see #getSuggestions(String, int, int[][])
+   *
    * @param word Suggestions for given misspelt word
    * @param threshold The lower boundary of similarity to misspelt word
    * @return a List of suggestions
+   * @see #getSuggestions(String, int, int[][])
    */
   @Override
   public List<Word> getSuggestions(String word, int threshold) {
@@ -127,11 +130,11 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
   /**
    * Returns a list of Word objects that are the suggestions to an
    * incorrect word.
-   * <p>
+   *
    * @param word Suggestions for given misspelt word
    * @param threshold The lower boundary of similarity to misspelt word
    * @param matrix Two dimensional int array used to calculate
-   * edit distance. Allocating this memory outside of the function will greatly improve efficiency.
+   *        edit distance. Allocating this memory outside of the function will greatly improve efficiency.
    * @return a List of suggestions
    */
   @Override
@@ -140,10 +143,11 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
   	int i;
   	int j;
 
-  	if(matrix == null)
-  		matrix = new int[0][0];
+  	if (matrix == null) {
+        matrix = new int[0][0];
+    }
 
-    HashMap<String, String> nearmisscodes = new HashMap<>();
+    Map<String, String> nearmisscodes = new HashMap<>();
     String code = getCode(word);
 
     // add all words that have the same phonetics
@@ -240,14 +244,16 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
   /**
    * When we don't come up with any suggestions (probably because the threshold was too strict),
    * then pick the best guesses from the those words that have the same phonetic code.
+   *
    * @param word - the word we are trying spell correct
    * @param wordList Two dimensional array of int used to calculate
-   * edit distance. Allocating this memory outside of the function will greatly improve efficiency.
+   *        edit distance. Allocating this memory outside of the function will greatly improve efficiency.
    * @param wordList - the linked list that will get the best guess
    */
   private void addBestGuess(String word, List<Word> wordList, int[][] matrix) {
-  	if(matrix == null)
-  		matrix = new int[0][0];
+  	if (matrix == null) {
+        matrix = new int[0][0];
+    }
 
     if (wordList.size() != 0)
       throw new InvalidParameterException("the wordList vector must be empty");
@@ -275,7 +281,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
   }
 
-  private List<Word> getWordsFromCode(String word, HashMap<String, String> codes) {
+  private List<Word> getWordsFromCode(String word, Map<String, String> codes) {
     Configuration config = Configuration.getConfiguration();
     List<Word> result = new ArrayList<>();
     int[][] matrix = new int[0][0];
@@ -295,6 +301,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
   /**
    * Returns the phonetic code representing the word.
+   *
    * @param word The word we want the phonetic code.
    * @return The value of the phonetic code for the word.
    */
@@ -304,6 +311,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
   /**
    * Returns a list of words that have the same phonetic code.
+   *
    * @param phoneticCode The phonetic code common to the list of words
    * @return A list of words having the same phonetic code
    */

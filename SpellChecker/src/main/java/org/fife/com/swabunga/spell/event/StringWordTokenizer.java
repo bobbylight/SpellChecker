@@ -48,7 +48,7 @@ public class StringWordTokenizer extends AbstractWordTokenizer {
    * Creates a new StringWordTokenizer object.
    *
    * @param wf the custom WordFinder to use in tokenizing. Note
-   * that the string to tokenize will be encapsulated within the WordFinder.
+   *        that the string to tokenize will be encapsulated within the WordFinder.
    */
   public StringWordTokenizer(WordFinder wf) {
     super(wf);
@@ -56,9 +56,10 @@ public class StringWordTokenizer extends AbstractWordTokenizer {
 
   /**
    * Creates a new StringWordTokenizer object.
+   *
    * @param s the string to work on
    * @param finder the custom WordFinder to use in tokenizing. Note
-   * that the string to tokenize will be encapsulated within the WordFinder.
+   *        that the string to tokenize will be encapsulated within the WordFinder.
    */
   public StringWordTokenizer(String s, WordFinder finder) {
     super(finder);
@@ -66,17 +67,15 @@ public class StringWordTokenizer extends AbstractWordTokenizer {
   }
 
 
-  //~ Methods .................................................................
-
   /**
+   * Returns the final text.
    *
-   * @deprecated use getContext() instead as per the WordTokenizer
-   * interface specification.
    * @return the final text.
+   * @deprecated use getContext() instead as per the WordTokenizer
+   *             interface specification.
    */
   @Deprecated
   public String getFinalText() {
-
     return getContext();
   }
 

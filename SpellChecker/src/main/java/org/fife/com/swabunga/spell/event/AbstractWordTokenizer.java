@@ -23,11 +23,11 @@ import java.text.BreakIterator;
 
 
 /**
- * This class tokenizes a input string.
+ * This class tokenizes an input string.
  *
  * <p>
  * It also allows for the string to be mutated. The result after the spell
- * checking is completed is available to the call to getFinalText
+ * checking is completed is available to the call to getFinalText.
  * </p>
  *
  * @author Jason Height(jheight@chariot.net.au)
@@ -37,16 +37,15 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
 
   //~ Instance/static variables ...............................................
 
-  /** The word being analyzed */
+  /** The word being analyzed. */
   protected Word currentWord;
-  /** The word finder used to filter out words which are non pertinent to
-   * spell checking */
+  /** The word finder used to filter out words which are non pertinent to spell checking. */
   protected WordFinder finder;
-  /** An iterator to work through the sentence */
+  /** An iterator to work through the sentence. */
   protected BreakIterator sentenceIterator;
 
-  /** The cumulative word count that have been processed */
-  protected int wordCount = 0;
+  /** The cumulative word count that have been processed. */
+  protected int wordCount;
 
   //~ Constructors ............................................................
 
@@ -71,7 +70,7 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
   //~ Methods .................................................................
 
   /**
-   * Returns the current number of words that have been processed
+   * Returns the current number of words that have been processed.
    *
    * @return number of words so far iterated.
    */
@@ -82,7 +81,7 @@ public int getCurrentWordCount() {
   }
 
   /**
-   * Returns the end of the current word in the text
+   * Returns the end of the current word in the text.
    *
    * @return index in string of the end of the current word.
    * @throws WordNotFoundException current word has not yet been set.
@@ -98,7 +97,7 @@ public int getCurrentWordEnd() {
   }
 
   /**
-   * Returns the index of the start of the current word in the text
+   * Returns the index of the start of the current word in the text.
    *
    * @return index in string of the start of the current word.
    * @throws WordNotFoundException current word has not yet been set.
@@ -114,7 +113,7 @@ public int getCurrentWordPosition() {
   }
 
   /**
-   * Returns true if there are more words that can be processed in the string
+   * Returns true if there are more words that can be processed in the string.
    *
    * @return true if there are further words in the text.
    */
@@ -138,7 +137,7 @@ public String nextWord() {
   }
 
   /**
-   * Replaces the current word token
+   * Replaces the current word token.
    *
    * @param newWord replacement word.
    * @throws WordNotFoundException current word has not yet been set.
@@ -148,7 +147,7 @@ public abstract void replaceWord(String newWord);
 
   /**
    * Returns the current text that is being tokenized (includes any changes
-   * that have been made)
+   * that have been made).
    *
    * @return the text being tokenized.
    */
@@ -159,7 +158,7 @@ public String getContext() {
   }
 
   /**
-   * returns true if the current word is at the start of a sentence
+   * returns true if the current word is at the start of a sentence.
    *
    * @return true if the current word starts a sentence.
    * @throws WordNotFoundException current word has not yet been set.

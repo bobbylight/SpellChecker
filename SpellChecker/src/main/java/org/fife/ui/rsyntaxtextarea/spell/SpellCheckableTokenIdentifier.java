@@ -2,7 +2,7 @@
  * 03/19/2014
  *
  * SpellCheckableTokenIdentifier.java - Identifies tokens to spell check.
- * 
+ *
  * This library is distributed under the LGPL.  See the included
  * LICENSE.md file for details.
  */

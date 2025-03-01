@@ -27,7 +27,6 @@ package org.fife.com.swabunga.spell.engine;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,24 +47,26 @@ import java.util.*;
  */
 // robert: Converted use of Vectors to ArrayLists; we're single-threaded
 public class SpellDictionaryHashMap extends SpellDictionaryASpell {
-  /** A field indicating the initial hash map capacity (16KB) for the main
-   *  dictionary hash map. Interested to see what the performance of a
-   *  smaller initial capacity is like.
+  /**
+   * A field indicating the initial hash map capacity (16KB) for the main
+   * dictionary hash map. Interested to see what the performance of a
+   * smaller initial capacity is like.
    */
-  private final static int INITIAL_CAPACITY = 16 * 1024;
+  private static final int INITIAL_CAPACITY = 16 * 1024;
 
   /**
    * The hashmap that contains the word dictionary. The map is hashed on the doublemeta
    * code. The map entry contains a LinkedList of words that have the same double meta code.
    */
-  private HashMap<String, List<String>> mainDictionary = new HashMap<>(INITIAL_CAPACITY);
+  private Map<String, List<String>> mainDictionary = new HashMap<>(INITIAL_CAPACITY);
 
-  /** Holds the dictionary file for appending*/
-  private File dictFile = null;
+  /** Holds the dictionary file for appending. */
+  private File dictFile;
 
   /**
    * Dictionary Constructor.
-   * @throws java.io.IOException indicates a problem with the file system
+   *
+   * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap() throws IOException {
     super((File) null);
@@ -73,9 +74,9 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
 
   /**
    * Dictionary Constructor.
+   *
    * @param wordList The file containing the words list for the dictionary
-   * @throws java.io.IOException indicates problems reading the words list
-   * file
+   * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap(Reader wordList) throws IOException {
     super((File) null);
@@ -84,13 +85,11 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
 
   /**
    * Dictionary convenience Constructor.
+   *
    * @param wordList The file containing the words list for the dictionary
-   * @throws java.io.FileNotFoundException indicates problems locating the
-   * words list file on the system
-   * @throws java.io.IOException indicates problems reading the words list
-   * file
+   * @throws IOException If an IO error occurs.
    */
-  public SpellDictionaryHashMap(File wordList) throws FileNotFoundException, IOException {
+  public SpellDictionaryHashMap(File wordList) throws IOException {
     this(new FileReader(wordList));
     dictFile = wordList;
   }
@@ -98,15 +97,12 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   /**
    * Dictionary constructor that uses an aspell phonetic file to
    * build the transformation table.
+   *
    * @param wordList The file containing the words list for the dictionary
-   * @param phonetic The file to use for phonetic transformation of the
-   * wordlist.
-   * @throws java.io.FileNotFoundException indicates problems locating the
-   * file on the system
-   * @throws java.io.IOException indicates problems reading the words list
-   * file
+   * @param phonetic The file to use for phonetic transformation of the wordlist.
+   * @throws IOException If an IO error occurs.
    */
-  public SpellDictionaryHashMap(File wordList, File phonetic) throws FileNotFoundException, IOException {
+  public SpellDictionaryHashMap(File wordList, File phonetic) throws IOException {
     super(phonetic);
     dictFile = wordList;
     createDictionary(new BufferedReader(new FileReader(wordList)));
@@ -116,16 +112,13 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * Dictionary constructor that uses an aspell phonetic file to
    * build the transformation table. Encoding is used for phonetic file only;
    * default encoding is used for wordList
+   *
    * @param wordList The file containing the words list for the dictionary
-   * @param phonetic The file to use for phonetic transformation of the
-   * wordlist.
+   * @param phonetic The file to use for phonetic transformation of the wordlist.
    * @param phoneticEncoding Uses the character set encoding specified
-   * @throws java.io.FileNotFoundException indicates problems locating the
-   * file on the system
-   * @throws java.io.IOException indicates problems reading the words list
-   * or phonetic information
+   * @throws IOException If an IO error occurs.
    */
-  public SpellDictionaryHashMap(File wordList, File phonetic, String phoneticEncoding) throws FileNotFoundException, IOException {
+  public SpellDictionaryHashMap(File wordList, File phonetic, String phoneticEncoding) throws IOException {
     super(phonetic, phoneticEncoding);
     dictFile = wordList;
     createDictionary(new BufferedReader(new FileReader(wordList)));
@@ -134,11 +127,11 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   /**
    * Dictionary constructor that uses an aspell phonetic file to
    * build the transformation table.
+   *
    * @param wordList The file containing the words list for the dictionary
    * @param phonetic The reader to use for phonetic transformation of the
-   * wordlist.
-   * @throws java.io.IOException indicates problems reading the words list
-   * or phonetic information
+   *        wordlist.
+   * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap(Reader wordList, Reader phonetic) throws IOException {
     super(phonetic);
@@ -154,12 +147,11 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * Note that adding a dictionary does not affect the target
    * dictionary file for the addWord method. That is, addWord() continues
    * to make additions to the dictionary file specified in createDictionary()
-   * <P>
+   *
    * @param wordList a File object that contains the words, on word per line.
-   * @throws FileNotFoundException
-   * @throws IOException
+   * @throws IOException If an IO error occurs.
    */
-  public void addDictionary(File wordList) throws FileNotFoundException, IOException {
+  public void addDictionary(File wordList) throws IOException {
     addDictionaryHelper(new BufferedReader(new FileReader(wordList)));
   }
 
@@ -171,9 +163,9 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * Note that adding a dictionary does not affect the target
    * dictionary file for the addWord method. That is, addWord() continues
    * to make additions to the dictionary file specified in createDictionary()
-   * <P>
+   *
    * @param wordList a Reader object that contains the words, on word per line.
-   * @throws IOException
+   * @throws IOException If an IO error uoccurs.
    */
   public void addDictionary(Reader wordList) throws IOException {
     addDictionaryHelper(new BufferedReader(wordList));
@@ -195,7 +187,6 @@ public boolean addWord(String word) {
 	    	w.close();
 	    	return true;
 	    } catch (IOException ex) {
-	      System.out.println("Error writing to dictionary file");
 	      ex.printStackTrace();
 	    }
     }
@@ -212,7 +203,7 @@ public boolean addWord(String word) {
    * load the data in. I suspect that we could speed this up quite allot.
    */
   protected void createDictionary(BufferedReader in) throws IOException {
-	  // robert: Optimized ever-so-slightly
+    // robert: Optimized ever-so-slightly
     String line;
     while ((line=in.readLine())!=null) {
       if (line.length() > 0) {
@@ -235,7 +226,7 @@ public boolean addWord(String word) {
    * to subclass for the cases where duplicates are bad.
    */
   protected void addDictionaryHelper(BufferedReader in) throws IOException {
-	  // robert: Optimized ever-so-slightly
+	    // robert: Optimized ever-so-slightly
 	    String line;
 	    while ((line=in.readLine())!=null) {
 	      if (line.length() > 0) {
@@ -245,7 +236,8 @@ public boolean addWord(String word) {
   }
 
   /**
-   * Allocates a word in the dictionary
+   * Allocates a word in the dictionary.
+   *
    * @param word The word to add
    */
   protected void putWord(String word) {
@@ -257,6 +249,7 @@ public boolean addWord(String word) {
   /**
    * Allocates a word, if it is not already present in the dictionary. A word
    * with a different case is considered the same.
+   *
    * @param word The word to add
    */
   protected void putWordUnique(String word) {

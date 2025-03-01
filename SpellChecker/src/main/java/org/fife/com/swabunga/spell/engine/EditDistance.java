@@ -23,15 +23,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 /**
- * This class is based on Levenshtein Distance algorithms, and it calculates how similar two words are.
- * If the words are identical, then the distance is 0. The more that the words have in common, the lower the distance value.
- * The distance value is based on how many operations it takes to get from one word to the other. Possible operations are
- * swapping characters, adding a character, deleting a character, and substituting a character.
- * The resulting distance is the sum of these operations weighted by their cost, which can be set in the Configuration object.
- * When there are multiple ways to convert one word into the other, the lowest cost distance is returned.
+ * This class is based on Levenshtein Distance algorithms, and it calculates how similar two words are. If the words
+ * are identical, then the distance is 0. The more that the words have in common, the lower the distance value.
+ * The distance value is based on how many operations it takes to get from one word to the other. Possible operations
+ * are swapping characters, adding a character, deleting a character, and substituting a character.
+ * The resulting distance is the sum of these operations weighted by their cost, which can be set in the Configuration
+ * object. When there are multiple ways to convert one word into the other, the lowest cost distance is returned.
  * <br/>
- * Another way to think about this: what are the cheapest operations that would have to be done on the "original" word to end up
- * with the "similar" word? Each operation has a cost, and these are added up to get the distance.
+ * Another way to think about this: what are the cheapest operations that would have to be done on the "original" word
+ * to end up with the "similar" word? Each operation has a cost, and these are added up to get the distance.
  * <br/>
  *
  * @see org.fife.com.swabunga.spell.engine.Configuration#COST_REMOVE_CHAR
@@ -40,55 +40,58 @@ import java.io.InputStreamReader;
  * @see org.fife.com.swabunga.spell.engine.Configuration#COST_SWAP_CHARS
  *
  */
-
-public class EditDistance {
+public final class EditDistance {
 
   /**
    * Fetches the spell engine configuration properties.
    */
-  public static final Configuration config = Configuration.getConfiguration();
+  public static final Configuration CONFIG = Configuration.getConfiguration();
 
   /**
-   * get the weights for each possible operation
+   * get the weights for each possible operation.
    */
-  static final int costOfDeletingSourceCharacter = config.getInteger(Configuration.COST_REMOVE_CHAR);
-  static final int costOfInsertingSourceCharacter = config.getInteger(Configuration.COST_INSERT_CHAR);
-  static final int costOfSubstitutingLetters = config.getInteger(Configuration.COST_SUBST_CHARS);
-  static final int costOfSwappingLetters = config.getInteger(Configuration.COST_SWAP_CHARS);
-  static final int costOfChangingCase = config.getInteger(Configuration.COST_CHANGE_CASE);  
+  private static final int COST_OF_DELETING_SOURCE_CHARACTER = CONFIG.getInteger(Configuration.COST_REMOVE_CHAR);
+  private static final int COST_OF_INSERTING_SOURCE_CHARACTER = CONFIG.getInteger(Configuration.COST_INSERT_CHAR);
+  private static final int COST_OF_SUBSTITUTING_LETTERS = CONFIG.getInteger(Configuration.COST_SUBST_CHARS);
+  private static final int COST_OF_SWAPPING_LETTERS = CONFIG.getInteger(Configuration.COST_SWAP_CHARS);
+  private static final int COST_OF_CHANGING_CASE = CONFIG.getInteger(Configuration.COST_CHANGE_CASE);
+
+  private EditDistance() {
+      // Private constructor to prevent instantiation.
+  }
 
   /**
    * Evaluates the distance between two words.
-   * 
+   *
    * @param word One word to evaluates
    * @param similar The other word to evaluates
-   * @return a number representing how easy or complex it is to transform on
-   * word into a similar one.
+   * @return A number representing how easy or complex it is to transform on
+   *         word into a similar one.
    */
-  public static final int getDistance(String word, String similar) {
+  public static int getDistance(String word, String similar) {
   	return getDistance(word,similar,null);
-  }  
-  
+  }
+
   /**
    * Evaluates the distance between two words.
-   * 
+   *
    * @param word One word to evaluates
    * @param similar The other word to evaluates
-   * @return a number representing how easy or complex it is to transform on
-   * word into a similar one.
+   * @param matrix The matrix.
+   * @return A number representing how easy or complex it is to transform on
+   *         word into a similar one.
    */
-  public static final int getDistance(String word, String similar, int[][] matrix) {
-    /* JMH Again, there is no need to have a global class matrix variable
-     *  in this class. I have removed it and made the getDistance static final
-     * DMV: I refactored this method to make it more efficient, more readable, and simpler.
-     * I also fixed a bug with how the distance was being calculated. You could get wrong
-     * distances if you compared ("abc" to "ab") depending on what you had setup your
-     * COST_REMOVE_CHAR and EDIT_INSERTION_COST values to - that is now fixed.
-     * WRS: I added a distance for case comparison, so a misspelling of "i" would be closer to "I" than
-     * to "a".
-     */
+  public static int getDistance(String word, String similar, int[][] matrix) {
+  	// JMH Again, there is no need to have a global class matrix variable
+  	// in this class. I have removed it and made the getDistance static final
+  	// DMV: I refactored this method to make it more efficient, more readable, and simpler.
+  	// I also fixed a bug with how the distance was being calculated. You could get wrong
+  	// distances if you compared ("abc" to "ab") depending on what you had setup your
+  	// COST_REMOVE_CHAR and EDIT_INSERTION_COST values to - that is now fixed.
+  	// WRS: I added a distance for case comparison, so a misspelling of "i" would be closer to "I" than
+  	// to "a".
 
-  	//Allocate memory outside of the loops. 
+  	//Allocate memory outside of the loops.
   	int i;
   	int j;
   	int costOfSubst;
@@ -96,30 +99,30 @@ public class EditDistance {
   	int costOfDelete;
   	int costOfInsertion;
   	int costOfCaseChange;
-  	
+
   	boolean isSwap;
   	char sourceChar = 0;
   	char otherChar = 0;
-  	
-    int a_size = word.length() + 1;
-    int b_size = similar.length() + 1;
-  
-    
-    //Only allocate new memory if we need a bigger matrix. 
-    if (matrix == null || matrix.length < a_size || matrix[0].length < b_size)
-    	matrix = new int[a_size][b_size];
-      
+
+    int aSize = word.length() + 1;
+    int bSize = similar.length() + 1;
+
+
+    //Only allocate new memory if we need a bigger matrix.
+    if (matrix == null || matrix.length < aSize || matrix[0].length < bSize)
+    	matrix = new int[aSize][bSize];
+
     matrix[0][0] = 0;
 
-    for (i = 1; i != a_size; ++i)
-      matrix[i][0] = matrix[i - 1][0] + costOfInsertingSourceCharacter; //initialize the first column
+    for (i = 1; i != aSize; ++i)
+      matrix[i][0] = matrix[i - 1][0] + COST_OF_INSERTING_SOURCE_CHARACTER; //initialize the first column
 
-    for (j = 1; j != b_size; ++j)
-      matrix[0][j] = matrix[0][j - 1] + costOfDeletingSourceCharacter; //initalize the first row
+    for (j = 1; j != bSize; ++j)
+      matrix[0][j] = matrix[0][j - 1] + COST_OF_DELETING_SOURCE_CHARACTER; //initalize the first row
 
-    for (i = 1; i != a_size; ++i) {
+    for (i = 1; i != aSize; ++i) {
       sourceChar = word.charAt(i-1);
-      for (j = 1; j != b_size; ++j) {
+      for (j = 1; j != bSize; ++j) {
 
         otherChar = similar.charAt(j-1);
         if (sourceChar == otherChar) {
@@ -127,47 +130,46 @@ public class EditDistance {
           continue;
         }
 
-        costOfSubst = costOfSubstitutingLetters + matrix[i - 1][j - 1];
+        costOfSubst = COST_OF_SUBSTITUTING_LETTERS + matrix[i - 1][j - 1];
         //if needed, add up the cost of doing a swap
         costOfSwap = Integer.MAX_VALUE;
 
         isSwap = (i != 1) && (j != 1) && sourceChar == similar.charAt(j - 2) && word.charAt(i - 2) == otherChar;
         if (isSwap)
-          costOfSwap = costOfSwappingLetters + matrix[i - 2][j - 2];
+          costOfSwap = COST_OF_SWAPPING_LETTERS + matrix[i - 2][j - 2];
 
-        costOfDelete = costOfDeletingSourceCharacter + matrix[i][j - 1];
-        costOfInsertion = costOfInsertingSourceCharacter + matrix[i - 1][j];
+        costOfDelete = COST_OF_DELETING_SOURCE_CHARACTER + matrix[i][j - 1];
+        costOfInsertion = COST_OF_INSERTING_SOURCE_CHARACTER + matrix[i - 1][j];
 
         costOfCaseChange = Integer.MAX_VALUE;
-       
+
         if (equalIgnoreCase(sourceChar, otherChar))
-          costOfCaseChange = costOfChangingCase + matrix[i - 1][j - 1];
-        
+          costOfCaseChange = COST_OF_CHANGING_CASE + matrix[i - 1][j - 1];
+
         matrix[i][j] = minimum(costOfSubst, costOfSwap, costOfDelete, costOfInsertion, costOfCaseChange);
       }
     }
 
-    return matrix[a_size - 1][b_size - 1];
+    return matrix[aSize - 1][bSize - 1];
   }
 
   /**
-   * checks to see if the two charactors are equal ignoring case. 
-   * @param ch1
-   * @param ch2
-   * @return boolean
+   * Checks to see if the two characters are equal ignoring case.
+   *
+   * @param ch1 The first character.
+   * @param ch2 The second character.
+   * @return Whether they are equal.
    */
   private static boolean equalIgnoreCase(char ch1, char ch2) {
-    if (ch1 == ch2)
-    {
+    if (ch1 == ch2) {
     	return true;
     }
-    else
-    {
+    else {
     	return (Character.toLowerCase(ch1) == Character.toLowerCase(ch2));
     }
   }
-  
-  static private int minimum(int a, int b, int c, int d, int e) {
+
+  private static int minimum(int a, int b, int c, int d, int e) {
     int mi = a;
     if (b < mi)
       mi = b;
@@ -182,13 +184,14 @@ public class EditDistance {
   }
 
   /**
-   * For testing edit distances
+   * For testing edit distances.
+   *
    * @param args an array of two strings we want to evaluate their distances.
    * @throws java.lang.Exception when problems occurs during reading args.
    */
   public static void main(String[] args) throws Exception {
     BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-    int[][] matrix = new int[0][0]; 
+    //int[][] matrix = new int[0][0];
     while (true) {
 
       String input1 = stdin.readLine();
@@ -199,10 +202,8 @@ public class EditDistance {
       if (input2 == null || input2.length() == 0)
         break;
 
-      System.out.println(EditDistance.getDistance(input1, input2,matrix));
+      //System.out.println(EditDistance.getDistance(input1, input2,matrix));
     }
-    System.out.println("done");
+    //System.out.println("done");
   }
 }
-
-

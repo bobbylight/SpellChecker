@@ -21,7 +21,7 @@ package org.fife.com.swabunga.spell.event;
 
 
 /**
- * A word finder Java source files, which searches text for sequences of 
+ * A word finder Java source files, which searches text for sequences of
  * letters formatted as Java comments.
  *
  * @author Anthony Roy  (ajr@antroy.co.uk)
@@ -127,9 +127,8 @@ public class JavaWordFinder extends AbstractWordFinder {
   }
 
   /**
-   * Initializes this word finder
+   * Initializes this word finder.
    */
-
   @Override
   protected void init() {
     super.init();

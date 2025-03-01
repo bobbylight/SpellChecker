@@ -19,20 +19,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.util;
 
-public class StringUtility {
-  // robert: Use StringBuilder
-  public static StringBuilder replace(StringBuilder buf, int start, int end, String text) {
-    int len = text.length();
-    char[] ch = new char[buf.length() + len - (end - start)];
-    buf.getChars(0, start, ch, 0);
-    text.getChars(0, len, ch, start);
-    buf.getChars(end, buf.length(), ch, start + len);
-    buf.setLength(0);
-    buf.append(ch);
-    return buf;
+/**
+ * String utility methods.
+ */
+public final class StringUtility {
+
+  private StringUtility() {
+    // Private constructor to prevent instantiation.
   }
 
-  public static void main(String[] args) {
-    System.out.println(StringUtility.replace(new StringBuilder(args[0]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), args[1]));
+  /**
+   * Replaces a region in a string builder with new text. Example:
+   * <code>
+   *   StringBuilder sb = new StringBuilder("Hello world");
+   *   String replaceWith = "foobar";
+   *   println(replace(buf, 3, 5, replaceWith));
+   * </code>
+   * would print {@code "Helfoobar world"}.
+   *
+   * @param sb The buffer to update.
+   * @param start The offset of the first character to replace, inclusive.
+   * @param end The offset of the end character to replace, exclusive.
+   * @param replaceWith The text to insert.
+   * @return The string builder.
+   */
+  public static StringBuilder replace(StringBuilder sb, int start, int end, String replaceWith) {
+    // robert: Use StringBuilder
+    int len = replaceWith.length();
+    char[] ch = new char[sb.length() + len - (end - start)];
+    sb.getChars(0, start, ch, 0);
+    replaceWith.getChars(0, len, ch, start);
+    sb.getChars(end, sb.length(), ch, start + len);
+    sb.setLength(0);
+    sb.append(ch);
+    return sb;
   }
 }

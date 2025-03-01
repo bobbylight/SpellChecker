@@ -3,7 +3,7 @@
  *
  * DefaultSpellCheckableTokenIdentifier.java - Identifies comment tokens to
  * be spell checked.
- * 
+ *
  * This library is distributed under the LGPL.  See the included
  * LICENSE.md file for details.
  */
