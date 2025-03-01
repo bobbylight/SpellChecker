@@ -1,6 +1,8 @@
 # SpellChecker
 ![Build](https://github.com/bobbylight/SpellChecker/actions/workflows/gradle.yml/badge.svg)
 ![CodeQL](https://github.com/bobbylight/SpellChecker/actions/workflows/codeql-analysis.yml/badge.svg)
+![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fifesoft/spellchecker/badge.svg)
+[![codecov](https://codecov.io/gh/bobbylight/SpellChecker/branch/master/graph/badge.svg?token=Hktq3vfINy)](https://codecov.io/gh/bobbylight/SpellChecker)
 
 SpellChecker is a spell check add-on for `RSyntaxTextArea`.  For programming languages, it spell-checks text in
 comments, and when editing plain text files, the entire file is spell-checked.  Spelling errors are squiggle-underlined

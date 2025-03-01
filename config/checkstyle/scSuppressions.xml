@@ -5,7 +5,6 @@
     "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
     <suppress files=".*Demo(?:App)?\.java" checks="[a-zA-Z0-9]*"/>
-    <suppress files=".*TokenMaker\.java" checks="[a-zA-Z0-9]*"/>
 
     <!-- For some reason checkstyle flags all Javadoc as false positives in this one file. -->
     <suppress files=".*SpellDictionaryCachedDichoDisk\.java" checks="JavadocContentLocationCheck"/>

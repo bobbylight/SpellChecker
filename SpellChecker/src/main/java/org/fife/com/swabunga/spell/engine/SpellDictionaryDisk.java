@@ -54,10 +54,32 @@ import java.util.Vector;
  * @since 0.5
  */
 public class SpellDictionaryDisk extends SpellDictionaryASpell {
+
+  /**
+   * A subdirectory containing zero or more word files (one word per line).
+   */
   private static final String DIRECTORY_WORDS = "words";
+
+  /**
+   * A subdirectory containing database-related files, created from the files in
+   * {@code DIRECTORY_WORDS}.
+   */
   private static final String DIRECTORY_DB = "db";
+
+  /**
+   * When a DB file is created, this is a "cache" of the files and their word counts
+   * that contributed to it. Used to determine whether to recreate the DB.
+   */
   private static final String FILE_CONTENTS = "contents";
+
+  /**
+   * The name of the database file to create. Lives in {@code DIRECTORY_DB}.
+   */
   private static final String FILE_DB = "words.db";
+
+  /**
+   * The name of the database index file to create. Lives in {@code DIRECTORY_DB}.
+   */
   private static final String FILE_INDEX = "words.idx";
 
   /* maximum number of words an index entry can represent */
@@ -557,8 +579,7 @@ public List<String> getWords(String code) {
 			FileSize fs = (FileSize)o;
 			// robert: Line below previously was buggy and would never return
 			// true (comparing a FileSize to a String).
-			return size==fs.size && this.filename!=null &&
-					this.filename.equals(fs.filename);
+			return size==fs.size && this.filename.equals(fs.filename);
 		}
       return false;
     }
