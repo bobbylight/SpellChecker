@@ -61,7 +61,7 @@ public class DocumentWordTokenizer implements WordTokenizer {
    */
   private boolean moreTokens = true;
   /**
-   * Is this a special case where the currentWordStart, currntWordEnd and
+   * Is this a special case where the currentWordStart, currentWordEnd and
    * nextWordPos have already been calculated. (see nextWord).
    */
   private boolean first = true;
@@ -292,13 +292,13 @@ public class DocumentWordTokenizer implements WordTokenizer {
     // BreakIterator doesn't work when the first word in a sentence is not
     // capitalized, but we need to check for capitalization
     if (startsSentence || currentWordPos < 2)
-      return (true);
+      return true;
 
-    String textBefore = null;
+    String textBefore;
     try {
       textBefore = document.getText(currentWordPos - 2, 2);
     } catch (BadLocationException ex) {
-      return (false);
+      return false;
     }
     return (textBefore != null && ".".equals(textBefore.trim()));
   }

@@ -5,4 +5,4 @@
 /**
  * Tests for this package.
  */
-package org.fife.com.swabunga.spell.event;
+package org.fife.ui.rsyntaxtextarea.spell;

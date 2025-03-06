@@ -86,7 +86,7 @@ public class StringWordTokenizer extends AbstractWordTokenizer {
    * @throws WordNotFoundException current word not yet set.
    */
   @Override
-public void replaceWord(String s) {
+  public void replaceWord(String s) {
     finder.replace(s);
   }
 }

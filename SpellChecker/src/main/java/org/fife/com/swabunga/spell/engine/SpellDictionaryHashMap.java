@@ -64,16 +64,20 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   private File dictFile;
 
   /**
-   * Dictionary Constructor.
+   * Creates an empty dictionary.
    *
    * @throws IOException If an IO error occurs.
+   * @see #addWord(String)
    */
   public SpellDictionaryHashMap() throws IOException {
     super((File) null);
   }
 
   /**
-   * Dictionary Constructor.
+   * Constructor.<p>
+   * Note that since there's no actual file for the word list, words added
+   * via {@link #addWord(String)} will not persist beyond the application's
+   * lifecycle.
    *
    * @param wordList The file containing the words list for the dictionary
    * @throws IOException If an IO error occurs.
@@ -126,7 +130,10 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
 
   /**
    * Dictionary constructor that uses an aspell phonetic file to
-   * build the transformation table.
+   * build the transformation table.<p>
+   * Note that since there's no actual file for the word list, words added
+   * via {@link #addWord(String)} will not persist beyond the application's
+   * lifecycle.
    *
    * @param wordList The file containing the words list for the dictionary
    * @param phonetic The reader to use for phonetic transformation of the
@@ -140,22 +147,6 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   }
 
   /**
-   * Add words from a file to existing dictionary hashmap.
-   * This function can be called as many times as needed to
-   * build the internal word list. Duplicates are not added.
-   * <p>
-   * Note that adding a dictionary does not affect the target
-   * dictionary file for the addWord method. That is, addWord() continues
-   * to make additions to the dictionary file specified in createDictionary()
-   *
-   * @param wordList a File object that contains the words, on word per line.
-   * @throws IOException If an IO error occurs.
-   */
-  public void addDictionary(File wordList) throws IOException {
-    addDictionaryHelper(new BufferedReader(new FileReader(wordList)));
-  }
-
-  /**
    * Add words from a Reader to existing dictionary hashmap.
    * This function can be called as many times as needed to
    * build the internal word list. Duplicates are not added.
@@ -165,7 +156,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * to make additions to the dictionary file specified in createDictionary()
    *
    * @param wordList a Reader object that contains the words, on word per line.
-   * @throws IOException If an IO error uoccurs.
+   * @throws IOException If an IO error occurs.
    */
   public void addDictionary(Reader wordList) throws IOException {
     addDictionaryHelper(new BufferedReader(wordList));
@@ -202,7 +193,7 @@ public boolean addWord(String word) {
    * This is a very slow function. On my machine it takes quite a while to
    * load the data in. I suspect that we could speed this up quite allot.
    */
-  protected void createDictionary(BufferedReader in) throws IOException {
+  private void createDictionary(BufferedReader in) throws IOException {
     // robert: Optimized ever-so-slightly
     String line;
     while ((line=in.readLine())!=null) {
@@ -236,9 +227,11 @@ public boolean addWord(String word) {
   }
 
   /**
-   * Allocates a word in the dictionary.
+   * Allocates a word in the dictionary. Assumes the word isn't already in this dictionary,
+   * as it can create duplicates (which should be harmless, but not performant).
    *
-   * @param word The word to add
+   * @param word The word to add.
+   * @see #putWordUnique(String)
    */
   protected void putWord(String word) {
     String code = getCode(word);
@@ -250,7 +243,8 @@ public boolean addWord(String word) {
    * Allocates a word, if it is not already present in the dictionary. A word
    * with a different case is considered the same.
    *
-   * @param word The word to add
+   * @param word The word to add.
+   * @see #putWord(String)
    */
   protected void putWordUnique(String word) {
 
