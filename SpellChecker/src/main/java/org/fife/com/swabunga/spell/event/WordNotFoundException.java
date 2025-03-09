@@ -24,8 +24,6 @@ package org.fife.com.swabunga.spell.event;
  */
 public class WordNotFoundException extends RuntimeException {
 
-  //~ Constructors ............................................................
-
   /**
    * Creates a new WordNotFoundException object.
    */

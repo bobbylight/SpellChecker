@@ -37,7 +37,7 @@ import java.util.*;
  * The SpellDictionaryHashMap holds the dictionary
  * <p/>
  * There are many open source dictionary files. For just a few see:
- * http://wordlist.sourceforge.net/
+ * <a href="http://wordlist.sourceforge.net/">http://wordlist.sourceforge.net/</a>
  * <p/>
  * This dictionary class reads words one per line. Make sure that your word list
  * is formatted in this way (most are).
@@ -197,7 +197,7 @@ public boolean addWord(String word) {
     // robert: Optimized ever-so-slightly
     String line;
     while ((line=in.readLine())!=null) {
-      if (line.length() > 0) {
+      if (!line.isEmpty()) {
         putWord(line);
       }
     }
@@ -220,7 +220,7 @@ public boolean addWord(String word) {
 	    // robert: Optimized ever-so-slightly
 	    String line;
 	    while ((line=in.readLine())!=null) {
-	      if (line.length() > 0) {
+	      if (!line.isEmpty()) {
 	        putWordUnique(line);
 	      }
 	    }
@@ -292,12 +292,11 @@ public boolean addWord(String word) {
   @Override
   public boolean isCorrect(String word) {
     List<String> possible = getWords(getCode(word));
-    if (possible.contains(word))
+    if (possible.contains(word)) {
       return true;
+    }
     //JMH should we always try the lowercase version. If I dont then capitalized
     //words are always returned as incorrect.
-    else if (possible.contains(word.toLowerCase()))
-      return true;
-    return false;
+    return possible.contains(word.toLowerCase());
   }
 }

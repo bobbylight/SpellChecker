@@ -30,11 +30,11 @@ import java.util.List;
 class BasicSpellCheckEvent implements SpellCheckEvent {
 
   /**
-   * The list holding the suggested Word objects for the misspelt word.
+   * The list holding the suggested Word objects for the misspelled word.
    */
   private List<Word> suggestions;
   /**
-   * The misspelt word.
+   * The misspelled word.
    */
   private String invalidWord;
   /**
@@ -52,8 +52,8 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
   /**
    * Constructs the SpellCheckEvent.
    *
-   * @param invalidWord The word that is misspelt
-   * @param suggestions A list of Word objects that are suggested to replace the currently misspelt word
+   * @param invalidWord The word that is misspelled
+   * @param suggestions A list of Word objects that are suggested to replace the currently misspelled word
    * @param tokenizer   The reference to the tokenizer that caused this event to fire.
    */
   BasicSpellCheckEvent(String invalidWord, List<Word> suggestions, WordTokenizer tokenizer) {
@@ -63,8 +63,8 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
   /**
    * Constructs the SpellCheckEvent.
    *
-   * @param invalidWord   The word that is misspelt
-   * @param suggestions   A list of Word objects that are suggested to replace the currently misspelt word
+   * @param invalidWord   The word that is misspelled
+   * @param suggestions   A list of Word objects that are suggested to replace the currently misspelled word
    * @param startPosition The position of the misspelled word.
    */
   BasicSpellCheckEvent(String invalidWord, List<Word> suggestions, int startPosition) {
@@ -76,7 +76,7 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
   /**
    * Returns the list of suggested Word objects.
    *
-   * @return A list of words phonetically close to the misspelt word
+   * @return A list of words phonetically close to the misspelled word
    */
   @Override
   public List<Word> getSuggestions() {
@@ -84,9 +84,9 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
   }
 
   /**
-   * Returns the currently misspelt word.
+   * Returns the currently misspelled word.
    *
-   * @return The text misspelt
+   * @return The text misspelled
    */
   @Override
   public String getInvalidWord() {
@@ -94,7 +94,7 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
   }
 
   /**
-   * Returns the context in which the misspelt word is used.
+   * Returns the context in which the misspelled word is used.
    *
    * @return The text containing the context
    */
@@ -105,7 +105,7 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
   }
 
   /**
-   * Returns the start position of the misspelt word in the context.
+   * Returns the start position of the misspelled word in the context.
    *
    * @return The position of the word.
    */
@@ -135,11 +135,11 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
   }
 
   /**
-   * Set the action to replace the currently misspelt word with the new word.
+   * Set the action to replace the currently misspelled word with the new word.
    *
-   * @param newWord  The word to replace the currently misspelt word
+   * @param newWord  The word to replace the currently misspelled word
    * @param replaceAll If set to true, the SpellChecker will replace all
-   *           further occurrences of the misspelt word without firing a SpellCheckEvent.
+   *           further occurrences of the misspelled word without firing a SpellCheckEvent.
    */
   @Override
   public void replaceWord(String newWord, boolean replaceAll) {
@@ -153,10 +153,10 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
   }
 
   /**
-   * Set the action it ignore the currently misspelt word.
+   * Set the action it ignore the currently misspelled word.
    *
    * @param ignoreAll If set to true, the SpellChecker will replace all
-   *          further occurrences of the misspelt word without firing a SpellCheckEvent.
+   *          further occurrences of the misspelled word without firing a SpellCheckEvent.
    */
   @Override
   public void ignoreWord(boolean ignoreAll) {
@@ -170,7 +170,7 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
 
   /**
    * Set the action to add a new word into the dictionary. This will also replace the
-   * currently misspelt word.
+   * currently misspelled word.
    *
    * @param newWord The new word to add to the dictionary.
    */

@@ -39,8 +39,6 @@ package org.fife.com.swabunga.spell.event;
 
 public interface WordFinder {
 
-  //~ Methods .................................................................
-
   /**
    * This method returns the text through which the WordFinder is iterating.
    * The text may have been modified through calls to replace().

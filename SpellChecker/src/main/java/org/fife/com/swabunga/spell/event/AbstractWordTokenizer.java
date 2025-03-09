@@ -35,8 +35,6 @@ import java.text.BreakIterator;
  */
 public abstract class AbstractWordTokenizer implements WordTokenizer {
 
-    //~ Instance/static variables ...............................................
-
     /**
      * The word being analyzed.
      */
@@ -55,8 +53,6 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
      */
     private int wordCount;
 
-    //~ Constructors ............................................................
-
     /**
      * Creates a new AbstractWordTokenizer object.
      *
@@ -74,8 +70,6 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
     public AbstractWordTokenizer(WordFinder wf) {
         this.finder = wf;
     }
-
-    //~ Methods .................................................................
 
     /**
      * Returns the current number of words that have been processed.

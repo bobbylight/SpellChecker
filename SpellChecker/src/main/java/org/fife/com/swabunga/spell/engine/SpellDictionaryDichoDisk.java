@@ -31,7 +31,7 @@ import java.util.List;
  * footprint of <code>SpellDictionaryHashMap</code> at the cost of relatively minor latency. A future version
  * of this class that implements some caching strategies might be a good idea in the future, if there's any
  * demand for it.
- *
+ * <p>
  * This implementation requires a special dictionary file, with "code*word" lines sorted by code.
  * It's using a dichotomy algorithm to search for words in the dictionary
  *
@@ -191,9 +191,8 @@ public class SpellDictionaryDichoDisk extends SpellDictionaryASpell {
     } catch (EOFException ex) {
     }
     if (i == 0)
-      return("");
-    String s = new String(buf, 0, i-1, encoding);
-    return(s);
+      return "";
+    return new String(buf, 0, i-1, encoding);
    }
 
   /**

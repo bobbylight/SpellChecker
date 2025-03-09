@@ -31,7 +31,7 @@ import org.fife.com.swabunga.spell.engine.Configuration;
 import org.fife.com.swabunga.spell.engine.SpellDictionary;
 import org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap;
 import org.fife.com.swabunga.spell.engine.Word;
-import org.fife.com.swabunga.util.VectorUtility;
+import org.fife.com.swabunga.util.ListUtil;
 
 
 /**
@@ -452,14 +452,14 @@ public class SpellChecker {
 
       for (SpellDictionary dictionary : dictionaries) {
         if (dictionary != userdictionary)
-          VectorUtility.addAll(suggestions, dictionary.getSuggestions(word, threshold), false);
+          ListUtil.addAllNoDuplicates(suggestions, dictionary.getSuggestions(word, threshold));
       }
 
       if (cache != null && cache.size() < cacheSize)
         cache.put(word, suggestions);
     }
 
-    VectorUtility.addAll(suggestions, userdictionary.getSuggestions(word, threshold), false);
+    ListUtil.addAllNoDuplicates(suggestions, userdictionary.getSuggestions(word, threshold));
     if (suggestions instanceof ArrayList) {
       ((ArrayList<Word>)suggestions).trimToSize();
     }

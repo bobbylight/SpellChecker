@@ -46,11 +46,11 @@ package org.fife.com.swabunga.spell.engine;
 public class DoubleMeta implements Transformator {
 
   /**
-   * The replace list is used in the getSuggestions method.
+   * Used in the getSuggestions method.
    * All of the letters in the misspelled word are replaced with the characters from
    * this list to try and generate more suggestions, which implies l*n tries,
    * if l is the size of the string, and n is the size of this list.
-   *
+   * <p>
    * In addition to that, each of these letters is added to the misspelled word.
    */
   private static char[] replaceList = {'A', 'B', 'X', 'S', 'K', 'J', 'T', 'F', 'H', 'L', 'M', 'N', 'P', 'R', '0'};
@@ -154,9 +154,7 @@ public class DoubleMeta implements Transformator {
   private static final String[] LIST_95 = {"C", "X", ""};
 
   private static boolean slavoGermanic(String in) {
-    if ((in.contains("W")) || (in.contains("K")) || (in.contains("CZ")) || (in.contains("WITZ")))
-      return true;
-    return false;
+    return in.contains("W") || in.contains("K") || in.contains("CZ") || in.contains("WITZ");
   }
 
   private static void metaphAdd(StringBuilder primary, String main) {
@@ -170,12 +168,10 @@ public class DoubleMeta implements Transformator {
   }
 
   private static boolean isVowel(String in, int at, int length) {
-    if ((at < 0) || (at >= length))
+    if (at < 0 || at >= length)
       return false;
     char it = in.charAt(at);
-    if ((it == 'A') || (it == 'E') || (it == 'I') || (it == 'O') || (it == 'U') || (it == 'Y'))
-      return true;
-    return false;
+    return it == 'A' || it == 'E' || it == 'I' || it == 'O' || it == 'U' || it == 'Y';
   }
 
   private static boolean stringAt(String string, int start, int length, String[] list) {

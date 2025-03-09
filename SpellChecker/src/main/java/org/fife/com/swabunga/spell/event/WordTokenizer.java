@@ -39,8 +39,6 @@ package org.fife.com.swabunga.spell.event;
  */
 public interface WordTokenizer {
 
-  //~ Methods .................................................................
-
   /**
    * Returns the context text that is being tokenized (should include any changes that have been made).
    *
