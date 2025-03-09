@@ -64,26 +64,26 @@ public interface SpellCheckEvent {
   /**
    * Returns the list of suggested Word objects.
    *
-   * @return A list of words phonetically close to the misspelt word
+   * @return A list of words phonetically close to the misspelled word
    */
   List<Word> getSuggestions();
 
   /**
-   * Returns the currently misspelt word.
+   * Returns the currently misspelled word.
    *
-   * @return The text misspelt
+   * @return The text misspelled
    */
   String getInvalidWord();
 
   /**
-   * Returns the context in which the misspelt word is used.
+   * Returns the context in which the misspelled word is used.
    *
    * @return The text containing the context
    */
   String getWordContext();
 
   /**
-   * Returns the start position of the misspelt word in the context.
+   * Returns the start position of the misspelled word in the context.
    *
    * @return The position of the word
    */
@@ -104,25 +104,25 @@ public interface SpellCheckEvent {
   String getReplaceWord();
 
   /**
-   * Set the action to replace the currently misspelt word with the new word.
+   * Set the action to replace the currently misspelled word with the new word.
    *
-   * @param newWord  The word to replace the currently misspelt word
+   * @param newWord  The word to replace the currently misspelled word
    * @param replaceAll If set to true, the SpellChecker will replace all
-   *           further occurrences of the misspelt word without firing a SpellCheckEvent.
+   *           further occurrences of the misspelled word without firing a SpellCheckEvent.
    */
   void replaceWord(String newWord, boolean replaceAll);
 
   /**
-   * Set the action it ignore the currently misspelt word.
+   * Set the action it ignore the currently misspelled word.
    *
    * @param ignoreAll If set to true, the SpellChecker will replace all
-   *          further occurrences of the misspelt word without firing a SpellCheckEvent.
+   *          further occurrences of the misspelled word without firing a SpellCheckEvent.
    */
   void ignoreWord(boolean ignoreAll);
 
   /**
    * Set the action to add a new word into the dictionary. This will also replace the
-   * currently misspelt word.
+   * currently misspelled word.
    *
    * @param newWord The new word to add
    */

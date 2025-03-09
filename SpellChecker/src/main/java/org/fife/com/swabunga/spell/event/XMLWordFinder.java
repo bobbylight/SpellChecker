@@ -29,10 +29,6 @@ package org.fife.com.swabunga.spell.event;
  */
 public class XMLWordFinder extends AbstractWordFinder {
 
-  //~ Instance/static variables ...............................................
-
-  //~ Constructors ............................................................
-
   /**
    * Creates a new DefaultWordFinder object.
    *
@@ -41,8 +37,6 @@ public class XMLWordFinder extends AbstractWordFinder {
   public XMLWordFinder(String inText) {
     super(inText);
   }
-
-  //~ Methods .................................................................
 
   /**
    * This method scans the text from the end of the last word,  and returns a

@@ -29,8 +29,6 @@ import java.text.BreakIterator;
  */
 public abstract class AbstractWordFinder implements WordFinder {
 
-  //~ Instance/static variables .............................................
-
   /**
    * The word being analyzed.
    */
@@ -52,8 +50,6 @@ public abstract class AbstractWordFinder implements WordFinder {
    */
   protected BreakIterator sentenceIterator;
 
-  //~ Constructors ..........................................................
-
   /**
    * Creates a new AbstractWordFinder object.
    *
@@ -71,7 +67,6 @@ public abstract class AbstractWordFinder implements WordFinder {
     text = "";
     setup();
   }
-  //~ Methods ...............................................................
 
   /**
    * This method scans the text from the end of the last word,  and returns
@@ -141,17 +136,13 @@ public abstract class AbstractWordFinder implements WordFinder {
       throw new WordNotFoundException("No Words in current String");
     }
 
-    // robert: Use StringBuilder
-    StringBuilder sb = new StringBuilder(text.substring(0, currentWord.getStart()));
-    sb.append(newWord);
-    sb.append(text.substring(currentWord.getEnd()));
+    text = text.substring(0, currentWord.getStart()) + newWord + text.substring(currentWord.getEnd());
     int diff = newWord.length() - currentWord.getText().length();
     currentWord.setText(newWord);
     /* Added Conditional to ensure a NullPointerException is avoided (11 Feb 2003) */
     if (nextWord != null) {
       nextWord.setStart(nextWord.getStart() + diff);
     }
-    text = sb.toString();
 
     sentenceIterator.setText(text);
     int start = currentWord.getStart();
@@ -300,7 +291,7 @@ public abstract class AbstractWordFinder implements WordFinder {
         newIndex++;
         while (newIndex < text.length()) {
           curChar = text.charAt(newIndex);
-          if (endIgnore != null && curChar.equals(endIgnore)) {
+          if (curChar.equals(endIgnore)) {
             newIndex++;
             break;
           }

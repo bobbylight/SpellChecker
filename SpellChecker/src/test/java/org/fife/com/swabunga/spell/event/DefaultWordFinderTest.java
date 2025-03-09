@@ -110,9 +110,7 @@ class DefaultWordFinderTest {
         wordFinder.next(); // "is"
         wordFinder.next(); // "a"
         wordFinder.next(); // "test"
-        assertThrows(WordNotFoundException.class, () -> {
-            wordFinder.next();
-        });
+        assertThrows(WordNotFoundException.class, () -> wordFinder.next());
     }
 
     @Test

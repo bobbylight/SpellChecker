@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 /**
  * An implementation of <code>SpellDictionary</code> that doesn't cache any words in memory. Avoids the huge
@@ -176,7 +175,7 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
    * Builds the file words database file and the contents file for the on
    * disk dictionary.
    */
-  protected void buildNewDictionaryDatabase() throws FileNotFoundException, IOException {
+  protected void buildNewDictionaryDatabase() throws IOException {
     /* combine all dictionary files into one sorted file */
     File sortedFile = buildSortedFile();
 
@@ -207,7 +206,7 @@ public boolean addWord(String word) {
    */
   @Override
 public List<String> getWords(String code) {
-    Vector<String> words = new Vector<>();
+    List<String> words = new ArrayList<>();
 
     int[] posLen = getStartPosAndLen(code);
     if (posLen != null) {
@@ -222,7 +221,7 @@ public List<String> getWords(String code) {
         String[] lines = split(data, "\n");
           for (String line : lines) {
               String[] s = split(line, ",");
-              if (s[0].equals(code)) words.addElement(s[1]);
+              if (s[0].equals(code)) words.add(s[1]);
           }
       } catch (Exception e) {
         e.printStackTrace();
@@ -239,7 +238,7 @@ public List<String> getWords(String code) {
   BufferedInputStream input;
   byte[] bytes;
     public List getWords(String code) {
-      Vector words = new Vector();
+      List<String> words = new ArrayList<>();
 
       int[] posLen = getStartPosAndLen(code);
       if (posLen != null) {
@@ -262,7 +261,7 @@ public List<String> getWords(String code) {
 //          String[] lines = split(data, "\n");
 //          for (int i = 0; i < lines.length; i++) {
 //            String[] s = split(lines[i], ",");
-//            if (s[0].equals(code)) words.addElement(s[1]);
+//            if (s[0].equals(code)) words.add(s[1]);
 //          }
   int offs = 0;
   while (offs<posLen[1]) {
@@ -348,7 +347,7 @@ public List<String> getWords(String code) {
           BufferedReader r = new BufferedReader(new FileReader(wordFile));
           String word;
           while ((word = r.readLine()) != null) {
-              if (!"".equals(word)) {
+              if (!word.isEmpty()) {
                   w.add(word.trim());
               }
           }
@@ -373,7 +372,7 @@ public List<String> getWords(String code) {
     return file;
   }
 
-  private void buildCodeDb(File sortedWords) throws FileNotFoundException, IOException {
+  private void buildCodeDb(File sortedWords) throws IOException {
     List<CodeWord> codeList = new ArrayList<>();
 
     BufferedReader reader = new BufferedReader(new FileReader(sortedWords));
@@ -461,7 +460,7 @@ public List<String> getWords(String code) {
   }
 
   private int[] getStartPosAndLen(String code) {
-    while (code.length() > 0) {
+    while (!code.isEmpty()) {
       int[] posLen = index.get(code);
       if (posLen == null) {
         code = code.substring(0, code.length() - 1);
@@ -546,10 +545,7 @@ public List<String> getWords(String code) {
       if (!(o instanceof CodeWord)) return false;
 
       final CodeWord codeWord = (CodeWord) o;
-
-      if (!word.equals(codeWord.word)) return false;
-
-      return true;
+      return word.equals(codeWord.word);
     }
 
     @Override

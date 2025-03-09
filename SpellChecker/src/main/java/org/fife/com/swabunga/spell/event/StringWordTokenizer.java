@@ -33,8 +33,6 @@ package org.fife.com.swabunga.spell.event;
  */
 public class StringWordTokenizer extends AbstractWordTokenizer {
 
-  //~ Constructors ............................................................
-
   /**
    * Creates a new StringWordTokenizer object.
    *

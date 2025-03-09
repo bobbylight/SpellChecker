@@ -24,13 +24,9 @@ package org.fife.com.swabunga.spell.event;
  */
 public class Word {
 
-  //~ Instance/static variables ...............................................
-
   private int end;
   private int start;
   private String text;
-
-  //~ Constructors ............................................................
 
   /**
    * Creates a new Word object.
@@ -53,15 +49,12 @@ public class Word {
     this.copy(w);
   }
 
-  //~ Methods .................................................................
-
   /**
    * Evaluate the end of word position.
    *
    * @return the end index of the word.
    */
   public int getEnd() {
-
     return end;
   }
 
@@ -101,7 +94,6 @@ public class Word {
    * @return the String representing the word.
    */
   public String getText() {
-
     return text;
   }
 
@@ -122,7 +114,6 @@ public class Word {
    * @return the length of the word.
    */
   public int length() {
-
     return text.length();
   }
 
@@ -132,8 +123,7 @@ public class Word {
    * @return the text representing the word.
    */
   @Override
-public String toString() {
-
+  public String toString() {
     return text;
   }
 

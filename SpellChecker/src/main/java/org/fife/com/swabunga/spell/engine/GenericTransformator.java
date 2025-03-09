@@ -20,11 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 package org.fife.com.swabunga.spell.engine;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-
-import org.fife.com.swabunga.util.StringUtility;
 
 /**
  * A Generic implementation of a transformator takes an
@@ -149,7 +148,7 @@ public class GenericTransformator implements Transformator {
    * that are coded equally will be in the replace list.
    * In other words, it removes any letters in the alphabet
    * that are redundant phonetically.
-   *
+   * <p>
    * This is done to improve speed in the getSuggestion method.
    *
    * @param alphabet The complete alphabet to wash.
@@ -207,7 +206,7 @@ public String transform(String word) {
 
       add = 1;
       if (Character.isDigit(str.charAt(startPos))) {
-        StringUtility.replace(str, startPos, startPos + DIGITCODE.length(), DIGITCODE);
+        str.replace(startPos, startPos + DIGITCODE.length(), DIGITCODE);
         startPos += add;
         continue;
       }
@@ -224,7 +223,7 @@ public String transform(String word) {
                 String replaceExp = rule.getReplaceExp();
 
                 add = replaceExp.length();
-                StringUtility.replace(str, startPos, startPos + rule.getTakeOut(), replaceExp);
+                str.replace(startPos, startPos + rule.getTakeOut(), replaceExp);
                 strLength -= rule.getTakeOut();
                 strLength += add;
                 //System.out.println("Replacing with rule#:"+i+" add="+add);
@@ -241,17 +240,16 @@ public String transform(String word) {
   // Used to build up the transformastion table.
   private void buildRules(BufferedReader in) throws IOException {
     String read = null;
-    Vector<TransformationRule> ruleList = new Vector<>();
+    List<TransformationRule> ruleList = new ArrayList<>();
     while ((read = in.readLine()) != null) {
       buildRule(realTrimmer(read), ruleList);
     }
-    ruleArray = new TransformationRule[ruleList.size()];
-    ruleList.copyInto(ruleArray);
+    ruleArray = ruleList.toArray(new TransformationRule[0]);
   }
 
   // Here is where the real work of reading the phonetics file is done.
-  private void buildRule(String str, Vector<TransformationRule> ruleList) {
-    if (str.length() < 1)
+  private void buildRule(String str, List<TransformationRule> ruleList) {
+    if (str.isEmpty())
       return;
     for (String ignoredKeyword : IGNORED_KEYWORDS) {
       if (str.startsWith(ignoredKeyword))
@@ -314,14 +312,12 @@ public String transform(String word) {
     }
     rule = new TransformationRule(matchExp.toString(), replaceExp.toString(), takeOutPart, matchLength, start, end);
     //System.out.println(rule.toString());
-    ruleList.addElement(rule);
+    ruleList.add(rule);
   }
 
   // Chars with special meaning to aspell. Not everyone is implemented here.
   private boolean isReservedChar(char ch) {
-    if (ch == '<' || ch == '>' || ch == '^' || ch == '$' || ch == '-' || Character.isDigit(ch))
-      return true;
-    return false;
+      return ch == '<' || ch == '>' || ch == '^' || ch == '$' || ch == '-' || Character.isDigit(ch);
   }
 
   // Trims off everything we don't care about.

@@ -52,7 +52,7 @@ public interface SpellDictionary {
    * <br/>
    * Each suggested word has a score, which is an integer
    * that represents how different the suggested word is from the sourceWord.
-   * If the words are the exactly the same, then the score is 0.
+   * If the words are exactly the same, then the score is 0.
    * You can get the dictionary to only return the most similar words by setting
    * an appropriately low threshold value.
    * If you set the threshold value too low, you may get no suggestions for a given word.
@@ -75,7 +75,7 @@ public interface SpellDictionary {
    * <br/>
    * Each suggested word has a score, which is an integer
    * that represents how different the suggested word is from the sourceWord.
-   * If the words are the exactly the same, then the score is 0.
+   * If the words are exactly the same, then the score is 0.
    * You can get the dictionary to only return the most similar words by setting
    * an appropriately low threshold value.
    * If you set the threshold value too low, you may get no suggestions for a given word.
@@ -84,7 +84,7 @@ public interface SpellDictionary {
    * @param sourceWord the string that we want to get a list of spelling suggestions for
    * @param scoreThreshold Any words that have score less than this number are returned.
    * @param matrix Two dimensional int array used to calculate edit distance. Allocating
-   *        this memory outside of the function will greatly improve efficiency.
+   *        this memory outside the function will greatly improve efficiency.
    * @return List a List of suggested words
    * @see org.fife.com.swabunga.spell.engine.Word
    */

@@ -26,10 +26,6 @@ package org.fife.com.swabunga.spell.event;
  */
 public class DefaultWordFinder extends AbstractWordFinder {
 
-  //~ Instance/static variables ...............................................
-
-  //~ Constructors ............................................................
-
   /**
    * Creates a new DefaultWordFinder object.
    *
@@ -45,8 +41,6 @@ public class DefaultWordFinder extends AbstractWordFinder {
   public DefaultWordFinder() {
     super();
   }
-
-  //~ Methods .................................................................
 
   /**
    * This method scans the text from the end of the last word,  and returns a
@@ -108,12 +102,12 @@ public Word next() {
             return i - 1;
       }
       return text.length();
-    } else {
-      for (int i = startPos; i < text.length(); i++) {
-        if (!isWordChar(i))
-          return i;
-      }
-      return text.length();
     }
+
+    for (int i = startPos; i < text.length(); i++) {
+      if (!isWordChar(i))
+        return i;
+    }
+    return text.length();
   }
 }

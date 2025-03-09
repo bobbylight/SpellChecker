@@ -137,7 +137,7 @@ class SpellCheckerTest {
     }
 
     @Test
-    void testIsCorrect_noDictionaryContainsWord() throws IOException {
+    void testIsCorrect_noDictionaryContainsWord() {
         assertFalse(checker.isCorrect("unknownWord"));
     }
 
@@ -275,9 +275,7 @@ class SpellCheckerTest {
 
     @Test
     void testSetUserDictionary() {
-        assertDoesNotThrow(() -> {
-            checker.setUserDictionary(new SpellDictionaryHashMap());
-        });
+        assertDoesNotThrow(() -> checker.setUserDictionary(new SpellDictionaryHashMap()));
     }
 
     @Test
