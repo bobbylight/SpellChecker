@@ -100,7 +100,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * Constructs a new SpellDictionaryASpell.
    *
    * @param phonetic The Reader to use for phonetic transformation of the
-   *        words list. If <code>phonetic</code> is null, the the transformation
+   *        words list. If <code>phonetic</code> is null, the transformation
    *        uses {@link DoubleMeta} transformation.
    * @throws IOException  indicates problems reading the phonetic information.
    */
@@ -225,11 +225,11 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
     List<Word> wordlist = getWordsFromCode(word, nearmisscodes);
 
-    if (wordlist.size() == 0 && phoneticList.size() == 0)
+    if (wordlist.isEmpty() && phoneticList.isEmpty())
       addBestGuess(word, phoneticList, matrix);
 
 
-    // We sort a Vector at the end instead of maintaining a
+    // We sort a List at the end instead of maintaining a
     // continuously sorted TreeSet because every time you add a collection
     // to a tree set it has to be resorted. It's better to do this operation
     // once at the end.
@@ -246,16 +246,16 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * then pick the best guesses from the those words that have the same phonetic code.
    *
    * @param word - the word we are trying spell correct
-   * @param wordList Two dimensional array of int used to calculate
-   *        edit distance. Allocating this memory outside of the function will greatly improve efficiency.
    * @param wordList - the linked list that will get the best guess
+   * @param matrix Two dimensional array of int used to calculate
+   *        edit distance. Allocating this memory outside of the function will greatly improve efficiency.
    */
   private void addBestGuess(String word, List<Word> wordList, int[][] matrix) {
   	if (matrix == null) {
         matrix = new int[0][0];
     }
 
-    if (wordList.size() != 0)
+    if (!wordList.isEmpty())
       throw new InvalidParameterException("the wordList vector must be empty");
 
     int bestScore = Integer.MAX_VALUE;
@@ -327,8 +327,6 @@ public boolean isCorrect(String word) {
       return true;
     //JMH should we always try the lowercase version. If I don't then
     // capitalized words are always returned as incorrect.
-    else if (possible.contains(word.toLowerCase()))
-      return true;
-    return false;
+    return possible.contains(word.toLowerCase());
   }
 }

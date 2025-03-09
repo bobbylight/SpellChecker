@@ -20,9 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 package org.fife.com.swabunga.spell.engine;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.fife.com.swabunga.util.StringUtility;
 
@@ -241,17 +242,16 @@ public String transform(String word) {
   // Used to build up the transformastion table.
   private void buildRules(BufferedReader in) throws IOException {
     String read = null;
-    Vector<TransformationRule> ruleList = new Vector<>();
+    List<TransformationRule> ruleList = new ArrayList<>();
     while ((read = in.readLine()) != null) {
       buildRule(realTrimmer(read), ruleList);
     }
-    ruleArray = new TransformationRule[ruleList.size()];
-    ruleList.copyInto(ruleArray);
+    ruleArray = ruleList.toArray(new TransformationRule[0]);
   }
 
   // Here is where the real work of reading the phonetics file is done.
-  private void buildRule(String str, Vector<TransformationRule> ruleList) {
-    if (str.length() < 1)
+  private void buildRule(String str, List<TransformationRule> ruleList) {
+    if (str.isEmpty())
       return;
     for (String ignoredKeyword : IGNORED_KEYWORDS) {
       if (str.startsWith(ignoredKeyword))
@@ -314,7 +314,7 @@ public String transform(String word) {
     }
     rule = new TransformationRule(matchExp.toString(), replaceExp.toString(), takeOutPart, matchLength, start, end);
     //System.out.println(rule.toString());
-    ruleList.addElement(rule);
+    ruleList.add(rule);
   }
 
   // Chars with special meaning to aspell. Not everyone is implemented here.

@@ -124,7 +124,7 @@ public abstract class Configuration {
    */
   public static final Configuration getConfiguration() {
     String config = System.getProperty("jazzy.config"); // added by bd
-    if (config != null && config.length() > 0)
+    if (config != null && !config.isEmpty())
         return getConfiguration(config);
     return getConfiguration(null);
   }
@@ -139,7 +139,7 @@ public abstract class Configuration {
 
     Configuration result;
 
-    if (className != null && className.length() > 0) {
+    if (className != null && !className.isEmpty()) {
       try {
         result = (Configuration) Class.forName(className).getDeclaredConstructor().newInstance();
       } catch (InstantiationException | InvocationTargetException | IllegalAccessException |

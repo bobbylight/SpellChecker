@@ -38,9 +38,7 @@ public class SpellingParserEventTest {
 
     @Test
     void testConstructor_error_invalidEventType() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new SpellingParserEvent(parser, textArea, -1, "test");
-        });
+        assertThrows(IllegalArgumentException.class, () -> new SpellingParserEvent(parser, textArea, -1, "test"));
     }
 
     @Test

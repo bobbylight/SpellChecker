@@ -44,7 +44,7 @@ class SpellingParserTest {
     }
 
     @Test
-    void testAddSpellingParserListener() throws BadLocationException {
+    void testAddSpellingParserListener() {
         SpellingParserListener listener = e -> {};
         assertDoesNotThrow(() -> parser.addSpellingParserListener(listener));
     }
