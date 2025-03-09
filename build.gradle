@@ -19,7 +19,7 @@ allprojects {
     }
 
     wrapper {
-        gradleVersion = '8.12.1'
+        gradleVersion = '8.13'
     }
 
     tasks.withType(Javadoc) {
@@ -38,7 +38,7 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = '10.21.3'
+        toolVersion = '10.21.4'
         configDirectory = file("$rootProject.projectDir/config/checkstyle")
     }
 
