@@ -197,7 +197,7 @@ public boolean addWord(String word) {
     // robert: Optimized ever-so-slightly
     String line;
     while ((line=in.readLine())!=null) {
-      if (line.length() > 0) {
+      if (!line.isEmpty()) {
         putWord(line);
       }
     }
@@ -220,7 +220,7 @@ public boolean addWord(String word) {
 	    // robert: Optimized ever-so-slightly
 	    String line;
 	    while ((line=in.readLine())!=null) {
-	      if (line.length() > 0) {
+	      if (!line.isEmpty()) {
 	        putWordUnique(line);
 	      }
 	    }

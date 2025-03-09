@@ -191,9 +191,8 @@ public class SpellDictionaryDichoDisk extends SpellDictionaryASpell {
     } catch (EOFException ex) {
     }
     if (i == 0)
-      return("");
-    String s = new String(buf, 0, i-1, encoding);
-    return(s);
+      return "";
+    return new String(buf, 0, i-1, encoding);
    }
 
   /**

@@ -623,7 +623,7 @@ public class SpellingParser extends AbstractParser
             String spacing = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             int threshold = sc.getConfiguration().getInteger(Configuration.SPELL_THRESHOLD);
             List<Word> suggestions = sc.getSuggestions(word, threshold);
-            if (suggestions == null || suggestions.size() == 0) {
+            if (suggestions == null || suggestions.isEmpty()) {
                 sb.append(spacing).append("&#8226;&nbsp;<em>");
                 sb.append(MSG.getString("None"));
                 sb.append("</em><br><br>");

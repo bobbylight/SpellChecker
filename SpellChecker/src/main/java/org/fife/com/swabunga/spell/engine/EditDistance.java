@@ -88,22 +88,11 @@ public final class EditDistance {
   	// WRS: I added a distance for case comparison, so a misspelling of "i" would be closer to "I" than
   	// to "a".
 
-  	//Allocate memory outside of the loops.
-  	int i;
-  	int j;
-  	int costOfSubst;
-  	int costOfSwap;
-  	int costOfDelete;
-  	int costOfInsertion;
-  	int costOfCaseChange;
-
-  	boolean isSwap;
-  	char sourceChar = 0;
-  	char otherChar = 0;
+  	char sourceChar;
+  	char otherChar;
 
     int aSize = word.length() + 1;
     int bSize = similar.length() + 1;
-
 
     //Only allocate new memory if we need a bigger matrix.
     if (matrix == null || matrix.length < aSize || matrix[0].length < bSize)
@@ -111,15 +100,15 @@ public final class EditDistance {
 
     matrix[0][0] = 0;
 
-    for (i = 1; i != aSize; ++i)
+    for (int i = 1; i != aSize; ++i)
       matrix[i][0] = matrix[i - 1][0] + COST_OF_INSERTING_SOURCE_CHARACTER; //initialize the first column
 
-    for (j = 1; j != bSize; ++j)
+    for (int j = 1; j != bSize; ++j)
       matrix[0][j] = matrix[0][j - 1] + COST_OF_DELETING_SOURCE_CHARACTER; //initialize the first row
 
-    for (i = 1; i != aSize; ++i) {
+    for (int i = 1; i != aSize; ++i) {
       sourceChar = word.charAt(i-1);
-      for (j = 1; j != bSize; ++j) {
+      for (int j = 1; j != bSize; ++j) {
 
         otherChar = similar.charAt(j-1);
         if (sourceChar == otherChar) {
@@ -127,18 +116,18 @@ public final class EditDistance {
           continue;
         }
 
-        costOfSubst = COST_OF_SUBSTITUTING_LETTERS + matrix[i - 1][j - 1];
-        //if needed, add up the cost of doing a swap
-        costOfSwap = Integer.MAX_VALUE;
+        int costOfSubst = COST_OF_SUBSTITUTING_LETTERS + matrix[i - 1][j - 1];
 
-        isSwap = (i != 1) && (j != 1) && sourceChar == similar.charAt(j - 2) && word.charAt(i - 2) == otherChar;
+        //if needed, add up the cost of doing a swap
+        int costOfSwap = Integer.MAX_VALUE;
+        boolean isSwap = (i != 1) && (j != 1) && sourceChar == similar.charAt(j - 2) && word.charAt(i - 2) == otherChar;
         if (isSwap)
           costOfSwap = COST_OF_SWAPPING_LETTERS + matrix[i - 2][j - 2];
 
-        costOfDelete = COST_OF_DELETING_SOURCE_CHARACTER + matrix[i][j - 1];
-        costOfInsertion = COST_OF_INSERTING_SOURCE_CHARACTER + matrix[i - 1][j];
+        int costOfDelete = COST_OF_DELETING_SOURCE_CHARACTER + matrix[i][j - 1];
+        int costOfInsertion = COST_OF_INSERTING_SOURCE_CHARACTER + matrix[i - 1][j];
 
-        costOfCaseChange = Integer.MAX_VALUE;
+        int costOfCaseChange = Integer.MAX_VALUE;
 
         if (equalIgnoreCase(sourceChar, otherChar))
           costOfCaseChange = COST_OF_CHANGING_CASE + matrix[i - 1][j - 1];
@@ -161,9 +150,7 @@ public final class EditDistance {
     if (ch1 == ch2) {
     	return true;
     }
-    else {
-    	return (Character.toLowerCase(ch1) == Character.toLowerCase(ch2));
-    }
+    return Character.toLowerCase(ch1) == Character.toLowerCase(ch2);
   }
 
   private static int minimum(int a, int b, int c, int d, int e) {

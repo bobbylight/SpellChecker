@@ -52,7 +52,7 @@ public interface SpellDictionary {
    * <br/>
    * Each suggested word has a score, which is an integer
    * that represents how different the suggested word is from the sourceWord.
-   * If the words are the exactly the same, then the score is 0.
+   * If the words are exactly the same, then the score is 0.
    * You can get the dictionary to only return the most similar words by setting
    * an appropriately low threshold value.
    * If you set the threshold value too low, you may get no suggestions for a given word.
@@ -75,7 +75,7 @@ public interface SpellDictionary {
    * <br/>
    * Each suggested word has a score, which is an integer
    * that represents how different the suggested word is from the sourceWord.
-   * If the words are the exactly the same, then the score is 0.
+   * If the words are exactly the same, then the score is 0.
    * You can get the dictionary to only return the most similar words by setting
    * an appropriately low threshold value.
    * If you set the threshold value too low, you may get no suggestions for a given word.
