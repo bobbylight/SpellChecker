@@ -55,6 +55,22 @@ class StringWordTokenizerTest {
     }
 
     @Test
+    void testGetCurrentWordEnd_errorIfNoWord() {
+        assertThrows(WordNotFoundException.class, () -> tokenizer.getCurrentWordEnd());
+    }
+
+    @Test
+    void testGetCurrentWordPosition() {
+        tokenizer.nextWord();
+        assertEquals(0, tokenizer.getCurrentWordPosition());
+    }
+
+    @Test
+    void testGetCurrentWordPosition_errorIfNoWord() {
+        assertThrows(WordNotFoundException.class, () -> tokenizer.getCurrentWordPosition());
+    }
+
+    @Test
     void testGetFinalText() {
         assertEquals("This is a test.", tokenizer.getFinalText());
     }

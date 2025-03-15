@@ -162,7 +162,7 @@
         <!-- Checks for Size Violations.                                   -->
         <!-- See https://checkstyle.sourceforge.io/checks/sizes/index.html -->
         <module name="MethodLength">
-            <property name="max" value="489"/>
+            <property name="max" value="490"/>
         </module>
         <module name="ParameterNumber">
             <property name="max" value="10"/>

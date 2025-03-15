@@ -23,13 +23,13 @@ class DoubleMetaTest {
     }
 
     @Test
-    void testTransform_emptyString() {
-        Assertions.assertEquals("", doubleMeta.transform(""));
+    void testTransform_null() {
+        Assertions.assertEquals("", doubleMeta.transform(null));
     }
 
     @Test
-    void testTransform_nullString() {
-        Assertions.assertThrows(NullPointerException.class, () -> doubleMeta.transform(null));
+    void testTransform_emptyString() {
+        Assertions.assertEquals("", doubleMeta.transform(""));
     }
 
     @Test
@@ -58,8 +58,13 @@ class DoubleMetaTest {
     }
 
     @Test
-    void testTransform_endsWith_j() {
+    void testTransform_endsWith_j_1() {
         Assertions.assertEquals("TJ", doubleMeta.transform("dj"));
+    }
+
+    @Test
+    void testTransform_endsWith_j_2() {
+        Assertions.assertEquals("HJ", doubleMeta.transform("haj"));
     }
 
     @Test
@@ -70,6 +75,11 @@ class DoubleMetaTest {
     @Test
     void testTransform_endsWith_vowel_then_w() {
         Assertions.assertEquals("M", doubleMeta.transform("maw"));
+    }
+
+    @Test
+    void testTransform_endsWith_w() {
+        Assertions.assertEquals("ANH", doubleMeta.transform("anyhow"));
     }
 
     @Test
@@ -115,6 +125,16 @@ class DoubleMetaTest {
     @Test
     void testTransform_startsWith_charism() {
         Assertions.assertEquals("KRSM", doubleMeta.transform("charisma"));
+    }
+
+    @Test
+    void testTransform_startsWith_cr_1() {
+        Assertions.assertEquals("KRSP", doubleMeta.transform("crisp"));
+    }
+
+    @Test
+    void testTransform_startsWith_cr_2() {
+        Assertions.assertEquals("KR", doubleMeta.transform("cry"));
     }
 
     @Test
@@ -168,13 +188,23 @@ class DoubleMetaTest {
     }
 
     @Test
-    void testTransform_startsWith_j() {
+    void testTransform_startsWith_j_1() {
         Assertions.assertEquals("JK", doubleMeta.transform("joke"));
     }
 
     @Test
-    void testTransform_startsWith_jose() {
+    void testTransform_startsWith_j_2() {
+        Assertions.assertEquals("J", doubleMeta.transform("jaw"));
+    }
+
+    @Test
+    void testTransform_startsWith_jose_1() {
         Assertions.assertEquals("HS", doubleMeta.transform("jose"));
+    }
+
+    @Test
+    void testTransform_startsWith_jose_2() {
+        Assertions.assertEquals("JSP", doubleMeta.transform("joseph"));
     }
 
     @Test
@@ -225,6 +255,11 @@ class DoubleMetaTest {
     @Test
     void testTransform_startsWith_sce() {
         Assertions.assertEquals("SN", doubleMeta.transform("scene"));
+    }
+
+    @Test
+    void testTransform_startsWith_sch() {
+        Assertions.assertEquals("SKL", doubleMeta.transform("school"));
     }
 
     @Test
@@ -298,6 +333,11 @@ class DoubleMetaTest {
     }
 
     @Test
+    void testTransform_contains_cr() {
+        Assertions.assertEquals("AKR", doubleMeta.transform("acre"));
+    }
+
+    @Test
     void testTransform_contains_agn() {
         Assertions.assertEquals("MNT", doubleMeta.transform("magnet"));
     }
@@ -333,6 +373,11 @@ class DoubleMetaTest {
     }
 
     @Test
+    void testTransform_contains_cc_4() {
+        Assertions.assertEquals("AKLT", doubleMeta.transform("occult"));
+    }
+
+    @Test
     void testTransform_contains_chae() {
         Assertions.assertEquals("RKL", doubleMeta.transform("rachael"));
     }
@@ -340,6 +385,11 @@ class DoubleMetaTest {
     @Test
     void testTransform_contains_chae_2() {
         Assertions.assertEquals("AXM", doubleMeta.transform("ischaemia"));
+    }
+
+    @Test
+    void testTransform_contains_chae_3() {
+        Assertions.assertEquals("ARKNS", doubleMeta.transform("archaeans"));
     }
 
     @Test
@@ -365,6 +415,11 @@ class DoubleMetaTest {
     @Test
     void testTransform_contains_ck() {
         Assertions.assertEquals("PK", doubleMeta.transform("back"));
+    }
+
+    @Test
+    void testTransform_contains_ck_2() {
+        Assertions.assertEquals("LKS", doubleMeta.transform("licks"));
     }
 
     @Test
@@ -403,6 +458,11 @@ class DoubleMetaTest {
     }
 
     @Test
+    void testTransform_contains_ger() {
+        Assertions.assertEquals("TKR", doubleMeta.transform("dagger"));
+    }
+
+    @Test
     void testTransform_contains_get() {
         Assertions.assertEquals("PNKR", doubleMeta.transform("banger"));
     }
@@ -415,6 +475,11 @@ class DoubleMetaTest {
     @Test
     void testTransform_contains_isl() {
         Assertions.assertEquals("ALNT", doubleMeta.transform("island"));
+    }
+
+    @Test
+    void testTransform_contains_jj() {
+        Assertions.assertEquals("HJ", doubleMeta.transform("hajji"));
     }
 
     @Test
@@ -435,6 +500,16 @@ class DoubleMetaTest {
     @Test
     void testTransform_contains_ll() {
         Assertions.assertEquals("KLR", doubleMeta.transform("caller"));
+    }
+
+    @Test
+    void testTransform_contains_ll_2() {
+        Assertions.assertEquals("FRFL", doubleMeta.transform("farfalle"));
+    }
+
+    @Test
+    void testTransform_contains_macher() {
+        Assertions.assertEquals("MKR", doubleMeta.transform("macher"));
     }
 
     @Test
@@ -498,8 +573,13 @@ class DoubleMetaTest {
     }
 
     @Test
-    void testTransform_contains_wr() {
+    void testTransform_contains_wr_1() {
         Assertions.assertEquals("R0", doubleMeta.transform("wrath"));
+    }
+
+    @Test
+    void testTransform_contains_wr_2() {
+        Assertions.assertEquals("RRT", doubleMeta.transform("rewrite"));
     }
 
     @Test
