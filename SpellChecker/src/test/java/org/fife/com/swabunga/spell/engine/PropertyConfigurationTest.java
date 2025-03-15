@@ -1,7 +1,6 @@
 package org.fife.com.swabunga.spell.engine;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +30,6 @@ class PropertyConfigurationTest {
     }
 
     @Test
-    @Disabled("Disabling until we make PropertyConfiguration immutable")
     void testSetBoolean() {
         config.setBoolean(Configuration.SPELL_IGNOREUPPERCASE, false);
         assertFalse(config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE));
@@ -41,7 +39,6 @@ class PropertyConfigurationTest {
     }
 
     @Test
-    @Disabled("Disabling until we make PropertyConfiguration immutable")
     void testSetInteger() {
         config.setInteger(Configuration.COST_REMOVE_CHAR, 5);
         assertEquals(5, config.getInteger(Configuration.COST_REMOVE_CHAR));

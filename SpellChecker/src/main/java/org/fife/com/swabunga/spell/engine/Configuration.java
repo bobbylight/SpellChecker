@@ -34,6 +34,11 @@ import java.lang.reflect.InvocationTargetException;
  */
 public abstract class Configuration {
 
+  /**
+   * System property that, if defined, should be a fully qualified class name of a configuration.
+   */
+  public static final String PROPERTY_CONFIG_OVERRIDE = "jazzy.config";
+
   /** used by EditDistance: the cost of having to remove a character <br/>(integer greater than 0). */
   public static final String COST_REMOVE_CHAR = "EDIT_DEL1";
 
@@ -102,18 +107,18 @@ public abstract class Configuration {
   public abstract boolean getBoolean(String key);
 
   /**
-   * Sets one of the integer constants.
+   * Sets one of the integer constants. Does not persist the change.
    *
    * @param key one of the integer constants defined in this class
-   * @param value new integer value of the constant
+   * @param value new integer value of the constant.
    */
   public abstract void setInteger(String key, int value);
 
   /**
-   * Sets one of the boolean constants.
+   * Sets one of the boolean constants. Does not persist the change.
    *
    * @param key one of the boolean constants defined in this class
-   * @param value new boolean value of this setting
+   * @param value new boolean value of this setting.
    */
   public abstract void setBoolean(String key, boolean value);
 
@@ -122,8 +127,8 @@ public abstract class Configuration {
    *
    * @return Configuration
    */
-  public static final Configuration getConfiguration() {
-    String config = System.getProperty("jazzy.config"); // added by bd
+  public static Configuration getConfiguration() {
+    String config = System.getProperty(PROPERTY_CONFIG_OVERRIDE); // added by bd
     if (config != null && !config.isEmpty())
         return getConfiguration(config);
     return getConfiguration(null);
@@ -133,9 +138,9 @@ public abstract class Configuration {
    * Returns a new instance of a Configuration class.
    *
    * @param className - the class to return, must be based on Configuration
-   * @return Configuration
+   * @return The configuration.
    */
-  public static final Configuration getConfiguration(String className) {
+  public static Configuration getConfiguration(String className) {
 
     Configuration result;
 

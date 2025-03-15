@@ -196,12 +196,13 @@ public class DoubleMeta implements Transformator {
    */
   @Override
 public final String transform(String word) {
+    if (word == null || word.isEmpty()) {
+      return "";
+    }
 	StringBuilder primary = new StringBuilder(word.length() + 5);
     String in = word.toUpperCase() + "     ";
     int current = 0;
     int length = in.length();
-    if (length < 1)
-      return "";
     int last = length - 1;
     boolean isSlavoGermaic = slavoGermanic(in);
     if (stringAt(in, 0, 2, MY_LIST))

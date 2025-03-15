@@ -232,14 +232,14 @@ public class SpellChecker {
    * @return true if this word looks like an Internet address.
    * @see #beginsAsINETWord(String)
    */
-  public static final boolean isINETWord(String word) {
+  public static boolean isINETWord(String word) {
     return beginsAsINETWord(word) || word.indexOf('@') > 0;
   }
 
 
   /**
    * Verifies if the word that is being spell checked contains all
-   * upper-cases characters.
+   * upper-cased characters.
    *
    * @param word The word to analyze for upper-cases characters
    * @return true if this word contains all upper case characters
@@ -553,6 +553,5 @@ public class SpellChecker {
     boolean configCapitalize = !config.getBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION);
     return configCapitalize && wordTokenizer.isNewSentence() && Character.isLowerCase(word.charAt(0));
   }
-
 
 }

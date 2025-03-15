@@ -1,5 +1,6 @@
 package org.fife.com.swabunga.spell.event;
 
+import org.fife.com.swabunga.spell.engine.Configuration;
 import org.fife.com.swabunga.spell.engine.SpellDictionary;
 import org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap;
 import org.fife.com.swabunga.spell.engine.Word;
@@ -120,7 +121,189 @@ class SpellCheckerTest {
     }
 
     @Test
-    void testIsCorrect_nonUserDictionaryREturnsTrue() throws IOException {
+    void testCheckSpelling_config_analyzeCamelCase_false() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, false);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("thisIs");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(1, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_analyzeCamelCase_true() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, true);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("thisIs");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_analyzeCamelCase_true_ignoreUpperCase_false_andIncorrect() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, true);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, false);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("thisISSSpelled");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(1, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_analyzeCamelCase_true_ignoreUpperCase_false_butCorrect() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, true);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, false);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("thisISSpelled");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreDigitWords_false() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, false);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("seventy9");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(1, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreDigitWords_true() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, true);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("seventy9");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreInternetAddresses_false() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREINTERNETADDRESSES, false);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("www.example.com");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(1, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreInternetAddresses_true() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREINTERNETADDRESSES, true);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("www.example.com");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreMixedCase_false() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        // Analyzing camel-case words goes down a different code path and takes priority
+        checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, false);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREMIXEDCASE, false);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("fooBar sentence");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(1, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreMixedCase_true() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        // Analyzing camel-case words goes down a different code path and takes priority
+        checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, false);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREMIXEDCASE, true);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("fooBar sentence");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreSentenceCapitalization_false() {
+        String[] words = { "test" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION, false);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("test");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(1, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreSentenceCapitalization_true() {
+        String[] words = { "test" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION, true);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("test");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreSingleLetters_false() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESINGLELETTERS, false);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("g");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(1, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreSingleLetters_true() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESINGLELETTERS, true);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("g");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreUpperCase_false() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, false);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("FOOBAR");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(1, result);
+    }
+
+    @Test
+    void testCheckSpelling_config_ignoreUpperCase_true() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, true);
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("FOOBAR");
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+    }
+
+    @Test
+    void testIsCorrect_nonUserDictionaryReturnsTrue() throws IOException {
         SpellDictionary newDictionary = new SpellDictionaryHashMap();
         newDictionary.addWord("foo");
         checker.addDictionary(newDictionary);
@@ -142,7 +325,7 @@ class SpellCheckerTest {
 
     @Test
     void testCheckSpelling_noErrors_happyPath() {
-        String[] words = { "This", "is", "a", "correctly", "spelled", "sentence" };
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
         addWordsToDictionary(words);
 
         String text = String.join(" ", words) + ".";
@@ -153,7 +336,7 @@ class SpellCheckerTest {
 
     @Test
     void testCheckSpelling_noErrors_mixedCaseWord() {
-        String[] words = { "This", "is", "a", "correctly", "spelled", "sentence" };
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
         addWordsToDictionary(words);
 
         String text = "This is a correctlySpelledSentence.";
@@ -164,7 +347,7 @@ class SpellCheckerTest {
 
     @Test
     void testCheckSpelling_withErrors_happyPath() {
-        String[] words = { "This", "is", "a", "sentence", "with", "errors" };
+        String[] words = { "this", "is", "a", "sentence", "with", "errors" };
         addWordsToDictionary(words);
 
         String text = "Ths is a sentence with erors.";
@@ -186,7 +369,7 @@ class SpellCheckerTest {
 
     @Test
     void testCheckSpelling_withErrors_mixedCaseWord() {
-        String[] words = { "This", "is", "a", "correctly", "spelled", "sentence" };
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
         addWordsToDictionary(words);
 
         String text = "This is a correktlySpellledSentence.";
@@ -207,6 +390,48 @@ class SpellCheckerTest {
     }
 
     @Test
+    void testCheckSpelling_terminatesWhenListenerSaysTo_camelCasedWord() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        TestSpellCheckListenerCancels listener = new TestSpellCheckListenerCancels();
+        checker.addSpellCheckListener(listener);
+
+        String text = "This is a correktlySpellled sentence.";
+        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_CANCEL, result);
+
+        // Only finds the first misspelled word before being canceled
+        List<SpellCheckEvent> events = listener.getEvents();
+        assertEquals(1, events.size());
+
+        SpellCheckEvent e = listener.events.get(0);
+        assertEquals("correktly", e.getInvalidWord());
+        assertEquals(10, e.getWordContextPosition());
+    }
+
+    @Test
+    void testCheckSpelling_terminatesWhenListenerSaysTo_separateWords() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        TestSpellCheckListenerCancels listener = new TestSpellCheckListenerCancels();
+        checker.addSpellCheckListener(listener);
+
+        String text = "This is a correktly spellled sentence.";
+        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_CANCEL, result);
+
+        // Only finds the first misspelled word before being canceled
+        List<SpellCheckEvent> events = listener.getEvents();
+        assertEquals(1, events.size());
+
+        SpellCheckEvent e = listener.events.get(0);
+        assertEquals("correktly", e.getInvalidWord());
+        assertEquals(10, e.getWordContextPosition());
+    }
+
+    @Test
     void testFireAndHandleEvent() {
         SpellCheckEvent e = new BasicSpellCheckEvent("invalidWord", 0);
         assertFalse(checker.fireAndHandleEvent(e));
@@ -219,7 +444,7 @@ class SpellCheckerTest {
 
     @Test
     void testGetSuggestions() {
-        String[] words = { "This", "is", "a", "sentence", "with", "errors" };
+        String[] words = { "this", "is", "a", "sentence", "with", "errors" };
         addWordsToDictionary(words);
 
         List<Word> suggestions = checker.getSuggestions("erors", 0);
@@ -229,7 +454,7 @@ class SpellCheckerTest {
 
     @Test
     void testIgnoreWords() {
-        String[] words = { "This", "is", "a", "sentence", "with", "errors" };
+        String[] words = { "this", "is", "a", "sentence", "with", "errors" };
         addWordsToDictionary(words);
         checker.ignoreAll("erors");
 
@@ -241,6 +466,14 @@ class SpellCheckerTest {
         StringWordTokenizer tokenizer = new StringWordTokenizer(text);
         int result = checker.checkSpelling(tokenizer);
         assertEquals(-1, result);
+    }
+
+    @Test
+    void testReset_clearsIgnoredWords() {
+        checker.ignoreAll("foo");
+        assertTrue(checker.isIgnored("foo"));
+        checker.reset();
+        assertFalse(checker.isIgnored("foo"));
     }
 
     @Test
@@ -330,6 +563,24 @@ class SpellCheckerTest {
         public boolean spellingError(SpellCheckEvent event) {
             events.add(event);
             return false;
+        }
+    }
+
+    /**
+     * Used to verify callback behavior.
+     */
+    private static final class TestSpellCheckListenerCancels implements SpellCheckListener {
+
+        private List<SpellCheckEvent> events = new ArrayList<>();
+
+        private List<SpellCheckEvent> getEvents() {
+            return Collections.unmodifiableList(events);
+        }
+
+        @Override
+        public boolean spellingError(SpellCheckEvent event) {
+            events.add(event);
+            return true;
         }
     }
 }

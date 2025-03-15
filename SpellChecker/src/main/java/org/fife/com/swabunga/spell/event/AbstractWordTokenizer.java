@@ -38,7 +38,7 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
     /**
      * The word being analyzed.
      */
-    protected Word currentWord;
+    private Word currentWord;
     /**
      * The word finder used to filter out words which are non pertinent to spell checking.
      */
