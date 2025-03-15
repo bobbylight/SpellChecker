@@ -19,32 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.spell.event;
 
-import java.util.List;
-
 /**
  * This event is fired off by the SpellChecker and is passed to the
- * registered SpellCheckListeners.
+ * registered SpellCheckListeners. Modified to only be incorrect words
+ * and their locations for RSTA's usage patterns.
  *
  * @author Jason Height (jheight@chariot.net.au)
  */
 class BasicSpellCheckEvent implements SpellCheckEvent {
 
   /**
-   * The list holding the suggested Word objects for the misspelled word.
-   */
-  private List<Word> suggestions;
-  /**
    * The misspelled word.
    */
   private String invalidWord;
-  /**
-   * The action to be done when the event returns.
-   */
-  private short action = INITIAL;
-  /**
-   * Contains the word to be replaced if the action is REPLACE or REPLACEALL.
-   */
-  private String replaceWord;
 
   private int startPosition;
 
@@ -53,34 +40,21 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
    * Constructs the SpellCheckEvent.
    *
    * @param invalidWord The word that is misspelled
-   * @param suggestions A list of Word objects that are suggested to replace the currently misspelled word
    * @param tokenizer   The reference to the tokenizer that caused this event to fire.
    */
-  BasicSpellCheckEvent(String invalidWord, List<Word> suggestions, WordTokenizer tokenizer) {
-    this(invalidWord, suggestions, tokenizer.getCurrentWordPosition());
+  BasicSpellCheckEvent(String invalidWord, WordTokenizer tokenizer) {
+    this(invalidWord, tokenizer.getCurrentWordPosition());
   }
 
   /**
    * Constructs the SpellCheckEvent.
    *
    * @param invalidWord   The word that is misspelled
-   * @param suggestions   A list of Word objects that are suggested to replace the currently misspelled word
    * @param startPosition The position of the misspelled word.
    */
-  BasicSpellCheckEvent(String invalidWord, List<Word> suggestions, int startPosition) {
+  BasicSpellCheckEvent(String invalidWord, int startPosition) {
     this.invalidWord = invalidWord;
-    this.suggestions = suggestions;
     this.startPosition = startPosition;
-  }
-
-  /**
-   * Returns the list of suggested Word objects.
-   *
-   * @return A list of words phonetically close to the misspelled word
-   */
-  @Override
-  public List<Word> getSuggestions() {
-    return suggestions;
   }
 
   /**
@@ -112,83 +86,5 @@ class BasicSpellCheckEvent implements SpellCheckEvent {
   @Override
   public int getWordContextPosition() {
     return startPosition;
-  }
-
-  /**
-   * Returns the action type the user has to handle.
-   *
-   * @return The type of action the event is carrying.
-   */
-  @Override
-  public short getAction() {
-    return action;
-  }
-
-  /**
-   * Returns the text to replace.
-   *
-   * @return the text of the word to replace
-   */
-  @Override
-  public String getReplaceWord() {
-    return replaceWord;
-  }
-
-  /**
-   * Set the action to replace the currently misspelled word with the new word.
-   *
-   * @param newWord  The word to replace the currently misspelled word
-   * @param replaceAll If set to true, the SpellChecker will replace all
-   *           further occurrences of the misspelled word without firing a SpellCheckEvent.
-   */
-  @Override
-  public void replaceWord(String newWord, boolean replaceAll) {
-    if (action != INITIAL)
-      throw new IllegalStateException("The action can can only be set once");
-    if (replaceAll)
-      action = REPLACEALL;
-    else
-      action = REPLACE;
-    replaceWord = newWord;
-  }
-
-  /**
-   * Set the action it ignore the currently misspelled word.
-   *
-   * @param ignoreAll If set to true, the SpellChecker will replace all
-   *          further occurrences of the misspelled word without firing a SpellCheckEvent.
-   */
-  @Override
-  public void ignoreWord(boolean ignoreAll) {
-    if (action != INITIAL)
-      throw new IllegalStateException("The action can can only be set once");
-    if (ignoreAll)
-      action = IGNOREALL;
-    else
-      action = IGNORE;
-  }
-
-  /**
-   * Set the action to add a new word into the dictionary. This will also replace the
-   * currently misspelled word.
-   *
-   * @param newWord The new word to add to the dictionary.
-   */
-  @Override
-  public void addToDictionary(String newWord) {
-    if (action != INITIAL)
-      throw new IllegalStateException("The action can can only be set once");
-    action = ADDTODICT;
-    replaceWord = newWord;
-  }
-
-  /**
-   * Set the action to terminate processing of the spellchecker.
-   */
-  @Override
-  public void cancel() {
-    if (action != INITIAL)
-      throw new IllegalStateException("The action can can only be set once");
-    action = CANCEL;
   }
 }
