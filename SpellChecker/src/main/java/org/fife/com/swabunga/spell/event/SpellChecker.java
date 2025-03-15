@@ -60,15 +60,14 @@ public class SpellChecker {
 
   private List<SpellCheckListener> eventListeners = new ArrayList<>();
   private List<SpellDictionary> dictionaries = new ArrayList<>();
-  private SpellDictionary userdictionary;
+  private SpellDictionary userDictionary;
 
   private Configuration config = Configuration.getConfiguration();
 
   /**
-   * This variable holds all of the words that are to be always ignored.
+   * This variable holds all the words that are to be always ignored.
    */
   private Set<String> ignoredWords = new HashSet<>();
-  private Map<String, String> autoReplaceWords = new HashMap<>();
 
   // added caching - bd
   // For cached operation a separate user dictionary is required
@@ -76,39 +75,18 @@ public class SpellChecker {
   private int threshold;
   private int cacheSize;
 
-
-  /**
-   * Constructs the SpellChecker.
-   */
-  public SpellChecker() {
-    try {
-      userdictionary = new SpellDictionaryHashMap();
-    } catch (IOException e) {
-      throw new RuntimeException("this exception should never happen because we are using null phonetic file");
-    }
-  }
-
   /**
    * Constructs the SpellChecker. The default threshold is used
    *
    * @param dictionary The dictionary used for looking up words.
    */
   public SpellChecker(SpellDictionary dictionary) {
-    this();
+    try {
+      userDictionary = new SpellDictionaryHashMap();
+    } catch (IOException e) {
+      throw new RuntimeException("this exception should never happen because we are using null phonetic file", e);
+    }
     addDictionary(dictionary);
-  }
-
-
-  /**
-   * Constructs the SpellChecker with a threshold.
-   *
-   * @param dictionary the dictionary used for looking up words.
-   * @param threshold  the cost value above which any suggestions are
-   *           thrown away
-   */
-  public SpellChecker(SpellDictionary dictionary, int threshold) {
-    this(dictionary);
-    config.setInteger(Configuration.SPELL_THRESHOLD, threshold);
   }
 
   /**
@@ -129,10 +107,13 @@ public class SpellChecker {
    * Registers the user dictionary to which words are added.
    *
    * @param dictionary the dictionary to use when the user specify a new word
-   *           to add.
+   *        to add. This cannot be {@code null}.
    */
   public void setUserDictionary(SpellDictionary dictionary) {
-    userdictionary = dictionary;
+    if (dictionary == null) {
+      throw new IllegalArgumentException("dictionary must be non-null");
+    }
+    userDictionary = dictionary;
   }
 
   /**
@@ -166,25 +147,11 @@ public class SpellChecker {
 
 
   /**
-   * Fires off a spell check event to the listeners.
-   *
-   * @param event The event that need to be processed by the spell checking
-   *        system.
-   */
-  protected void fireSpellCheckEvent(SpellCheckEvent event) {
-    for (int i = eventListeners.size() - 1; i >= 0; i--) {
-      eventListeners.get(i).spellingError(event);
-    }
-  }
-
-
-  /**
    * This method clears the words that are currently being remembered as
    * <code>Ignore All</code> words and <code>Replace All</code> words.
    */
   public void reset() {
     ignoredWords.clear();
-    autoReplaceWords.clear();
   }
 
 
@@ -289,7 +256,7 @@ public class SpellChecker {
 
   /**
    * Verifies if the word that is being spell checked contains lower and
-   * upper cased characters. Note that a phrase beginning with an upper cased
+   * upper-cased characters. Note that a phrase beginning with an upper-cased
    * character is not considered a mixed case word.
    *
    * @param word       The word to analyze for mixed cases characters
@@ -300,7 +267,7 @@ public class SpellChecker {
     int strLen = word.length();
     boolean isUpper = Character.isUpperCase(word.charAt(0));
     //Ignore the first character if this word starts the sentence and the first
-    //character was upper cased, since this is normal behaviour
+    //character was upper-cased, since this is normal behaviour
     if ((startsSentence) && isUpper && (strLen > 1))
       isUpper = Character.isUpperCase(word.charAt(1));
     if (isUpper) {
@@ -325,44 +292,16 @@ public class SpellChecker {
    * This method will fire the spell check event and then handle the event
    * action that has been selected by the user.
    *
-   * @param tokenizer Description of the Parameter
    * @param event   The event to handle
-   * @return Returns true if the event action is to cancel the current spell checking, false if the spell checking
-   *         should continue
+   * @return Returns true if the event action is to cancel the current spell checking, false if
+   *         the spell checking should continue
    */
-  protected boolean fireAndHandleEvent(WordTokenizer tokenizer, SpellCheckEvent event) {
-    fireSpellCheckEvent(event);
-    String word = event.getInvalidWord();
-    //Work out what to do in response to the event.
-    switch (event.getAction()) {
-      case SpellCheckEvent.INITIAL:
-      case SpellCheckEvent.IGNORE:
-        break;
-      case SpellCheckEvent.IGNOREALL:
-        ignoreAll(word);
-        break;
-      case SpellCheckEvent.REPLACE:
-        tokenizer.replaceWord(event.getReplaceWord());
-        break;
-      case SpellCheckEvent.REPLACEALL:
-        String replaceAllWord = event.getReplaceWord();
-        if (!autoReplaceWords.containsKey(word)) {
-          autoReplaceWords.put(word, replaceAllWord);
-        }
-        tokenizer.replaceWord(replaceAllWord);
-        break;
-      case SpellCheckEvent.ADDTODICT:
-        String addWord = event.getReplaceWord();
-        if (!addWord.equals(word))
-          tokenizer.replaceWord(addWord);
-        userdictionary.addWord(addWord);
-        break;
-      case SpellCheckEvent.CANCEL:
-        return true;
-      default:
-        throw new IllegalArgumentException("Unhandled case.");
-    }
-    return false;
+  protected boolean fireAndHandleEvent(SpellCheckEvent event) {
+     boolean cancel = false;
+     for (int i = eventListeners.size() - 1; i >= 0; i--) {
+       cancel |= eventListeners.get(i).spellingError(event);
+     }
+    return cancel;
   }
 
   /**
@@ -381,8 +320,8 @@ public class SpellChecker {
    * @return Whether the word was successfully added
    */
   public boolean addToDictionary(String word) {
-    if (!userdictionary.isCorrect(word)) {
-      return userdictionary.addWord(word);
+    if (!userDictionary.isCorrect(word)) {
+      return userDictionary.addWord(word);
     }
     return false;
   }
@@ -393,7 +332,7 @@ public class SpellChecker {
    * @param word The text of the word check
    * @return Whether the word is ignored.
    */
-  public boolean isIgnored(String word) {
+  protected boolean isIgnored(String word) {
     return ignoredWords.contains(word);
   }
 
@@ -411,24 +350,17 @@ public class SpellChecker {
    * @param word The word to verify that it's spelling is known.
    * @return true if the word is in a dictionary.
    */
-  public boolean isCorrect(String word) {
-    if (userdictionary.isCorrect(word)) return true;
+  protected boolean isCorrect(String word) {
     for (SpellDictionary dictionary : dictionaries) {
       if (dictionary.isCorrect(word)) return true;
     }
-    return false;
+    return userDictionary.isCorrect(word);
   }
 
   /**
    * Produces a list of suggested word after looking for suggestions in various
-   * dictionaries. The order of dictionary lookup is:
-   * <ul>
-   * <li>The default user dictionary or the one set through
-   * {@link SpellChecker#setUserDictionary}</li>
-   * <li>The dictionary specified at construction time, if any.</li>
-   * <li>Any dictionary in the order they were added through
-   * {@link SpellChecker#addDictionary}</li>
-   * </ul>
+   * dictionaries. The dictionary specified in the constructor is checked first,
+   * then any other dictionaries added, and finally the user dictionary.
    *
    * @param word    The word for which we want to gather suggestions
    * @param threshold the cost value above which any suggestions are
@@ -444,14 +376,15 @@ public class SpellChecker {
 
     List<Word> suggestions = null;
 
-    if (cache != null)
-      suggestions = cache.get(word);
+    if (cache != null) {
+        suggestions = cache.get(word);
+    }
 
     if (suggestions == null) {
       suggestions = new ArrayList<>();
 
       for (SpellDictionary dictionary : dictionaries) {
-        if (dictionary != userdictionary)
+        if (dictionary != userDictionary)
           ListUtil.addAllNoDuplicates(suggestions, dictionary.getSuggestions(word, threshold));
       }
 
@@ -459,7 +392,7 @@ public class SpellChecker {
         cache.put(word, suggestions);
     }
 
-    ListUtil.addAllNoDuplicates(suggestions, userdictionary.getSuggestions(word, threshold));
+    ListUtil.addAllNoDuplicates(suggestions, userDictionary.getSuggestions(word, threshold));
     if (suggestions instanceof ArrayList) {
       ((ArrayList<Word>)suggestions).trimToSize();
     }
@@ -475,7 +408,7 @@ public class SpellChecker {
    *
    * @param size - max. number of cache entries (0 to disable cache)
    */
-  public void setCache(int size) {
+  public void setCacheSize(int size) {
     cacheSize = size;
     if (size == 0)
       cache = null;
@@ -561,9 +494,10 @@ public class SpellChecker {
             if (!config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) || !isUpperCaseWord(part)) {
               String partLower = part.toLowerCase();
               if (!isCorrect(partLower) && !isIgnored(partLower)) {
+                errors++;
                 int wordOffs = tokenizer.getCurrentWordPosition() + offs;
-                SpellCheckEvent event = new BasicSpellCheckEvent(part, null, wordOffs);
-                terminated = fireAndHandleEvent(tokenizer, event);
+                SpellCheckEvent event = new BasicSpellCheckEvent(part, wordOffs);
+                terminated = fireAndHandleEvent(event);
                 if (terminated) {
                   break;
                 }
@@ -586,21 +520,13 @@ public class SpellChecker {
           //For this invalid word are we ignoring the misspelling?
           if (!isIgnored(word)) {
             errors++;
-            //Is this word being automagically replaced
-            if (autoReplaceWords.containsKey(word)) {
-              tokenizer.replaceWord(autoReplaceWords.get(word));
-            }
-            else {
-              // robert: Don't calculate suggestions until mouseover for speed.
-              List<org.fife.com.swabunga.spell.event.Word> suggestions = null;
-              SpellCheckEvent event = new BasicSpellCheckEvent(word, suggestions, tokenizer);
-              terminated = fireAndHandleEvent(tokenizer, event);
-            }
+            SpellCheckEvent event = new BasicSpellCheckEvent(word, tokenizer);
+            terminated = fireAndHandleEvent(event);
           }
         }
       }
       else {
-        //This is a correctly spelled word. However perform some extra checks
+        //This is a correctly spelled word. However, perform some extra checks
         /*
          *  JMH TBD      //Check for multiple words
          *  if (!ignoreMultipleWords &&) {
@@ -609,13 +535,8 @@ public class SpellChecker {
         //Check for capitalization
         if (isSupposedToBeCapitalized(word, tokenizer)) {
           errors++;
-          // robert: StringBuilder and List instead of SBuf/Vector
-          StringBuilder buf = new StringBuilder(word);
-          buf.setCharAt(0, Character.toUpperCase(word.charAt(0)));
-          List<org.fife.com.swabunga.spell.event.Word> suggestions = new ArrayList<>();
-          suggestions.add(new org.fife.com.swabunga.spell.event.Word(buf.toString(), 0));
-          SpellCheckEvent event = new BasicSpellCheckEvent(word, suggestions, tokenizer);
-          terminated = fireAndHandleEvent(tokenizer, event);
+          SpellCheckEvent event = new BasicSpellCheckEvent(word, tokenizer);
+          terminated = fireAndHandleEvent(event);
         }
       }
     }
@@ -626,16 +547,6 @@ public class SpellChecker {
       return SPELLCHECK_OK;
     else
       return errors;
-  }
-
-
-  private static boolean isAllUpperCase(String word) {
-    for (int i = 0; i < word.length(); i++) {
-      if (!Character.isUpperCase(word.charAt(i))) {
-        return false;
-      }
-    }
-    return true;
   }
 
   private boolean isSupposedToBeCapitalized(String word, WordTokenizer wordTokenizer) {

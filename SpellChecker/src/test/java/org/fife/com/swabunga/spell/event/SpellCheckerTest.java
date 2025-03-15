@@ -6,7 +6,6 @@ import org.fife.com.swabunga.spell.engine.Word;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,8 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 
 /**
  * Unit tests for the {@code SpellChecker} class.
@@ -25,12 +22,14 @@ import static org.mockito.Mockito.times;
 class SpellCheckerTest {
 
     private SpellChecker checker;
+    private TestSpellCheckListener listener = new TestSpellCheckListener();
 
     private static final String TEMP_FILE_PREFIX = "scUnitTests_spellChecker";
 
     @BeforeEach
-    void setUp() {
-        checker = new SpellChecker();
+    void setUp() throws IOException{
+        checker = new SpellChecker(new SpellDictionaryHashMap());
+        checker.addSpellCheckListener(listener);
     }
 
     private void addWordsToDictionary(String[] words) {
@@ -64,21 +63,21 @@ class SpellCheckerTest {
         SpellCheckListener listener = events::add;
 
         // Doesn't receive events before being added
-        SpellCheckEvent e1 = new BasicSpellCheckEvent("xxx", Collections.emptyList(), 0);
-        checker.fireSpellCheckEvent(e1);
+        SpellCheckEvent e1 = new BasicSpellCheckEvent("xxx", 0);
+        checker.fireAndHandleEvent(e1);
         assertTrue(events.isEmpty());
 
         // Receives events after being added
         checker.addSpellCheckListener(listener);
-        SpellCheckEvent e2 = new BasicSpellCheckEvent("yyy", Collections.emptyList(), 0);
-        checker.fireSpellCheckEvent(e2);
+        SpellCheckEvent e2 = new BasicSpellCheckEvent("yyy", 0);
+        checker.fireAndHandleEvent(e2);
         assertEquals(1, events.size());
         assertEquals(e2, events.get(0));
 
         // Doesn't receive events after being removed
         checker.removeSpellCheckListener(listener);
-        SpellCheckEvent e3 = new BasicSpellCheckEvent("zzz", Collections.emptyList(), 0);
-        checker.fireSpellCheckEvent(e3);
+        SpellCheckEvent e3 = new BasicSpellCheckEvent("zzz", 0);
+        checker.fireAndHandleEvent(e3);
         assertEquals(1, events.size());
     }
 
@@ -142,7 +141,7 @@ class SpellCheckerTest {
     }
 
     @Test
-    void testCheckSpelling_noErrors() {
+    void testCheckSpelling_noErrors_happyPath() {
         String[] words = { "This", "is", "a", "correctly", "spelled", "sentence" };
         addWordsToDictionary(words);
 
@@ -153,7 +152,18 @@ class SpellCheckerTest {
     }
 
     @Test
-    void testCheckSpelling_withErrors() {
+    void testCheckSpelling_noErrors_mixedCaseWord() {
+        String[] words = { "This", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+
+        String text = "This is a correctlySpelledSentence.";
+        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+    }
+
+    @Test
+    void testCheckSpelling_withErrors_happyPath() {
         String[] words = { "This", "is", "a", "sentence", "with", "errors" };
         addWordsToDictionary(words);
 
@@ -161,77 +171,45 @@ class SpellCheckerTest {
         StringWordTokenizer tokenizer = new StringWordTokenizer(text);
         int result = checker.checkSpelling(tokenizer);
         assertEquals(2, result);
+
+        List<SpellCheckEvent> events = listener.getEvents();
+        assertEquals(2, events.size());
+
+        SpellCheckEvent e = listener.events.get(0);
+        assertEquals("Ths", e.getInvalidWord());
+        assertEquals(0, e.getWordContextPosition());
+
+        e = listener.events.get(1);
+        assertEquals("erors", e.getInvalidWord());
+        assertEquals(23, e.getWordContextPosition());
     }
 
     @Test
-    void testFireAndHandleEvent_eventType_addToDict_newReplacement() {
-        WordTokenizer tokenizer = Mockito.mock(WordTokenizer.class);
-        SpellCheckEvent e = new BasicSpellCheckEvent("invalidWord", Collections.emptyList(), 0);
-        e.addToDictionary("newReplacement");
-        assertFalse(checker.fireAndHandleEvent(tokenizer, e));
-        Mockito.verify(tokenizer, times(1)).replaceWord(Mockito.eq("newReplacement"));
+    void testCheckSpelling_withErrors_mixedCaseWord() {
+        String[] words = { "This", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+
+        String text = "This is a correktlySpellledSentence.";
+        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        int result = checker.checkSpelling(tokenizer);
+        assertEquals(2, result);
+
+        List<SpellCheckEvent> events = listener.getEvents();
+        assertEquals(2, events.size());
+
+        SpellCheckEvent e = listener.events.get(0);
+        assertEquals("correktly", e.getInvalidWord());
+        assertEquals(10, e.getWordContextPosition());
+
+        e = listener.events.get(1);
+        assertEquals("Spellled", e.getInvalidWord());
+        assertEquals(19, e.getWordContextPosition());
     }
 
     @Test
-    void testFireAndHandleEvent_eventType_addToDict_notReplaced() {
-        WordTokenizer tokenizer = Mockito.mock(WordTokenizer.class);
-        SpellCheckEvent e = new BasicSpellCheckEvent("invalidWord", Collections.emptyList(), 0);
-        e.addToDictionary("invalidWord");
-        assertFalse(checker.fireAndHandleEvent(tokenizer, e));
-        Mockito.verify(tokenizer, never()).replaceWord(Mockito.anyString());
-    }
-
-    @Test
-    void testFireAndHandleEvent_eventType_cancel() {
-        WordTokenizer tokenizer = Mockito.mock(WordTokenizer.class);
-        SpellCheckEvent e = new BasicSpellCheckEvent("invalidWord", Collections.emptyList(), 0);
-        e.cancel();
-        assertTrue(checker.fireAndHandleEvent(tokenizer, e));
-        Mockito.verify(tokenizer, never()).replaceWord(Mockito.anyString());
-    }
-
-    @Test
-    void testFireAndHandleEvent_eventType_ignore() {
-        WordTokenizer tokenizer = Mockito.mock(WordTokenizer.class);
-        SpellCheckEvent e = new BasicSpellCheckEvent("invalidWord", Collections.emptyList(), 0);
-        e.ignoreWord(false);
-        assertFalse(checker.fireAndHandleEvent(tokenizer, e));
-        Mockito.verify(tokenizer, never()).replaceWord(Mockito.anyString());
-    }
-
-    @Test
-    void testFireAndHandleEvent_eventType_ignoreAll() {
-        WordTokenizer tokenizer = Mockito.mock(WordTokenizer.class);
-        SpellCheckEvent e = new BasicSpellCheckEvent("invalidWord", Collections.emptyList(), 0);
-        e.ignoreWord(true);
-        assertFalse(checker.fireAndHandleEvent(tokenizer, e));
-        Mockito.verify(tokenizer, never()).replaceWord(Mockito.anyString());
-    }
-
-    @Test
-    void testFireAndHandleEvent_eventType_initial() {
-        WordTokenizer tokenizer = Mockito.mock(WordTokenizer.class);
-        SpellCheckEvent e = new BasicSpellCheckEvent("invalidWord", Collections.emptyList(), 0);
-        assertFalse(checker.fireAndHandleEvent(tokenizer, e));
-        Mockito.verify(tokenizer, never()).replaceWord(Mockito.anyString());
-    }
-
-    @Test
-    void testFireAndHandleEvent_eventType_replace() {
-        WordTokenizer tokenizer = Mockito.mock(WordTokenizer.class);
-        SpellCheckEvent e = new BasicSpellCheckEvent("invalidWord", Collections.emptyList(), 0);
-        e.replaceWord("replacement", false);
-        assertFalse(checker.fireAndHandleEvent(tokenizer, e));
-        Mockito.verify(tokenizer, times(1)).replaceWord(Mockito.eq("replacement"));
-    }
-
-    @Test
-    void testFireAndHandleEvent_eventType_replaceAll() {
-        WordTokenizer tokenizer = Mockito.mock(WordTokenizer.class);
-        SpellCheckEvent e = new BasicSpellCheckEvent("invalidWord", Collections.emptyList(), 0);
-        e.replaceWord("replacement", true);
-        assertFalse(checker.fireAndHandleEvent(tokenizer, e));
-        Mockito.verify(tokenizer, times(1)).replaceWord(Mockito.eq("replacement"));
+    void testFireAndHandleEvent() {
+        SpellCheckEvent e = new BasicSpellCheckEvent("invalidWord", 0);
+        assertFalse(checker.fireAndHandleEvent(e));
     }
 
     @Test
@@ -268,14 +246,19 @@ class SpellCheckerTest {
     @Test
     void testSetCache() {
         assertDoesNotThrow(() -> {
-            checker.setCache(0);
-            checker.setCache(300);
+            checker.setCacheSize(0);
+            checker.setCacheSize(300);
         });
     }
 
     @Test
     void testSetUserDictionary() {
         assertDoesNotThrow(() -> checker.setUserDictionary(new SpellDictionaryHashMap()));
+    }
+
+    @Test
+    void testSetUserDictionary_throwsIfNull() {
+        assertThrows(IllegalArgumentException.class, () -> checker.setUserDictionary(null));
     }
 
     @Test
@@ -330,5 +313,23 @@ class SpellCheckerTest {
         Assertions.assertEquals("TO", actual.get(3));
         Assertions.assertEquals("Do", actual.get(4));
         Assertions.assertEquals("THIS", actual.get(5));
+    }
+
+    /**
+     * Used to verify callback behavior.
+     */
+    private static final class TestSpellCheckListener implements SpellCheckListener {
+
+        private List<SpellCheckEvent> events = new ArrayList<>();
+
+        private List<SpellCheckEvent> getEvents() {
+            return Collections.unmodifiableList(events);
+        }
+
+        @Override
+        public boolean spellingError(SpellCheckEvent event) {
+            events.add(event);
+            return false;
+        }
     }
 }

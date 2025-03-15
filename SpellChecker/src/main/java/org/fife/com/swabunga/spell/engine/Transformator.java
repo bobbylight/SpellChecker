@@ -39,11 +39,11 @@ public interface Transformator {
   /**
    * gets the list of characters that should be swapped in to the misspelled word
    * in order to try to find more suggestions.
-   * In general, this list represents all of the unique phonetic characters
+   * In general, this list represents all the unique phonetic characters
    * for this Transformator.
    * <p/>
    * The replace list is used in the getSuggestions method.
-   * All of the letters in the misspelled word are replaced with the characters from
+   * All the letters in the misspelled word are replaced with the characters from
    * this list to try and generate more suggestions, which implies l*n tries,
    * if l is the size of the string, and n is the size of this list.
    * <p/>

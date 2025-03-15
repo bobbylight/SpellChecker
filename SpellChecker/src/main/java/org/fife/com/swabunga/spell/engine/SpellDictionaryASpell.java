@@ -140,9 +140,6 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
   @Override
   public List<Word> getSuggestions(String word, int threshold, int[][] matrix) {
 
-  	int i;
-  	int j;
-
   	if (matrix == null) {
         matrix = new int[0][0];
     }
@@ -158,18 +155,15 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     //interchange
     nearmisscodes = new HashMap<>();
     char[] charArray = word.toCharArray();
-    char a;
-    char b ;
 
-    for (i = 0; i < word.length() - 1; i++) {
-      a = charArray[i];
-      b = charArray[i + 1];
-      charArray[i] = b;
-      charArray[i + 1] = a;
+    for (int i = 0; i < word.length() - 1; i++) {
+      char temp = charArray[i];
+      charArray[i] = charArray[i + 1];
+      charArray[i + 1] = temp;
       String s = getCode(new String(charArray));
       nearmisscodes.put(s, s);
-      charArray[i] = a;
-      charArray[i + 1] = b;
+      charArray[i + 1] = charArray[i];
+      charArray[i] = temp;
     }
 
     char[] replacelist = tf.getReplaceList();
@@ -177,9 +171,9 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     //change
     charArray = word.toCharArray();
     char original;
-    for (i = 0; i < word.length(); i++) {
+    for (int i = 0; i < word.length(); i++) {
       original = charArray[i];
-      for (j = 0; j < replacelist.length; j++) {
+      for (int j = 0; j < replacelist.length; j++) {
         charArray[i] = replacelist[j];
         String s = getCode(new String(charArray));
         nearmisscodes.put(s, s);
@@ -191,7 +185,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     charArray = (word += " ").toCharArray();
     int iy = charArray.length - 1;
     while (true) {
-      for (j = 0; j < replacelist.length; j++) {
+      for (int j = 0; j < replacelist.length; j++) {
         charArray[iy] = replacelist[j];
         String s = getCode(new String(charArray));
         nearmisscodes.put(s, s);
@@ -208,14 +202,14 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     char[] charArray2 = new char[charArray.length - 1];
     System.arraycopy(charArray, 0, charArray2, 0, charArray2.length);
 
-    a = charArray[charArray.length - 1];
+    char a = charArray[charArray.length - 1];
     int ii = charArray2.length;
     while (true) {
       String s = getCode(new String(charArray));
       nearmisscodes.put(s, s);
       if (ii == 0)
         break;
-      b = a;
+      char b = a;
       a = charArray2[ii - 1];
       charArray2[ii - 1] = b;
       --ii;

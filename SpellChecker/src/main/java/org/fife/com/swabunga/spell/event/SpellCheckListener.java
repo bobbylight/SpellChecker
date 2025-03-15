@@ -32,6 +32,7 @@ public interface SpellCheckListener extends EventListener {
    * Propagates the spelling errors to listeners.
    *
    * @param event The event to handle.
+   * @return Whether to cancel the rest of the spell check.
    */
-  void spellingError(SpellCheckEvent event);
+  boolean spellingError(SpellCheckEvent event);
 }

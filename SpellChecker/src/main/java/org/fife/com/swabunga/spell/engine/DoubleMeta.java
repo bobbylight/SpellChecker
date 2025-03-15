@@ -47,7 +47,7 @@ public class DoubleMeta implements Transformator {
 
   /**
    * Used in the getSuggestions method.
-   * All of the letters in the misspelled word are replaced with the characters from
+   * All the letters in the misspelled word are replaced with the characters from
    * this list to try and generate more suggestions, which implies l*n tries,
    * if l is the size of the string, and n is the size of this list.
    * <p>
