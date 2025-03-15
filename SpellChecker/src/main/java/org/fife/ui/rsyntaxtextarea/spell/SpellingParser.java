@@ -12,7 +12,6 @@ import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -501,7 +500,7 @@ public class SpellingParser extends AbstractParser
 
     /**
      * Sets the maximum number of spelling errors this parser will report for a
-     * single text file.  Note that the file should be re-parsed after changing
+     * single text file.  Note that the file should be reparsed after changing
      * this value.
      *
      * @param max The new maximum error count.
@@ -546,7 +545,7 @@ public class SpellingParser extends AbstractParser
      * If this is non-<code>null</code>, then on the focusable tool tip for
      * spelling errors, there will be an option available: "Add word to
      * dictionary."  If this is clicked then the "error" word is added to the
-     * user's dictionary and the document is re-parsed.
+     * user's dictionary and the document is reparsed.
      *
      * @param dictionaryFile The dictionary file.  If this is <code>null</code>
      *        then the user will not be able to add words.
@@ -557,9 +556,9 @@ public class SpellingParser extends AbstractParser
         SpellDictionaryHashMap userDict;
         if (dictionaryFile != null) {
             if (!dictionaryFile.exists()) {
-                // The file must exist for Jazzy to be happy
-                FileWriter w = new FileWriter(dictionaryFile);
-                w.close();
+                if (!dictionaryFile.createNewFile()) {
+                    throw new IOException("Could not create user dictionary file: " + dictionaryFile);
+                }
             }
             userDict = new SpellDictionaryHashMap(dictionaryFile);
         }
@@ -572,14 +571,8 @@ public class SpellingParser extends AbstractParser
     }
 
 
-    /**
-     * Callback called when a spelling error is found.
-     *
-     * @param e The event.
-     */
     @Override
-    public void spellingError(SpellCheckEvent e) {
-        // e.ignoreWord(true);
+    public boolean spellingError(SpellCheckEvent e) {
         String word = e.getInvalidWord();
         int offs = startOffs + e.getWordContextPosition();
         int line = getLineOfOffset(offs);
@@ -587,10 +580,7 @@ public class SpellingParser extends AbstractParser
         SpellingParserNotice notice =
                 new SpellingParserNotice(this, text, line, offs, word, sc);
         result.addNotice(notice);
-        if (++errorCount >= maxErrorCount) {
-            //System.out.println("Cancelling the spelling check!");
-            e.cancel();
-        }
+        return ++errorCount >= maxErrorCount;
     }
 
 
