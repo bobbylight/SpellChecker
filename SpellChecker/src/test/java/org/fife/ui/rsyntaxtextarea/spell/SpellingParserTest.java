@@ -11,6 +11,10 @@ import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.BadLocationException;
@@ -117,7 +121,7 @@ class SpellingParserTest {
         assertTrue(userDictFile.delete());
         parser.setUserDictionary(userDictFile);
         assertEquals(userDictFile, parser.getUserDictionary());
-        assertTrue(userDictFile.exists()); // Gets created if doesn't initially exist
+        assertTrue(userDictFile.exists()); // Gets created if it doesn't initially exist
     }
 
     @Test
@@ -128,13 +132,126 @@ class SpellingParserTest {
     }
 
     @Test
+    void testGetSetUserDictionary_throwsIfCannotBeCreated() throws IOException{
+        assertNull(parser.getUserDictionary());
+        File mockDictionaryFile = Mockito.mock(File.class);
+        Mockito.doReturn(false).when(mockDictionaryFile).exists();
+        Mockito.doReturn(false).when(mockDictionaryFile).createNewFile();
+        assertThrows(IOException.class, () -> parser.setUserDictionary(mockDictionaryFile));
+    }
+
+    @Test
     void testGetImageBase() {
         assertNotNull(parser.getImageBase());
     }
 
     @Test
-    void testParse_plainText() throws BadLocationException {
-        RSyntaxDocument doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
+    void testLinkClicked_listenersNotified_addWithoutUserDictionary_noNotification() throws IOException {
+        List<SpellingParserEvent> events = new ArrayList<>();
+        SpellingParserListener listener = events::add;
+        parser.addSpellingParserListener(listener);
+
+        File userDictFile = File.createTempFile("scUnitTests_spellingParser", ".txt");
+        userDictFile.deleteOnExit();
+        parser.setUserDictionary(userDictFile);
+
+        String desc = "add://newword";
+        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
+        parser.linkClicked(textArea, e);
+
+        // Proper event fired
+        assertEquals(1, events.size());
+        SpellingParserEvent event = events.get(0);
+        assertEquals(SpellingParserEvent.WORD_ADDED, event.getType());
+        assertEquals(parser, event.getParser());
+        assertEquals(textArea, event.getTextArea());
+        assertEquals("newword", event.getWord());
+
+        // The user dictionary file is actually updated
+        assertEquals("newword\n", Files.readString(userDictFile.toPath()));
+    }
+
+    @Test
+    void testLinkClicked_listenersNotified_addWithUserDictionary_notification() {
+        List<SpellingParserEvent> events = new ArrayList<>();
+        SpellingParserListener listener = events::add;
+        parser.addSpellingParserListener(listener);
+
+        String desc = "add://newword";
+        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
+        parser.linkClicked(textArea, e);
+
+        assertEquals(0, events.size());
+    }
+
+    @Test
+    void testLinkClicked_listenersNotified_ignore() {
+        List<SpellingParserEvent> events = new ArrayList<>();
+        SpellingParserListener listener = events::add;
+        parser.addSpellingParserListener(listener);
+
+        String desc = "ignore://newword";
+        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
+        parser.linkClicked(textArea, e);
+
+        assertEquals(1, events.size());
+        SpellingParserEvent event = events.get(0);
+        assertEquals(SpellingParserEvent.WORD_IGNORED, event.getType());
+        assertEquals(parser, event.getParser());
+        assertEquals(textArea, event.getTextArea());
+        assertEquals("newword", event.getWord());
+    }
+
+    @Test
+    void testLinkClicked_listenersNotified_replace_noNotification() {
+        List<SpellingParserEvent> events = new ArrayList<>();
+        SpellingParserListener listener = events::add;
+        parser.addSpellingParserListener(listener);
+        textArea.setText("0123456789");
+
+        String desc = "replace://1,3,replacement";
+        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
+        parser.linkClicked(textArea, e);
+
+        assertEquals(0, events.size());
+        assertEquals("0replacement456789", textArea.getText());
+    }
+
+    @Test
+    void testLinkClicked_listenersNotified_linkEntered_noNotification() {
+        List<SpellingParserEvent> events = new ArrayList<>();
+        SpellingParserListener listener = events::add;
+        parser.addSpellingParserListener(listener);
+
+        // The mouse entering a hyperlink doesn't do anything
+        String desc = "add://newword";
+        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ENTERED, null, desc);
+        parser.linkClicked(textArea, e);
+
+        // No events fired
+        assertEquals(0, events.size());
+    }
+
+    @Test
+    void testLinkClicked_listenersNotified_linkExited_noNotification() {
+        List<SpellingParserEvent> events = new ArrayList<>();
+        SpellingParserListener listener = events::add;
+        parser.addSpellingParserListener(listener);
+
+        // The mouse exiting a hyperlink doesn't do anything
+        String desc = "add://newword";
+        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.EXITED, null, desc);
+        parser.linkClicked(textArea, e);
+
+        // No events fired
+        assertEquals(0, events.size());
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = SyntaxConstants.SYNTAX_STYLE_NONE)
+    void testParse_plainText(String syntaxStyle) throws BadLocationException {
+        RSyntaxDocument doc = new RSyntaxDocument(syntaxStyle);
         doc.insertString(0, "Thiss is a test.", null);
         ParseResult result = parser.parse(doc, null);
 
@@ -187,79 +304,31 @@ class SpellingParserTest {
     }
 
     @Test
-    void testParse_listenersNotified_addWithoutUserDictionary_noNotification() throws IOException {
-        List<SpellingParserEvent> events = new ArrayList<>();
-        SpellingParserListener listener = events::add;
-        parser.addSpellingParserListener(listener);
+    void testParse_nonPlainText_stopsAtMaxSpellingErrors() throws BadLocationException {
+        RSyntaxDocument doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        doc.insertString(0, "// Thiss is a test. Thiss is a test", null);
+        parser.setMaxErrorCount(1);
+        ParseResult result = parser.parse(doc, SyntaxConstants.SYNTAX_STYLE_JAVA);
 
-        File userDictFile = File.createTempFile("scUnitTests_spellingParser", ".txt");
-        assertTrue(userDictFile.delete());
-        parser.setUserDictionary(userDictFile);
+        // Only the first spelling error is found, since the check is canceled at 1
+        List<ParserNotice> notices = result.getNotices();
+        assertEquals(1, notices.size());
+        ParserNotice notice = notices.get(0);
+        assertEquals(3, notice.getOffset());
+        assertEquals(5, notice.getLength());
+        assertTrue(notice.getKnowsOffsetAndLength());
+        assertEquals("Incorrectly spelled word: Thiss", notice.getMessage());
+        assertEquals(ParserNotice.Level.INFO, notice.getLevel());
+        assertEquals(parser, notice.getParser());
+        assertEquals(Color.BLUE, notice.getColor());
+        assertNotNull(notice.getToolTipText());
+        assertEquals("[SpellingParserNotice: Thiss]", notice.toString());
 
-        try {
-            String desc = "add://newword";
-            HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
-            parser.linkClicked(textArea, e);
-
-            // Proper event fired
-            assertEquals(1, events.size());
-            SpellingParserEvent event = events.get(0);
-            assertEquals(SpellingParserEvent.WORD_ADDED, event.getType());
-            assertEquals(parser, event.getParser());
-            assertEquals(textArea, event.getTextArea());
-            assertEquals("newword", event.getWord());
-
-            // The user dictionary file is actually updated
-            assertEquals("newword\n", Files.readString(userDictFile.toPath()));
-        } finally {
-            userDictFile.deleteOnExit();
-        }
-    }
-
-    @Test
-    void testParse_listenersNotified_addWithUserDictionary_notification() {
-        List<SpellingParserEvent> events = new ArrayList<>();
-        SpellingParserListener listener = events::add;
-        parser.addSpellingParserListener(listener);
-
-        String desc = "add://newword";
-        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
-        parser.linkClicked(textArea, e);
-
-        assertEquals(0, events.size());
-    }
-
-    @Test
-    void testParse_listenersNotified_ignore() {
-        List<SpellingParserEvent> events = new ArrayList<>();
-        SpellingParserListener listener = events::add;
-        parser.addSpellingParserListener(listener);
-
-        String desc = "ignore://newword";
-        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
-        parser.linkClicked(textArea, e);
-
-        assertEquals(1, events.size());
-        SpellingParserEvent event = events.get(0);
-        assertEquals(SpellingParserEvent.WORD_IGNORED, event.getType());
-        assertEquals(parser, event.getParser());
-        assertEquals(textArea, event.getTextArea());
-        assertEquals("newword", event.getWord());
-    }
-
-    @Test
-    void testParse_listenersNotified_replace_noNotification() {
-        List<SpellingParserEvent> events = new ArrayList<>();
-        SpellingParserListener listener = events::add;
-        parser.addSpellingParserListener(listener);
-        textArea.setText("0123456789");
-
-        String desc = "replace://1,3,replacement";
-        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
-        parser.linkClicked(textArea, e);
-
-        assertEquals(0, events.size());
-        assertEquals("0replacement456789", textArea.getText());
+        // Correct other fields
+        assertEquals(parser, result.getParser());
+        assertNull(result.getError());
+        assertEquals(0, result.getFirstLineParsed());
+        assertEquals(doc.getDefaultRootElement().getElementCount() - 1, result.getLastLineParsed());
     }
 
     @Test

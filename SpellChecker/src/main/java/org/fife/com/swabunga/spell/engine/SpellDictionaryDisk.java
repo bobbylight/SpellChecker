@@ -522,7 +522,7 @@ public List<String> getWords(String code) {
     return out;
   }
 
-  private static class CodeWord implements Comparable<CodeWord> { // robert: static
+  static class CodeWord implements Comparable<CodeWord> { // robert: static
     private String code;
     private String word;
 
@@ -559,7 +559,7 @@ public List<String> getWords(String code) {
     }
   }
 
-  private static class FileSize { // robert: static
+  static class FileSize { // robert: static
     private String filename;
     private long size;
 
@@ -571,12 +571,12 @@ public List<String> getWords(String code) {
     @Override
 	public boolean equals(Object o) {
       if (this == o) return true;
-		if (o instanceof FileSize) {
-			FileSize fs = (FileSize)o;
-			// robert: Line below previously was buggy and would never return
-			// true (comparing a FileSize to a String).
-			return size==fs.size && this.filename.equals(fs.filename);
-		}
+	  if (o instanceof FileSize) {
+		FileSize fs = (FileSize)o;
+		// robert: Line below previously was buggy and would never return
+		// true (comparing a FileSize to a String).
+		return size==fs.size && this.filename.equals(fs.filename);
+	  }
       return false;
     }
 

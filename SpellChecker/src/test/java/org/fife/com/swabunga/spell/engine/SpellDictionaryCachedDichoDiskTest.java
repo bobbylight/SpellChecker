@@ -32,19 +32,32 @@ class SpellDictionaryCachedDichoDiskTest {
         }
     }
 
-    /**
-     * Utility method for test setup.
-     */
-    private static SpellDictionaryCachedDichoDisk createDictionary_noCache(String[] content, String encoding)
-            throws IOException {
+    private static File createWordsFile(String[] content) throws IOException {
         File precacheDir = new File(SpellDictionaryCachedDichoDisk.getPreCacheDir());
         if (precacheDir.isDirectory()) {
             recursiveDelete(precacheDir);
         }
 
         File wordsFile = File.createTempFile(TEST_DIR_PREFIX, ".txt");
+        wordsFile.deleteOnExit();
         Files.writeString(wordsFile.toPath(), String.join("\n", content));
-        return new SpellDictionaryCachedDichoDisk(wordsFile, encoding);
+        return wordsFile;
+    }
+
+    /**
+     * Utility method for test setup.
+     */
+    private static SpellDictionaryCachedDichoDisk createDictionary_noCache(String[] content, String encoding)
+            throws IOException {
+        return new SpellDictionaryCachedDichoDisk(createWordsFile(content), encoding);
+    }
+
+    /**
+     * Utility method for test setup.
+     */
+    private static SpellDictionaryCachedDichoDisk createDictionary_noCache(String[] content, String encoding,
+                                                                           int maxCacheSize) throws IOException {
+        return new SpellDictionaryCachedDichoDisk(createWordsFile(content), encoding, maxCacheSize);
     }
 
     @Test
@@ -142,6 +155,29 @@ class SpellDictionaryCachedDichoDiskTest {
         SpellDictionaryCachedDichoDisk dictionary = createDictionary_noCache(CONTENT, encoding);
         List<String> words = dictionary.getWords(dictionary.getCode("nonexistent"));
         Assertions.assertTrue(words.isEmpty());
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = "UTF-8")
+    void testGetWords_cacheSpillover(String encoding) throws IOException {
+        SpellDictionaryCachedDichoDisk dictionary = createDictionary_noCache(CONTENT, encoding, 2);
+
+        List<String> words = dictionary.getWords(dictionary.getCode("dog"));
+        Assertions.assertEquals(1, words.size());
+        Assertions.assertTrue(words.contains("dog"));
+
+        words = dictionary.getWords(dictionary.getCode("cat"));
+        Assertions.assertEquals(1, words.size());
+        Assertions.assertTrue(words.contains("cat"));
+
+        words = dictionary.getWords(dictionary.getCode("cat"));
+        Assertions.assertEquals(1, words.size());
+        Assertions.assertTrue(words.contains("cat"));
+
+        words = dictionary.getWords(dictionary.getCode("apple"));
+        Assertions.assertEquals(1, words.size());
+        Assertions.assertTrue(words.contains("apple"));
     }
 
     @ParameterizedTest

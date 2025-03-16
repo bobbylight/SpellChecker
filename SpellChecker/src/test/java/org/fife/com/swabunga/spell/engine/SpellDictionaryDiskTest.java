@@ -168,7 +168,13 @@ class SpellDictionaryDiskTest {
     }
 
     @Test
-    void testGetWords() {
+    void testGetWords_emptyString() {
+        List<String> words = dictionary.getWords("");
+        assertEquals(0, words.size());
+    }
+
+    @Test
+    void testGetWords_happyPath() {
         List<String> words = dictionary.getWords("APL");
         assertEquals(1, words.size());
         assertTrue(words.contains("apple"));
@@ -183,4 +189,75 @@ class SpellDictionaryDiskTest {
     void testIsCorrect_wordFound() {
         assertTrue(dictionary.isCorrect("apple"));
     }
+
+    @Test
+    void testCodeWord_equals_sameObject() {
+        SpellDictionaryDisk.CodeWord codeWord = new SpellDictionaryDisk.CodeWord("CODE", "word");
+        assertTrue(codeWord.equals(codeWord));
+    }
+
+    @Test
+    void testCodeWord_equals_differentWords_equal() {
+        SpellDictionaryDisk.CodeWord codeWord = new SpellDictionaryDisk.CodeWord("CODE", "word");
+        SpellDictionaryDisk.CodeWord codeWord2 = new SpellDictionaryDisk.CodeWord("CODE", "word");
+        assertTrue(codeWord.equals(codeWord2));
+    }
+
+    @Test
+    void testCodeWord_equals_differentWords_differentWords() {
+        SpellDictionaryDisk.CodeWord codeWord = new SpellDictionaryDisk.CodeWord("CODE", "word");
+        SpellDictionaryDisk.CodeWord codeWord2 = new SpellDictionaryDisk.CodeWord("CODE", "word2");
+        assertFalse(codeWord.equals(codeWord2));
+    }
+
+    @Test
+    void testCodeWord_equals_differentTypes() {
+        SpellDictionaryDisk.CodeWord codeWord = new SpellDictionaryDisk.CodeWord("CODE", "word");
+        assertFalse(codeWord.equals("word"));
+    }
+
+    @Test
+    void testCodeWord_hashCode() {
+        SpellDictionaryDisk.CodeWord codeWord = new SpellDictionaryDisk.CodeWord("CODE", "word");
+        assertEquals("word".hashCode(), codeWord.hashCode());
+    }
+
+   @Test
+   void testFileSize_equals_sameObject() {
+       SpellDictionaryDisk.FileSize fileSize = new SpellDictionaryDisk.FileSize("file.txt", 100);
+       assertTrue(fileSize.equals(fileSize));
+   }
+
+   @Test
+   void testFileSize_equals_differentObjects_equal() {
+       SpellDictionaryDisk.FileSize fileSize1 = new SpellDictionaryDisk.FileSize("file.txt", 100);
+       SpellDictionaryDisk.FileSize fileSize2 = new SpellDictionaryDisk.FileSize("file.txt", 100);
+       assertTrue(fileSize1.equals(fileSize2));
+   }
+
+   @Test
+   void testFileSize_equals_differentObjects_notEqual_differentFileName() {
+       SpellDictionaryDisk.FileSize fileSize1 = new SpellDictionaryDisk.FileSize("file.txt", 100);
+       SpellDictionaryDisk.FileSize fileSize2 = new SpellDictionaryDisk.FileSize("file2.txt", 100);
+       assertFalse(fileSize1.equals(fileSize2));
+   }
+
+    @Test
+    void testFileSize_equals_differentObjects_notEqual_differentFileSize() {
+        SpellDictionaryDisk.FileSize fileSize1 = new SpellDictionaryDisk.FileSize("file.txt", 100);
+        SpellDictionaryDisk.FileSize fileSize2 = new SpellDictionaryDisk.FileSize("file.txt", 101);
+        assertFalse(fileSize1.equals(fileSize2));
+    }
+
+   @Test
+   void testFileSize_equals_differentTypes() {
+       SpellDictionaryDisk.FileSize fileSize = new SpellDictionaryDisk.FileSize("file.txt", 100);
+       assertFalse(fileSize.equals("file.txt"));
+   }
+
+   @Test
+   void testFileSize_hashCode() {
+       SpellDictionaryDisk.FileSize fileSize = new SpellDictionaryDisk.FileSize("file.txt", 100);
+       assertNotEquals(0, fileSize.hashCode());
+   }
 }
