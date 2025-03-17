@@ -9,9 +9,9 @@ import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
 import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserEvent;
 import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserListener;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
@@ -20,10 +20,13 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.BadLocationException;
 import java.awt.Color;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,17 +50,76 @@ class SpellingParserTest {
         textArea = new RSyntaxTextArea();
     }
 
+    private static File createZipFile(boolean american, boolean programming) throws IOException {
+        File zipFile = File.createTempFile("scUnitTests_spellingParser_eng_dictionary", ".zip");
+        zipFile.deleteOnExit();
+        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile))) {
+            ZipEntry entry = new ZipEntry("eng_com.dic");
+            zos.putNextEntry(entry);
+            zos.write("aardvark\nappla\nbat\n".getBytes());
+            zos.closeEntry();
+
+            // US English entries
+            entry = new ZipEntry("color.dic");
+            zos.putNextEntry(entry);
+            zos.write("color\n".getBytes());
+            entry = new ZipEntry("labeled.dic");
+            zos.putNextEntry(entry);
+            zos.write("labeled\n".getBytes());
+            entry = new ZipEntry("center.dic");
+            zos.putNextEntry(entry);
+            zos.write("center\n".getBytes());
+            entry = new ZipEntry("ize.dic");
+            zos.putNextEntry(entry);
+            zos.write("sanitize\n".getBytes());
+            entry = new ZipEntry("yze.dic");
+            zos.putNextEntry(entry);
+            zos.write("analyze\n".getBytes());
+
+            // UK English entries
+            entry = new ZipEntry("colour.dic");
+            zos.putNextEntry(entry);
+            zos.write("colour\n".getBytes());
+            entry = new ZipEntry("labelled.dic");
+            zos.putNextEntry(entry);
+            zos.write("labelled\n".getBytes());
+            entry = new ZipEntry("centre.dic");
+            zos.putNextEntry(entry);
+            zos.write("centre\n".getBytes());
+            entry = new ZipEntry("ise.dic");
+            zos.putNextEntry(entry);
+            zos.write("sanitise\n".getBytes());
+            entry = new ZipEntry("yse.dic");
+            zos.putNextEntry(entry);
+            zos.write("analyse\n".getBytes());
+
+            // Programming entries
+            entry = new ZipEntry("programming.dic");
+            zos.putNextEntry(entry);
+            zos.write("gradle\n".getBytes());
+        }
+        return zipFile;
+    }
+
     @Test
     void testAddSpellingParserListener() {
         SpellingParserListener listener = e -> {};
         assertDoesNotThrow(() -> parser.addSpellingParserListener(listener));
     }
 
-    @Test
-    @Disabled("Requires a valid dictionary file")
-    void testCreateEnglishSpellingParser() throws IOException {
-        File zip = new File("path/to/english_dic.zip");
-        SpellingParser englishParser = SpellingParser.createEnglishSpellingParser(zip, true);
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testCreateEnglishSpellingParser_2Arg(boolean american) throws IOException {
+        File zipFile = createZipFile(american, false);
+        SpellingParser englishParser = SpellingParser.createEnglishSpellingParser(zipFile, american);
+        assertNotNull(englishParser);
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "false,false", "false,true", "true,false", "true,true" })
+    void testCreateEnglishSpellingParser_3Arg(boolean american, boolean programming) throws IOException {
+        File zipFile = createZipFile(american, programming);
+        SpellingParser englishParser = SpellingParser.createEnglishSpellingParser(zipFile, american, programming);
         assertNotNull(englishParser);
     }
 
