@@ -9,14 +9,12 @@
 package org.fife.ui.rsyntaxtextarea.spell;
 
 import java.awt.Color;
-import java.awt.ComponentOrientation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.zip.ZipFile;
 
@@ -25,10 +23,8 @@ import javax.swing.event.EventListenerList;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.Element;
 
-import org.fife.com.swabunga.spell.engine.Configuration;
 import org.fife.com.swabunga.spell.engine.SpellDictionary;
 import org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap;
-import org.fife.com.swabunga.spell.engine.Word;
 import org.fife.com.swabunga.spell.event.DocumentWordTokenizer;
 import org.fife.com.swabunga.spell.event.SpellCheckEvent;
 import org.fife.com.swabunga.spell.event.SpellCheckListener;
@@ -41,7 +37,6 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip;
 import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
-import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
 import org.fife.ui.rsyntaxtextarea.parser.ExtendedHyperlinkListener;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserEvent;
@@ -50,7 +45,7 @@ import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserListener;
 
 /**
  * A parser that spell-checks documents.  The spelling engine is a lightly
- * modified version of <a href="http://jazzy.sourceforge.net/">Jazzy</a>.
+ * modified version of <a href="https://jazzy.sourceforge.net/">Jazzy</a>.
  * All Jazzy source, modified or otherwise, is licensed under the LGPL. just
  * like the entirety of this library.<p>
  * <p>
@@ -99,14 +94,6 @@ public class SpellingParser extends AbstractParser
 
     private static final ResourceBundle MSG = ResourceBundle.getBundle(
             "org.fife.ui.rsyntaxtextarea.spell.SpellingParser");
-
-    private static final String ADD = "add";
-    private static final String IGNORE = "ignore";
-    private static final String REPLACE = "replace";
-    private static final String TOOLTIP_TEXT_FORMAT =
-            "<html><body dir='{0}'>" +
-                    "<img src='lightbulb.png' width='16' height='16'>{1}<hr>" +
-                    "<img src='spellcheck.png' width='16' height='16'>{2}<br>{3}<br>&nbsp;";
 
     /**
      * The default maximum number of spelling errors to report for a document.
@@ -350,10 +337,10 @@ public class SpellingParser extends AbstractParser
 
             String desc = e.getDescription();
             int temp = desc.indexOf("://");
-            String operation = desc.substring(0, temp);
+            SpellingErrorAction action = SpellingErrorAction.valueOf(desc.substring(0, temp));
             String[] tokens = desc.substring(temp + 3).split(",");
 
-            switch (operation) {
+            switch (action) {
 
                 case REPLACE:
                     int offs = Integer.parseInt(tokens[0]);
@@ -581,120 +568,6 @@ public class SpellingParser extends AbstractParser
                 new SpellingParserNotice(this, text, line, offs, word, sc);
         result.addNotice(notice);
         return ++errorCount >= maxErrorCount;
-    }
-
-
-    /**
-     * The notice type returned by this parser.
-     */
-    private static class SpellingParserNotice extends DefaultParserNotice {
-
-        private String word;
-        private SpellChecker sc;
-
-        SpellingParserNotice(SpellingParser parser, String msg,
-                             int line, int offs, String word,
-                             SpellChecker sc) {
-            super(parser, msg, line, offs, word.length());
-            setLevel(Level.INFO);
-            this.word = word;
-            this.sc = sc;
-        }
-
-        @Override
-        public Color getColor() {
-            return ((SpellingParser)getParser()).getSquiggleUnderlineColor();
-        }
-
-        @Override
-        public String getToolTipText() {
-
-            StringBuilder sb = new StringBuilder();
-            String spacing = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-            int threshold = sc.getConfiguration().getInteger(Configuration.SPELL_THRESHOLD);
-            List<Word> suggestions = sc.getSuggestions(word, threshold);
-            if (suggestions == null || suggestions.isEmpty()) {
-                sb.append(spacing).append("&#8226;&nbsp;<em>");
-                sb.append(MSG.getString("None"));
-                sb.append("</em><br><br>");
-            }
-            else {
-
-                // If the bad word started with an upper-case letter, make sure all our suggestions do.
-                if (Character.isUpperCase(word.charAt(0))) {
-                    for (Word suggestion : suggestions) {
-                        String oldSug = suggestion.getWord();
-                        suggestion.setWord(Character.toUpperCase(oldSug.charAt(0)) + oldSug.substring(1));
-                    }
-                }
-
-                sb.append("<center>");
-                sb.append("<table width='75%'>");
-                for (int i = 0; i < suggestions.size(); i++) {
-                    if ((i % 2) == 0) {
-                        sb.append("<tr>");
-                    }
-                    sb.append("<td>&#8226;&nbsp;");
-                    Word suggestion = suggestions.get(i);
-                    // Surround with double quotes, not single, since
-                    // replacement words can have single quotes in them.
-                    sb.append("<a href=\"").append(REPLACE).append("://").
-                            append(getOffset()).append(',').
-                            append(getLength()).append(',').
-                            append(suggestion.getWord()).
-                            append("\">").
-                            append(suggestion.getWord()).
-                            append("</a>").
-                            append("</td>");
-                    if ((i & 1) == 1) {
-                        sb.append("</tr>");
-                    }
-                }
-                if ((suggestions.size() % 2) == 0) {
-                    sb.append("<td></td></tr>");
-                }
-                sb.append("</table>");
-                sb.append("</center>");
-            }
-
-            SpellingParser sp = (SpellingParser)getParser();
-            if (sp.getAllowAdd()) {
-                sb.append("<img src='add.png' width='16' height='16'>&nbsp;").
-                        append("<a href='").append(ADD).
-                        append("://").append(word).append("'>").
-                        append(MSG.getString("ErrorToolTip.AddToDictionary")).
-                        append("</a><br>");
-            }
-
-            if (sp.getAllowIgnore()) {
-                String text = MSG.getString("ErrorToolTip.IgnoreWord");
-                text = MessageFormat.format(text, word);
-                sb.append("<img src='cross.png' width='16' height='16'>&nbsp;").
-                        append("<a href='").append(IGNORE).
-                        append("://").append(word).append("'>").
-                        append(text).append("</a>");
-            }
-
-            String firstLine = MessageFormat.format(
-                    MSG.getString("ErrorToolTip.DescHtml"),
-                    word);
-            ComponentOrientation o = ComponentOrientation.getOrientation(
-                    Locale.getDefault());
-            String dirAttr = o.isLeftToRight() ? "ltr" : "rtl";
-
-            return MessageFormat.format(TOOLTIP_TEXT_FORMAT,
-                    dirAttr,
-                    firstLine,
-                    MSG.getString("ErrorToolTip.SuggestionsHtml"),
-                    sb.toString());
-
-        }
-
-        @Override
-        public String toString() {
-            return "[SpellingParserNotice: " + word + "]";
-        }
-
     }
 
 

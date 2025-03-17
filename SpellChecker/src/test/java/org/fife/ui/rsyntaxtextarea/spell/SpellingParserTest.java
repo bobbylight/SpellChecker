@@ -217,7 +217,7 @@ class SpellingParserTest {
         userDictFile.deleteOnExit();
         parser.setUserDictionary(userDictFile);
 
-        String desc = "add://newword";
+        String desc = "ADD://newword";
         HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
         parser.linkClicked(textArea, e);
 
@@ -239,7 +239,7 @@ class SpellingParserTest {
         SpellingParserListener listener = events::add;
         parser.addSpellingParserListener(listener);
 
-        String desc = "add://newword";
+        String desc = "ADD://newword";
         HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
         parser.linkClicked(textArea, e);
 
@@ -252,7 +252,7 @@ class SpellingParserTest {
         SpellingParserListener listener = events::add;
         parser.addSpellingParserListener(listener);
 
-        String desc = "ignore://newword";
+        String desc = "IGNORE://newword";
         HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
         parser.linkClicked(textArea, e);
 
@@ -271,7 +271,7 @@ class SpellingParserTest {
         parser.addSpellingParserListener(listener);
         textArea.setText("0123456789");
 
-        String desc = "replace://1,3,replacement";
+        String desc = "REPLACE://1,3,replacement";
         HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
         parser.linkClicked(textArea, e);
 
@@ -286,7 +286,7 @@ class SpellingParserTest {
         parser.addSpellingParserListener(listener);
 
         // The mouse entering a hyperlink doesn't do anything
-        String desc = "add://newword";
+        String desc = "ADD://newword";
         HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ENTERED, null, desc);
         parser.linkClicked(textArea, e);
 
@@ -301,7 +301,7 @@ class SpellingParserTest {
         parser.addSpellingParserListener(listener);
 
         // The mouse exiting a hyperlink doesn't do anything
-        String desc = "add://newword";
+        String desc = "ADD://newword";
         HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.EXITED, null, desc);
         parser.linkClicked(textArea, e);
 
