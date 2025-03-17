@@ -64,7 +64,7 @@
     <!-- Checks for Size Violations.                             -->
     <!-- See https://checkstyle.sourceforge.io/config_sizes.html -->
     <module name="FileLength">
-        <property name="max" value="1615"/>
+        <property name="max" value="1000"/>
     </module>
 
     <module name="LineLength">
@@ -272,7 +272,7 @@
         <!-- <module name="TodoComment"/> -->
         <module name="UpperEll"/>
 
-        <!-- Checks for metrics.                                       -->
+        <!-- Checks for metrics.                                             -->
         <!-- See https://checkstyle.sourceforge.io/checks/metrics/index.html -->
         <!--        <module name="CyclomaticComplexity"/>-->
 
