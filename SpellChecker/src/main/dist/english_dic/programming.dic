@@ -16,9 +16,13 @@ ctrl
 def
 dir
 doc
+endpoint
+endpoints
 foo
 frontend
 git
+github
+gradle
 guid
 hotfix
 hotfixes
@@ -29,8 +33,11 @@ javadoc
 li
 localhost
 microservice
+microservices
 min
 ol
+plugin
+plugins
 printf
 println
 refactor
@@ -39,6 +46,7 @@ refactoring
 refactors
 regex
 regexes
+sonatype
 td
 todo
 toolbar
