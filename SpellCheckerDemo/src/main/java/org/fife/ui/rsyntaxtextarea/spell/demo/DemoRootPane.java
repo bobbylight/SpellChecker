@@ -122,7 +122,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
         }
 
 		try {
-			return SpellingParser.createEnglishSpellingParser(zip, true);
+			return SpellingParser.createEnglishSpellingParser(zip, true, true);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -189,7 +189,7 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 			JOptionPane.showMessageDialog(DemoRootPane.this,
 				"<html><b>Spell Checker</b> - An add-on for RSyntaxTextArea" +
 				"<br>that does spell checking in code comments." +
-				"<br>Version 3.0.3" +
+				"<br>Version 3.4.1" +
 				"<br>Licensed under the LGPL",
 				"About Spell Checker",
 				JOptionPane.INFORMATION_MESSAGE);
