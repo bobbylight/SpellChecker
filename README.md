@@ -13,7 +13,17 @@ the spell check white list.
 This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Indeed, 99% of the code is just
 Jazzy, with changes made for performance, bug fixes, and Java 8 syntax.
 
-This library is built with Java 17, but runs on Java 8 and later.
+## Building and Requirements
+Building SpellChecker requires JDK 25 or later:
+
+    ./gradlew build --warning-mode all
+
+The built library runs on Java 8 and later.  The table below lists the requirements for each version:
+
+| Version      | Required to build (JDK) | Required to run (JRE) |
+|--------------|-------------------------|-----------------------|
+| Next release | 25                      | 8                     |
+| 3.4.x        | 17                      | 8                     |
 
 ## Getting a dictionary file
 While the `SpellingParser` class can take any implementation of the `SpellDictionary` interface,
