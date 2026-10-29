@@ -18,11 +18,11 @@ Building SpellChecker requires JDK 25 or later:
 
     ./gradlew build --warning-mode all
 
-The built library runs on Java 8 and later.  The table below lists the requirements for each version:
+The built library runs on Java 11 and later.  The table below lists the requirements for each version:
 
 | Version      | Required to build (JDK) | Required to run (JRE) |
 |--------------|-------------------------|-----------------------|
-| Next release | 25                      | 8                     |
+| Next release | 25                      | 11                    |
 | 3.4.x        | 17                      | 8                     |
 
 ## Getting a dictionary file
