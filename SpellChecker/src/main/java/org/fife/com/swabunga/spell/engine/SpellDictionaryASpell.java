@@ -111,35 +111,13 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
   /**
    * Returns a list of Word objects that are the suggestions to an
    * incorrect word.
-   * <p>
-   * This method is only needed to provide backward compatibility.
    *
    * @param word Suggestions for given misspelled word
    * @param threshold The lower boundary of similarity to misspelled word
    * @return a List of suggestions
-   * @see #getSuggestions(String, int, int[][])
    */
   @Override
   public List<Word> getSuggestions(String word, int threshold) {
-  	return getSuggestions(word,threshold,null);
-  }
-
-  /**
-   * Returns a list of Word objects that are the suggestions to an
-   * incorrect word.
-   *
-   * @param word Suggestions for given misspelled word
-   * @param threshold The lower boundary of similarity to misspelled word
-   * @param matrix Two dimensional int array used to calculate
-   *        edit distance. Allocating this memory outside the function will greatly improve efficiency.
-   * @return a List of suggestions
-   */
-  @Override
-  public List<Word> getSuggestions(String word, int threshold, int[][] matrix) {
-
-  	if (matrix == null) {
-        matrix = new int[0][0];
-    }
 
     Map<String, String> nearmisscodes = new HashMap<>();
     String code = getCode(word);
@@ -217,7 +195,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     List<Word> wordlist = getWordsFromCode(word, nearmisscodes);
 
     if (wordlist.isEmpty() && phoneticList.isEmpty())
-      addBestGuess(word, phoneticList, matrix);
+      addBestGuess(word, phoneticList);
 
 
     // We sort a List at the end instead of maintaining a
@@ -238,14 +216,8 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    *
    * @param word - the word we are trying to spell correct
    * @param wordList - the linked list that will get the best guess
-   * @param matrix Two dimensional array of int used to calculate
-   *        edit distance. Allocating this memory outside the function will greatly improve efficiency.
    */
-  private void addBestGuess(String word, List<Word> wordList, int[][] matrix) {
-  	if (matrix == null) {
-        matrix = new int[0][0];
-    }
-
+  private void addBestGuess(String word, List<Word> wordList) {
     if (!wordList.isEmpty())
       throw new InvalidParameterException("the wordList vector must be empty");
 
@@ -257,7 +229,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     LinkedList<Word> candidates = new LinkedList<>();
 
     for (String similar : simwordlist) {
-      int distance = EditDistance.getDistance(word, similar, matrix);
+      int distance = EditDistance.getDistance(word, similar);
       if (distance <= bestScore) {
         bestScore = distance;
         candidates.add(new Word(similar, distance));
@@ -275,13 +247,12 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
   private List<Word> getWordsFromCode(String word, Map<String, String> codes) {
     Configuration config = Configuration.getConfiguration();
     List<Word> result = new ArrayList<>();
-    int[][] matrix = new int[0][0];
     final int configDistance = config.getInteger(Configuration.SPELL_THRESHOLD);
 
     for (String code : codes.keySet()) {
       List<String> simwordlist = getWords(code);
       for (String similar : simwordlist) {
-        int distance = EditDistance.getDistance(word, similar, matrix);
+        int distance = EditDistance.getDistance(word, similar);
         if (distance < configDistance) {
           result.add(new Word(similar, distance));
         }
