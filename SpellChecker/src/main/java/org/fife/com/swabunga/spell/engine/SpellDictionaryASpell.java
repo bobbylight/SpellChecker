@@ -61,7 +61,15 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
 
   /** The reference to a Transformator, used to transform a word into it's phonetic code. */
-  private Transformator tf;
+  private final Transformator tf;
+
+  /**
+   * Constructs a new SpellDictionaryASpell that uses {@link DoubleMeta}
+   * transformation.
+   */
+  protected SpellDictionaryASpell() {
+    tf = new DoubleMeta();
+  }
 
   /**
    * Constructs a new SpellDictionaryASpell.
@@ -72,10 +80,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @throws IOException  indicates problems reading the phonetic information.
    */
   public SpellDictionaryASpell(File phonetic) throws IOException {
-    if (phonetic == null)
-      tf = new DoubleMeta();
-    else
-      tf = new GenericTransformator(phonetic);
+    tf = phonetic == null ? new DoubleMeta() : new GenericTransformator(phonetic);
   }
 
   /**
@@ -88,12 +93,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @throws IOException  indicates problems reading the phonetic information.
    */
   public SpellDictionaryASpell(File phonetic, String encoding) throws IOException {
-    if (phonetic == null) {
-        tf = new DoubleMeta();
-    }
-    else {
-      tf = new GenericTransformator(phonetic, encoding);
-    }
+    tf = phonetic == null ? new DoubleMeta() : new GenericTransformator(phonetic, encoding);
   }
 
   /**
@@ -105,10 +105,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @throws IOException  indicates problems reading the phonetic information.
    */
   public SpellDictionaryASpell(Reader phonetic) throws IOException {
-    if (phonetic == null)
-      tf = new DoubleMeta();
-    else
-      tf = new GenericTransformator(phonetic);
+    tf = phonetic == null ? new DoubleMeta() : new GenericTransformator(phonetic);
   }
 
   /**

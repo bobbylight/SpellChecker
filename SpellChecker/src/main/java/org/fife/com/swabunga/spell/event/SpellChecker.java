@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.spell.event;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,7 +59,7 @@ public class SpellChecker {
 
   private List<SpellCheckListener> eventListeners = new ArrayList<>();
   private List<SpellDictionary> dictionaries = new ArrayList<>();
-  private SpellDictionary userDictionary;
+  private SpellDictionary userDictionary = new SpellDictionaryHashMap();
 
   private Configuration config = Configuration.getConfiguration();
 
@@ -81,11 +80,6 @@ public class SpellChecker {
    * @param dictionary The dictionary used for looking up words.
    */
   public SpellChecker(SpellDictionary dictionary) {
-    try {
-      userDictionary = new SpellDictionaryHashMap();
-    } catch (IOException e) {
-      throw new RuntimeException("this exception should never happen because we are using null phonetic file", e);
-    }
     addDictionary(dictionary);
   }
 

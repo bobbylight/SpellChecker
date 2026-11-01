@@ -66,11 +66,9 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   /**
    * Creates an empty dictionary.
    *
-   * @throws IOException If an IO error occurs.
    * @see #addWord(String)
    */
-  public SpellDictionaryHashMap() throws IOException {
-    super((File) null);
+  public SpellDictionaryHashMap() {
   }
 
   /**
@@ -83,7 +81,6 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap(Reader wordList) throws IOException {
-    super((File) null);
     createDictionary(new BufferedReader(wordList));
   }
 
@@ -284,19 +281,5 @@ public boolean addWord(String word) {
     if (mainDictResult == null)
       return Collections.emptyList();
     return mainDictResult;
-  }
-
-  /**
-   * Returns true if the word is correctly spelled against the current word list.
-   */
-  @Override
-  public boolean isCorrect(String word) {
-    List<String> possible = getWords(getCode(word));
-    if (possible.contains(word)) {
-      return true;
-    }
-    //JMH should we always try the lowercase version. If I dont then capitalized
-    //words are always returned as incorrect.
-    return possible.contains(word.toLowerCase());
   }
 }
