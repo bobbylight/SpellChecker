@@ -203,8 +203,8 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     // to a tree set it has to be resorted. It's better to do this operation
     // once at the end.
 
-    phoneticList.sort(new Word()); //always sort phonetic matches along the top
-    wordlist.sort(new Word()); //the non-phonetic matches can be listed below
+    phoneticList.sort(Word.COST_COMPARATOR); //always sort phonetic matches along the top
+    wordlist.sort(Word.COST_COMPARATOR); //the non-phonetic matches can be listed below
 
     phoneticList.addAll(wordlist);
     return phoneticList;

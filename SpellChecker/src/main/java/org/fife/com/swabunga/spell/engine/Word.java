@@ -28,9 +28,17 @@ import java.util.Comparator;
  *  <p>This class is now immutable.
  *  </p>
  */
-public class Word implements Comparator<Word> {
-  private String word;
-  private int score;
+public class Word {
+
+  /**
+   * Sorts words by cost, most similar (lowest cost) first.
+   *
+   * @see #getCost()
+   */
+  public static final Comparator<Word> COST_COMPARATOR = Comparator.comparingInt(Word::getCost);
+
+  private final String word;
+  private final int score;
 
   /**
    * Constructs a new Word.
@@ -41,28 +49,6 @@ public class Word implements Comparator<Word> {
   public Word(String word, int score) {
     this.word = word;
     this.score = score;
-  }
-
-  /**
-   * Constructs a new Word.
-   */
-  public Word() {
-    this.word = "";
-    this.score = 0;
-  }
-
-  /**
-   * Compares two words, mostly for the purpose of sorting words.
-   *
-   * @param o1 the first word
-   * @param o2 the second word
-   * @return -1 if the first word is more similar to the misspelled word
-   *         <br>1 if the second word is more similar to the misspelled word
-   *         <br>0 if both words are equally similar
-   */
-  @Override
-  public int compare(Word o1, Word o2) {
-      return Integer.compare(o1.getCost(), o2.getCost());
   }
 
   /**
@@ -95,16 +81,6 @@ public class Word implements Comparator<Word> {
   @Override
   public int hashCode() {
     return word.hashCode();
-  }
-
-
-  /**
-   * Sets suggested spelling.
-   *
-   * @param word The text to set for suggested spelling
-   */
-  public void setWord(String word) {
-    this.word = word;
   }
 
   /**

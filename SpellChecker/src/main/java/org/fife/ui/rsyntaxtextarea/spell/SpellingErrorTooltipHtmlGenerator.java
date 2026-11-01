@@ -45,12 +45,7 @@ class SpellingErrorTooltipHtmlGenerator {
         else {
 
             // If the bad word started with an upper-case letter, make sure all our suggestions do.
-            if (Character.isUpperCase(word.charAt(0))) {
-                for (Word suggestion : suggestions) {
-                    String oldSug = suggestion.getWord();
-                    suggestion.setWord(Character.toUpperCase(oldSug.charAt(0)) + oldSug.substring(1));
-                }
-            }
+            boolean capitalize = Character.isUpperCase(word.charAt(0));
 
             sb.append("<center>");
             sb.append("<table width='75%'>");
@@ -59,15 +54,18 @@ class SpellingErrorTooltipHtmlGenerator {
                     sb.append("<tr>");
                 }
                 sb.append("<td>&#8226;&nbsp;");
-                Word suggestion = suggestions.get(i);
+                String suggestion = suggestions.get(i).getWord();
+                if (capitalize) {
+                    suggestion = Character.toUpperCase(suggestion.charAt(0)) + suggestion.substring(1);
+                }
                 // Surround with double quotes, not single, since
                 // replacement words can have single quotes in them.
                 sb.append("<a href=\"").append(SpellingErrorAction.REPLACE).append("://").
                         append(notice.getOffset()).append(',').
                         append(notice.getLength()).append(',').
-                        append(suggestion.getWord()).
+                        append(suggestion).
                         append("\">").
-                        append(suggestion.getWord()).
+                        append(suggestion).
                         append("</a>").
                         append("</td>");
                 if ((i & 1) == 1) {
