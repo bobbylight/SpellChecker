@@ -71,7 +71,8 @@ class SpellingErrorTooltipHtmlGenerator {
                     sb.append("</tr>");
                 }
             }
-            if ((suggestions.size() % 2) == 0) {
+            // An odd suggestion count leaves the last row half-full and unclosed
+            if ((suggestions.size() & 1) == 1) {
                 sb.append("<td></td></tr>");
             }
             sb.append("</table>");
