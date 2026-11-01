@@ -110,6 +110,23 @@ class SpellCheckerTest {
     }
 
     @Test
+    void testBeginsAsINETWord_caseInsensitive() {
+        assertTrue(SpellChecker.beginsAsINETWord("HTTPS://GOOGLE.COM"));
+        assertTrue(SpellChecker.beginsAsINETWord("WWW.google.com"));
+        assertTrue(SpellChecker.beginsAsINETWord("Http://google.com"));
+        assertTrue(SpellChecker.beginsAsINETWord("FTP://google.com"));
+        assertTrue(SpellChecker.beginsAsINETWord("FtPs://google.com"));
+    }
+
+    @Test
+    void testBeginsAsINETWord_shorterThanPrefixes() {
+        assertFalse(SpellChecker.beginsAsINETWord(""));
+        assertFalse(SpellChecker.beginsAsINETWord("w"));
+        assertFalse(SpellChecker.beginsAsINETWord("www"));
+        assertFalse(SpellChecker.beginsAsINETWord("https:/"));
+    }
+
+    @Test
     void testIsINETWord() {
         assertTrue(SpellChecker.isINETWord("http://google.com"));
         assertTrue(SpellChecker.isINETWord("https://google.com"));
