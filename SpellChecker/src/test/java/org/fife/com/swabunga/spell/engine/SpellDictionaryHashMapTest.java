@@ -47,7 +47,7 @@ class SpellDictionaryHashMapTest {
         dictionary.addWord("foobar");
         List<String> lines = Files.readAllLines(wordFile.toPath());
         Assertions.assertEquals(1, lines.size());
-        Assertions.assertEquals("aardvark", lines.get(0));
+        Assertions.assertEquals("aardvark", lines.getFirst());
     }
 
     @Test
@@ -60,7 +60,7 @@ class SpellDictionaryHashMapTest {
         dictionary.addWord("foobar");
         List<String> lines = Files.readAllLines(wordFile.toPath());
         Assertions.assertEquals(1, lines.size());
-        Assertions.assertEquals("foobar", lines.get(0));
+        Assertions.assertEquals("foobar", lines.getFirst());
     }
 
     @Test
@@ -73,7 +73,7 @@ class SpellDictionaryHashMapTest {
         dictionary.addWord("foobar");
         List<String> lines = Files.readAllLines(wordFile.toPath());
         Assertions.assertEquals(1, lines.size());
-        Assertions.assertEquals("foobar", lines.get(0));
+        Assertions.assertEquals("foobar", lines.getFirst());
     }
 
     @Test
@@ -86,7 +86,7 @@ class SpellDictionaryHashMapTest {
         dictionary.addWord("foobar");
         List<String> lines = Files.readAllLines(wordFile.toPath());
         Assertions.assertEquals(1, lines.size());
-        Assertions.assertEquals("foobar", lines.get(0));
+        Assertions.assertEquals("foobar", lines.getFirst());
     }
 
     @Test
@@ -130,7 +130,7 @@ class SpellDictionaryHashMapTest {
         // Verify the word was actually added to the file
         List<String> lines = Files.readAllLines(wordFile.toPath());
         Assertions.assertEquals(1, lines.size());
-        Assertions.assertEquals("added", lines.get(0));
+        Assertions.assertEquals("added", lines.getFirst());
     }
 
     @Test
@@ -176,7 +176,7 @@ class SpellDictionaryHashMapTest {
         // Note: threshold is unused in SpellDictionaryASpell (!!)
         List<Word> suggestions = dic.getSuggestions("changex", 0);
         Assertions.assertEquals(1, suggestions.size());
-        Assertions.assertEquals("change", suggestions.get(0).getWord());
+        Assertions.assertEquals("change", suggestions.getFirst().getWord());
     }
 
     @Test

@@ -11,7 +11,7 @@ in the color of your choosing, and hovering the mouse over a misspelled word dis
 the spell check white list.
 
 This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Indeed, 99% of the code is just
-Jazzy, with changes made for performance, bug fixes, and Java 8 syntax.
+Jazzy, with changes made for performance, bug fixes, and modern Java syntax.
 
 ## Building and Requirements
 Building SpellChecker requires JDK 25 or later:
@@ -20,10 +20,10 @@ Building SpellChecker requires JDK 25 or later:
 
 The built library runs on Java 11 and later.  The table below lists the requirements for each version:
 
-| Version      | Required to build (JDK) | Required to run (JRE) |
-|--------------|-------------------------|-----------------------|
-| Next release | 25                      | 11                    |
-| 3.4.x        | 17                      | 8                     |
+| Version | Required to build (JDK) | Required to run (JRE) |
+|---------|-------------------------|-----------------------|
+| 4.x     | 25                      | 11                    |
+| 3.4.x   | 17                      | 8                     |
 
 ## Getting a dictionary file
 While the `SpellingParser` class can take any implementation of the `SpellDictionary` interface,
