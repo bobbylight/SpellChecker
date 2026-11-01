@@ -50,6 +50,18 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     }
 
     @Test
+    void testGet_capitalizedWord_suggestionsCapitalized() {
+        dictionary.addWord("misspelled");
+        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "Mispelled", sc);
+
+        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+
+        // Both the replacement in the link and the displayed text are capitalized
+        Assertions.assertTrue(html.contains("<a href=\"REPLACE://4,9,Misspelled\">Misspelled</a>"));
+        Assertions.assertFalse(html.contains("misspelled"));
+    }
+
+    @Test
     void testGet_noSuggestions() {
         SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
 
