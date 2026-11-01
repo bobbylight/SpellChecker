@@ -19,10 +19,13 @@ import java.util.ResourceBundle;
  */
 class SpellingErrorTooltipHtmlGenerator {
 
+    // Use double quotes for attribute values; this is a MessageFormat pattern,
+    // so single quotes would be treated as escapes and dropped (along with
+    // any placeholder they surround).
     private static final String TOOLTIP_TEXT_FORMAT =
-            "<html><body dir='{0}'>" +
-                    "<img src='lightbulb.png' width='16' height='16'>{1}<hr>" +
-                    "<img src='spellcheck.png' width='16' height='16'>{2}<br>{3}<br>&nbsp;";
+            "<html><body dir=\"{0}\">" +
+                    "<img src=\"lightbulb.png\" width=\"16\" height=\"16\">{1}<hr>" +
+                    "<img src=\"spellcheck.png\" width=\"16\" height=\"16\">{2}<br>{3}<br>&nbsp;";
 
     private static final ResourceBundle MSG = ResourceBundle.getBundle(
             "org.fife.ui.rsyntaxtextarea.spell.SpellingParser");

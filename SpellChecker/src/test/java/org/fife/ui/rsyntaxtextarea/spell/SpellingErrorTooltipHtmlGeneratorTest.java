@@ -109,16 +109,18 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     }
 
     @Test
+    void testGet_ltr() {
+        String html = getHtmlWithDefaultLocale(Locale.US);
+        Assertions.assertTrue(html.contains("<body dir=\"ltr\">"));
+    }
+
+    @Test
     void testGet_rtl() {
-        Locale origDefault = Locale.getDefault();
-        try {
-            Locale.setDefault(Locale.CHINA);
-            SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
-            String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
-            Assertions.assertFalse(html.contains("dir=\"rtl\""));
-        } finally {
-            Locale.setDefault(origDefault);
-        }
+        // Hebrew is used rather than e.g. Arabic because we have no Hebrew
+        // translation. The generator caches its ResourceBundle statically, so
+        // a translated locale here could leak into other tests' assertions.
+        String html = getHtmlWithDefaultLocale(Locale.forLanguageTag("he"));
+        Assertions.assertTrue(html.contains("<body dir=\"rtl\">"));
     }
 
     private static int countOccurrences(String text, String substring) {
@@ -129,6 +131,17 @@ class SpellingErrorTooltipHtmlGeneratorTest {
             offs = text.indexOf(substring, offs + substring.length());
         }
         return count;
+    }
+
+    private String getHtmlWithDefaultLocale(Locale locale) {
+        Locale origDefault = Locale.getDefault();
+        try {
+            Locale.setDefault(locale);
+            SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
+            return new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+        } finally {
+            Locale.setDefault(origDefault);
+        }
     }
 
     private static String getSuggestionTable(String html) {
