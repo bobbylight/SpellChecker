@@ -224,7 +224,7 @@ class SpellingParserTest {
         // Proper event fired
         assertEquals(1, events.size());
         SpellingParserEvent event = events.getFirst();
-        assertEquals(SpellingParserEvent.WORD_ADDED, event.getType());
+        assertEquals(SpellingParserEvent.Type.WORD_ADDED, event.getType());
         assertEquals(parser, event.getParser());
         assertEquals(textArea, event.getTextArea());
         assertEquals("newword", event.getWord());
@@ -258,7 +258,7 @@ class SpellingParserTest {
 
         assertEquals(1, events.size());
         SpellingParserEvent event = events.getFirst();
-        assertEquals(SpellingParserEvent.WORD_IGNORED, event.getType());
+        assertEquals(SpellingParserEvent.Type.WORD_IGNORED, event.getType());
         assertEquals(parser, event.getParser());
         assertEquals(textArea, event.getTextArea());
         assertEquals("newword", event.getWord());
