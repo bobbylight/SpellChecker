@@ -23,19 +23,24 @@ import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
 public class SpellingParserEvent extends EventObject {
 
 	/**
-	 * Event type specifying that a word was added to the user's dictionary.
+	 * The types of spelling parser events.
 	 */
-	public static final int WORD_ADDED		= 0;
+	public enum Type {
 
-	/**
-	 * Event type specifying that a word will be ignored for the rest of
-	 * this JVM session.
-	 */
-	public static final int WORD_IGNORED	= 1;
+		/**
+		 * A word was added to the user's dictionary.
+		 */
+		WORD_ADDED,
 
-	private RSyntaxTextArea textArea;
-	private int type;
-	private String word;
+		/**
+		 * A word will be ignored for the rest of this JVM session.
+		 */
+		WORD_IGNORED
+	}
+
+	private final RSyntaxTextArea textArea;
+	private final Type type;
+	private final String word;
 
 
 	/**
@@ -43,15 +48,19 @@ public class SpellingParserEvent extends EventObject {
 	 *
 	 * @param source The source parser.
 	 * @param textArea The text area that was parsed.
-	 * @param type The type of event.
+	 * @param type The type of event.  This cannot be <code>null</code>.
 	 * @param word The word being added or ignored.
-	 * @throws IllegalArgumentException If <code>type</code> is invalid.
+	 * @throws IllegalArgumentException If <code>type</code> is
+	 *         <code>null</code>.
 	 */
 	public SpellingParserEvent(SpellingParser source, RSyntaxTextArea textArea,
-								int type, String word) {
+								Type type, String word) {
 		super(source);
+		if (type == null) {
+			throw new IllegalArgumentException("type cannot be null");
+		}
 		this.textArea = textArea;
-		setType(type);
+		this.type = type;
 		this.word = word;
 	}
 
@@ -80,9 +89,9 @@ public class SpellingParserEvent extends EventObject {
 	/**
 	 * Returns the type of this event.
 	 *
-	 * @return Either {@link #WORD_ADDED} or {@link #WORD_IGNORED}.
+	 * @return The type of this event.
 	 */
-	public int getType() {
+	public Type getType() {
 		return type;
 	}
 
@@ -94,19 +103,6 @@ public class SpellingParserEvent extends EventObject {
 	 */
 	public String getWord() {
 		return word;
-	}
-
-
-	/**
-	 * Sets the type of event being fired.
-	 *
-	 * @param type The type of event being fired.
-	 */
-	private void setType(int type) {
-		if (type!=WORD_ADDED && type!=WORD_IGNORED) {
-			throw new IllegalArgumentException("Invalid type: " + type);
-		}
-		this.type = type;
 	}
 
 

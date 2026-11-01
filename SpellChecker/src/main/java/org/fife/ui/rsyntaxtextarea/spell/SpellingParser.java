@@ -361,7 +361,7 @@ public class SpellingParser extends AbstractParser
                     if (sc.addToDictionary(word)) {
                         textArea.forceReparsing(this);
                         SpellingParserEvent se = new SpellingParserEvent(this,
-                                textArea, SpellingParserEvent.WORD_ADDED, word);
+                                textArea, SpellingParserEvent.Type.WORD_ADDED, word);
                         fireSpellingParserEvent(se);
                     }
                     else { // IO error adding the word
@@ -374,7 +374,7 @@ public class SpellingParser extends AbstractParser
                     sc.ignoreAll(word);
                     textArea.forceReparsing(this);
                     SpellingParserEvent se = new SpellingParserEvent(this,
-                            textArea, SpellingParserEvent.WORD_IGNORED, word);
+                            textArea, SpellingParserEvent.Type.WORD_IGNORED, word);
                     fireSpellingParserEvent(se);
                     break;
             }
