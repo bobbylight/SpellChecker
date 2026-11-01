@@ -1,5 +1,5 @@
 /*
- * This library is distributed under a modified BSD license.  See the included
+ * This library is distributed under the LGPL.  See the included
  * LICENSE.md file for details.
  */
 /**

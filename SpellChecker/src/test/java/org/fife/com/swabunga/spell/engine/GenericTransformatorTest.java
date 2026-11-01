@@ -61,14 +61,16 @@ class GenericTransformatorTest {
     void testTransform_rules() throws IOException {
         File file = File.createTempFile(TEMP_FILE_PREFIX, ".txt");
         file.deleteOnExit();
-        Files.writeString(file.toPath(), "version 1\n" +
-                "# Comments are ignored\n" +
-                "collapse_result    1   # This comment is ignored\n" +
-                "alphabet[abcdefghijklmnopqrstuvwxyz]\n" +
-                "ENOUGH^$    *NF\n" +
-                "SCH(EOU)-   SK\n" +
-                "SC(IEY)-    SI\n" +
-                "XXX         _\n"
+        Files.writeString(file.toPath(), """
+                version 1
+                # Comments are ignored
+                collapse_result    1   # This comment is ignored
+                alphabet[abcdefghijklmnopqrstuvwxyz]
+                ENOUGH^$    *NF
+                SCH(EOU)-   SK
+                SC(IEY)-    SI
+                XXX         _
+                """
         );
 
         GenericTransformator transformator = new GenericTransformator(file);

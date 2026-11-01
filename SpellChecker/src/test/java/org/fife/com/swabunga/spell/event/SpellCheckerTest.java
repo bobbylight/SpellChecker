@@ -73,7 +73,7 @@ class SpellCheckerTest {
         SpellCheckEvent e2 = new BasicSpellCheckEvent("yyy", 0);
         checker.fireAndHandleEvent(e2);
         assertEquals(1, events.size());
-        assertEquals(e2, events.get(0));
+        assertEquals(e2, events.getFirst());
 
         // Doesn't receive events after being removed
         checker.removeSpellCheckListener(listener);
@@ -358,7 +358,7 @@ class SpellCheckerTest {
         List<SpellCheckEvent> events = listener.getEvents();
         assertEquals(2, events.size());
 
-        SpellCheckEvent e = listener.events.get(0);
+        SpellCheckEvent e = listener.events.getFirst();
         assertEquals("Ths", e.getInvalidWord());
         assertEquals(0, e.getWordContextPosition());
 
@@ -380,7 +380,7 @@ class SpellCheckerTest {
         List<SpellCheckEvent> events = listener.getEvents();
         assertEquals(2, events.size());
 
-        SpellCheckEvent e = listener.events.get(0);
+        SpellCheckEvent e = listener.events.getFirst();
         assertEquals("correktly", e.getInvalidWord());
         assertEquals(10, e.getWordContextPosition());
 
@@ -405,7 +405,7 @@ class SpellCheckerTest {
         List<SpellCheckEvent> events = listener.getEvents();
         assertEquals(1, events.size());
 
-        SpellCheckEvent e = listener.events.get(0);
+        SpellCheckEvent e = listener.events.getFirst();
         assertEquals("correktly", e.getInvalidWord());
         assertEquals(10, e.getWordContextPosition());
     }
@@ -426,7 +426,7 @@ class SpellCheckerTest {
         List<SpellCheckEvent> events = listener.getEvents();
         assertEquals(1, events.size());
 
-        SpellCheckEvent e = listener.events.get(0);
+        SpellCheckEvent e = listener.events.getFirst();
         assertEquals("correktly", e.getInvalidWord());
         assertEquals(10, e.getWordContextPosition());
     }
@@ -449,7 +449,7 @@ class SpellCheckerTest {
 
         List<Word> suggestions = checker.getSuggestions("erors", 0);
         assertEquals(1, suggestions.size());
-        assertEquals("errors", suggestions.get(0).getWord());
+        assertEquals("errors", suggestions.getFirst().getWord());
     }
 
     @Test
@@ -499,7 +499,7 @@ class SpellCheckerTest {
 
         List<String> actual = SpellChecker.splitMixedCaseWord("archer");
         Assertions.assertEquals(1, actual.size());
-        Assertions.assertEquals("archer", actual.get(0));
+        Assertions.assertEquals("archer", actual.getFirst());
     }
 
     @Test

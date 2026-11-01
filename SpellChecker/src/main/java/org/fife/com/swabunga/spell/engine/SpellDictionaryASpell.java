@@ -173,8 +173,8 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     char original;
     for (int i = 0; i < word.length(); i++) {
       original = charArray[i];
-      for (int j = 0; j < replacelist.length; j++) {
-        charArray[i] = replacelist[j];
+      for (char c : replacelist) {
+        charArray[i] = c;
         String s = getCode(new String(charArray));
         nearmisscodes.put(s, s);
       }
@@ -185,8 +185,8 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     charArray = (word += " ").toCharArray();
     int iy = charArray.length - 1;
     while (true) {
-      for (int j = 0; j < replacelist.length; j++) {
-        charArray[iy] = replacelist[j];
+      for (char c : replacelist) {
+        charArray[iy] = c;
         String s = getCode(new String(charArray));
         nearmisscodes.put(s, s);
       }
