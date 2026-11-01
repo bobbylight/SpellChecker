@@ -40,21 +40,27 @@ package org.fife.com.swabunga.spell.engine;
 public final class EditDistance {
 
   /**
-   * Fetches the spell engine configuration properties.
+   * The weights for each possible operation.
    */
-  public static final Configuration CONFIG = Configuration.getConfiguration();
+  private final int deleteCost;
+  private final int insertCost;
+  private final int substituteCost;
+  private final int swapCost;
+  private final int changeCaseCost;
 
   /**
-   * get the weights for each possible operation.
+   * Constructor.  The cost of each operation is read from the configuration
+   * once, when this object is created; later changes to the configuration
+   * are not reflected.
+   *
+   * @param config The configuration to get the cost of each operation from.
    */
-  private static final int COST_OF_DELETING_SOURCE_CHARACTER = CONFIG.getInteger(Configuration.COST_REMOVE_CHAR);
-  private static final int COST_OF_INSERTING_SOURCE_CHARACTER = CONFIG.getInteger(Configuration.COST_INSERT_CHAR);
-  private static final int COST_OF_SUBSTITUTING_LETTERS = CONFIG.getInteger(Configuration.COST_SUBST_CHARS);
-  private static final int COST_OF_SWAPPING_LETTERS = CONFIG.getInteger(Configuration.COST_SWAP_CHARS);
-  private static final int COST_OF_CHANGING_CASE = CONFIG.getInteger(Configuration.COST_CHANGE_CASE);
-
-  private EditDistance() {
-      // Private constructor to prevent instantiation.
+  public EditDistance(Configuration config) {
+    deleteCost = config.getInteger(Configuration.COST_REMOVE_CHAR);
+    insertCost = config.getInteger(Configuration.COST_INSERT_CHAR);
+    substituteCost = config.getInteger(Configuration.COST_SUBST_CHARS);
+    swapCost = config.getInteger(Configuration.COST_SWAP_CHARS);
+    changeCaseCost = config.getInteger(Configuration.COST_CHANGE_CASE);
   }
 
   /**
@@ -65,7 +71,7 @@ public final class EditDistance {
    * @return A number representing how easy or complex it is to transform on
    *         word into a similar one.
    */
-  public static int getDistance(String word, String similar) {
+  public int getDistance(String word, String similar) {
   	// JMH Again, there is no need to have a global class matrix variable
   	// in this class. I have removed it and made the getDistance static final
   	// DMV: I refactored this method to make it more efficient, more readable, and simpler.
@@ -86,10 +92,10 @@ public final class EditDistance {
     matrix[0][0] = 0;
 
     for (int i = 1; i != aSize; ++i)
-      matrix[i][0] = matrix[i - 1][0] + COST_OF_INSERTING_SOURCE_CHARACTER; //initialize the first column
+      matrix[i][0] = matrix[i - 1][0] + insertCost; //initialize the first column
 
     for (int j = 1; j != bSize; ++j)
-      matrix[0][j] = matrix[0][j - 1] + COST_OF_DELETING_SOURCE_CHARACTER; //initialize the first row
+      matrix[0][j] = matrix[0][j - 1] + deleteCost; //initialize the first row
 
     for (int i = 1; i != aSize; ++i) {
       sourceChar = word.charAt(i-1);
@@ -101,21 +107,21 @@ public final class EditDistance {
           continue;
         }
 
-        int costOfSubst = COST_OF_SUBSTITUTING_LETTERS + matrix[i - 1][j - 1];
+        int costOfSubst = substituteCost + matrix[i - 1][j - 1];
 
         //if needed, add up the cost of doing a swap
         int costOfSwap = Integer.MAX_VALUE;
         boolean isSwap = (i != 1) && (j != 1) && sourceChar == similar.charAt(j - 2) && word.charAt(i - 2) == otherChar;
         if (isSwap)
-          costOfSwap = COST_OF_SWAPPING_LETTERS + matrix[i - 2][j - 2];
+          costOfSwap = swapCost + matrix[i - 2][j - 2];
 
-        int costOfDelete = COST_OF_DELETING_SOURCE_CHARACTER + matrix[i][j - 1];
-        int costOfInsertion = COST_OF_INSERTING_SOURCE_CHARACTER + matrix[i - 1][j];
+        int costOfDelete = deleteCost + matrix[i][j - 1];
+        int costOfInsertion = insertCost + matrix[i - 1][j];
 
         int costOfCaseChange = Integer.MAX_VALUE;
 
         if (equalIgnoreCase(sourceChar, otherChar))
-          costOfCaseChange = COST_OF_CHANGING_CASE + matrix[i - 1][j - 1];
+          costOfCaseChange = changeCaseCost + matrix[i - 1][j - 1];
 
         matrix[i][j] = minimum(costOfSubst, costOfSwap, costOfDelete, costOfInsertion, costOfCaseChange);
       }

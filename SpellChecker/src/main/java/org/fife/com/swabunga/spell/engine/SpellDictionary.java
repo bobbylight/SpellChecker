@@ -54,14 +54,17 @@ public interface SpellDictionary {
    * that represents how different the suggested word is from the sourceWord.
    * If the words are exactly the same, then the score is 0.
    * You can get the dictionary to only return the most similar words by setting
-   * an appropriately low threshold value.
+   * an appropriately low {@link Configuration#SPELL_THRESHOLD threshold value}.
    * If you set the threshold value too low, you may get no suggestions for a given word.
    *
    * @param sourceWord the string that we want to get a list of spelling suggestions for
-   * @param scoreThreshold Any words that have score less than this number are returned.
+   * @param config The configuration to use.  This provides the score threshold
+   *        (words with a score less than it are returned) and the costs used to
+   *        compute each word's score.
    * @return List a List of suggested words
    * @see org.fife.com.swabunga.spell.engine.Word
+   * @see Configuration#SPELL_THRESHOLD
    */
-  List<Word> getSuggestions(String sourceWord, int scoreThreshold);
+  List<Word> getSuggestions(String sourceWord, Configuration config);
 
 }

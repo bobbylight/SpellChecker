@@ -162,19 +162,40 @@ class SpellDictionaryHashMapTest {
     void testGetSuggestions_existingWord() throws IOException {
         SpellDictionaryHashMap dic = createDictionary_zeroArg();
 
-        // Note: threshold is unused in SpellDictionaryASpell (!!)
-        List<Word> suggestions = dic.getSuggestions("change", 0);
+        List<Word> suggestions = dic.getSuggestions("change", Configuration.getConfiguration());
         Assertions.assertEquals(2, suggestions.size());
         Assertions.assertEquals("change", suggestions.get(0).getWord());
         Assertions.assertEquals("chance", suggestions.get(1).getWord());
     }
 
     @Test
+    void testGetSuggestions_respectsThreshold() throws IOException {
+        SpellDictionaryHashMap dic = createDictionary_zeroArg();
+        Configuration config = Configuration.getConfiguration();
+        config.setInteger(Configuration.SPELL_THRESHOLD, 1); // Only exact matches
+
+        List<Word> suggestions = dic.getSuggestions("change", config);
+        Assertions.assertEquals(1, suggestions.size());
+        Assertions.assertEquals("change", suggestions.getFirst().getWord());
+    }
+
+    @Test
+    void testGetSuggestions_respectsEditCosts() throws IOException {
+        SpellDictionaryHashMap dic = createDictionary_zeroArg();
+        Configuration config = Configuration.getConfiguration();
+        // Make "chance" (one substitution away) cost more than the threshold
+        config.setInteger(Configuration.COST_SUBST_CHARS, 1000);
+
+        List<Word> suggestions = dic.getSuggestions("change", config);
+        Assertions.assertEquals(1, suggestions.size());
+        Assertions.assertEquals("change", suggestions.getFirst().getWord());
+    }
+
+    @Test
     void testGetSuggestions_nonExistingWord() throws IOException {
         SpellDictionaryHashMap dic = createDictionary_zeroArg();
 
-        // Note: threshold is unused in SpellDictionaryASpell (!!)
-        List<Word> suggestions = dic.getSuggestions("changex", 0);
+        List<Word> suggestions = dic.getSuggestions("changex", Configuration.getConfiguration());
         Assertions.assertEquals(1, suggestions.size());
         Assertions.assertEquals("change", suggestions.getFirst().getWord());
     }
