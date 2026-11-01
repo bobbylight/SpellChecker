@@ -176,7 +176,7 @@ public class SpellChecker {
   /**
    * Checks if the word that is being spell checked contains an Internet
    * address. This method look for typical protocol or the habitual string
-   * in the word:
+   * in the word (case-insensitively):
    * <ul>
    * <li>http://</li>
    * <li>ftp://</li>
@@ -196,17 +196,19 @@ public class SpellChecker {
    */
   public static boolean beginsAsINETWord(String word) {
     // robert: In standard Jazzy distributions, this is "isINETWord(String)".
-    // robert: Since "word" may be the entire rest of the document (line), we'll try
-    // to micro-optimize a little here and just get the smallest lower-case String
-    // we need.
-    //String lowerCaseWord = word.toLowerCase();
-    int last = Math.min(8, word.length());
-    String lowerCaseWord = word.substring(0, last);
-    return lowerCaseWord.startsWith("http://") ||
-        lowerCaseWord.startsWith("www.") ||
-        lowerCaseWord.startsWith("ftp://") ||
-        lowerCaseWord.startsWith("https://") ||
-        lowerCaseWord.startsWith("ftps://");
+    // robert: Since "word" may be the entire rest of the document (line), we
+    // compare prefixes in place rather than creating a lower-cased copy.
+    // Prefixes are checked roughly in order of how commonly they're seen.
+    return startsWithIgnoreCase(word, "https://") ||
+        startsWithIgnoreCase(word, "www.") ||
+        startsWithIgnoreCase(word, "http://") ||
+        startsWithIgnoreCase(word, "ftp://") ||
+        startsWithIgnoreCase(word, "ftps://");
+  }
+
+
+  private static boolean startsWithIgnoreCase(String str, String prefix) {
+    return str.regionMatches(true, 0, prefix, 0, prefix.length());
   }
 
 
