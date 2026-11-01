@@ -41,6 +41,12 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         Assertions.assertTrue(html.contains("dispelled"));
         Assertions.assertTrue(html.contains("Add to dictionary"));
         Assertions.assertTrue(html.contains("Ignore 'mispelled' for this session"));
+
+        // Two suggestions fill a single row exactly; no padding cell is needed
+        String table = getSuggestionTable(html);
+        Assertions.assertEquals(1, countOccurrences(table, "<tr>"));
+        Assertions.assertEquals(1, countOccurrences(table, "</tr>"));
+        Assertions.assertFalse(table.contains("<td></td>"));
     }
 
     @Test
@@ -70,6 +76,12 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         Assertions.assertTrue(html.contains("misspelled"));
         Assertions.assertTrue(html.contains("Add to dictionary"));
         Assertions.assertTrue(html.contains("Ignore 'mispelled' for this session"));
+
+        // A single suggestion leaves the row half-full, so it's padded and closed
+        String table = getSuggestionTable(html);
+        Assertions.assertEquals(1, countOccurrences(table, "<tr>"));
+        Assertions.assertEquals(1, countOccurrences(table, "</tr>"));
+        Assertions.assertTrue(table.endsWith("<td></td></tr></table>"));
     }
 
     @Test
@@ -107,5 +119,22 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         } finally {
             Locale.setDefault(origDefault);
         }
+    }
+
+    private static int countOccurrences(String text, String substring) {
+        int count = 0;
+        int offs = text.indexOf(substring);
+        while (offs > -1) {
+            count++;
+            offs = text.indexOf(substring, offs + substring.length());
+        }
+        return count;
+    }
+
+    private static String getSuggestionTable(String html) {
+        int start = html.indexOf("<table");
+        int end = html.indexOf("</table>") + "</table>".length();
+        Assertions.assertTrue(start > -1 && end > start, "No suggestion table found");
+        return html.substring(start, end);
     }
 }
