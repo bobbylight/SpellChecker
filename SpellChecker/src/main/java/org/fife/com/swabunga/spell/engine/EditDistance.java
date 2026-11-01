@@ -66,19 +66,6 @@ public final class EditDistance {
    *         word into a similar one.
    */
   public static int getDistance(String word, String similar) {
-  	return getDistance(word,similar,null);
-  }
-
-  /**
-   * Evaluates the distance between two words.
-   *
-   * @param word One word to evaluates
-   * @param similar The other word to evaluates
-   * @param matrix The matrix.
-   * @return A number representing how easy or complex it is to transform on
-   *         word into a similar one.
-   */
-  public static int getDistance(String word, String similar, int[][] matrix) {
   	// JMH Again, there is no need to have a global class matrix variable
   	// in this class. I have removed it and made the getDistance static final
   	// DMV: I refactored this method to make it more efficient, more readable, and simpler.
@@ -94,9 +81,7 @@ public final class EditDistance {
     int aSize = word.length() + 1;
     int bSize = similar.length() + 1;
 
-    //Only allocate new memory if we need a bigger matrix.
-    if (matrix == null || matrix.length < aSize || matrix[0].length < bSize)
-    	matrix = new int[aSize][bSize];
+    int[][] matrix = new int[aSize][bSize];
 
     matrix[0][0] = 0;
 

@@ -56,38 +56,12 @@ public interface SpellDictionary {
    * You can get the dictionary to only return the most similar words by setting
    * an appropriately low threshold value.
    * If you set the threshold value too low, you may get no suggestions for a given word.
-   * <p>
-   * This method is only needed to provide backward compatibility.
    *
    * @param sourceWord the string that we want to get a list of spelling suggestions for
    * @param scoreThreshold Any words that have score less than this number are returned.
-   * @return List a List of suggested words
-   * @see org.fife.com.swabunga.spell.engine.Word
-   * @see #getSuggestions(String, int, int[][])
-   */
-  List<Word> getSuggestions(String sourceWord, int scoreThreshold);
-
-  /**
-   * Returns a list of Word objects that are the suggestions to any word.
-   * If the word is correctly spelled, then this method
-   * could return just that one word, or it could still return a list
-   * of words with similar spellings.
-   * <br/>
-   * Each suggested word has a score, which is an integer
-   * that represents how different the suggested word is from the sourceWord.
-   * If the words are exactly the same, then the score is 0.
-   * You can get the dictionary to only return the most similar words by setting
-   * an appropriately low threshold value.
-   * If you set the threshold value too low, you may get no suggestions for a given word.
-   * <p>
-   *
-   * @param sourceWord the string that we want to get a list of spelling suggestions for
-   * @param scoreThreshold Any words that have score less than this number are returned.
-   * @param matrix Two dimensional int array used to calculate edit distance. Allocating
-   *        this memory outside the function will greatly improve efficiency.
    * @return List a List of suggested words
    * @see org.fife.com.swabunga.spell.engine.Word
    */
-  List<Word> getSuggestions(String sourceWord, int scoreThreshold , int[][] matrix);
+  List<Word> getSuggestions(String sourceWord, int scoreThreshold);
 
 }
