@@ -357,14 +357,17 @@ public class SpellChecker {
    * Produces a list of suggested word after looking for suggestions in various
    * dictionaries. The dictionary specified in the constructor is checked first,
    * then any other dictionaries added, and finally the user dictionary.
+   * <p>
+   * The score threshold and edit costs come from this spell checker's
+   * {@link #getConfiguration() configuration}.
    *
    * @param word    The word for which we want to gather suggestions
-   * @param threshold the cost value above which any suggestions are
-   *          thrown away
    * @return the list of words suggested
+   * @see Configuration#SPELL_THRESHOLD
    */
-  public List<Word> getSuggestions(String word, int threshold) {
+  public List<Word> getSuggestions(String word) {
     //long start = System.currentTimeMillis();
+    int threshold = config.getInteger(Configuration.SPELL_THRESHOLD);
     if (this.threshold != threshold && cache != null) {
       this.threshold = threshold;
       cache.clear();
@@ -381,14 +384,14 @@ public class SpellChecker {
 
       for (SpellDictionary dictionary : dictionaries) {
         if (dictionary != userDictionary)
-          ListUtil.addAllNoDuplicates(suggestions, dictionary.getSuggestions(word, threshold));
+          ListUtil.addAllNoDuplicates(suggestions, dictionary.getSuggestions(word, config));
       }
 
       if (cache != null && cache.size() < cacheSize)
         cache.put(word, suggestions);
     }
 
-    ListUtil.addAllNoDuplicates(suggestions, userDictionary.getSuggestions(word, threshold));
+    ListUtil.addAllNoDuplicates(suggestions, userDictionary.getSuggestions(word, config));
     if (suggestions instanceof ArrayList) {
       ((ArrayList<Word>)suggestions).trimToSize();
     }

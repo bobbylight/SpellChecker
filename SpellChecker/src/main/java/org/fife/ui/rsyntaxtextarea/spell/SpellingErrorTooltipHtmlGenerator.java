@@ -4,7 +4,6 @@
  */
 package org.fife.ui.rsyntaxtextarea.spell;
 
-import org.fife.com.swabunga.spell.engine.Configuration;
 import org.fife.com.swabunga.spell.engine.Word;
 import org.fife.com.swabunga.spell.event.SpellChecker;
 
@@ -33,10 +32,9 @@ class SpellingErrorTooltipHtmlGenerator {
     public String get(SpellChecker sc, SpellingParserNotice notice) {
         StringBuilder sb = new StringBuilder();
         String spacing = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-        int threshold = sc.getConfiguration().getInteger(Configuration.SPELL_THRESHOLD);
         String word = notice.getWord();
 
-        List<Word> suggestions = sc.getSuggestions(word, threshold);
+        List<Word> suggestions = sc.getSuggestions(word);
         if (suggestions.isEmpty()) {
             sb.append(spacing).append("&#8226;&nbsp;<em>");
             sb.append(MSG.getString("None"));

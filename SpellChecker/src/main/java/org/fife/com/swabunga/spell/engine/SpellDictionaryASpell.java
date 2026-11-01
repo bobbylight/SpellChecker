@@ -113,18 +113,21 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * incorrect word.
    *
    * @param word Suggestions for given misspelled word
-   * @param threshold The lower boundary of similarity to misspelled word
+   * @param config The configuration providing the score threshold and edit costs
    * @return a List of suggestions
    */
   @Override
-  public List<Word> getSuggestions(String word, int threshold) {
+  public List<Word> getSuggestions(String word, Configuration config) {
+
+    int threshold = config.getInteger(Configuration.SPELL_THRESHOLD);
+    EditDistance editDistance = new EditDistance(config);
 
     Map<String, String> nearmisscodes = new HashMap<>();
     String code = getCode(word);
 
     // add all words that have the same phonetics
     nearmisscodes.put(code, code);
-    List<Word> phoneticList = getWordsFromCode(word, nearmisscodes);
+    List<Word> phoneticList = getWordsFromCode(word, nearmisscodes, editDistance, threshold);
 
     // do some transformations to pick up more results
     //interchange
@@ -192,10 +195,10 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
     nearmisscodes.remove(code); //already accounted for in phoneticList
 
-    List<Word> wordlist = getWordsFromCode(word, nearmisscodes);
+    List<Word> wordlist = getWordsFromCode(word, nearmisscodes, editDistance, threshold);
 
     if (wordlist.isEmpty() && phoneticList.isEmpty())
-      addBestGuess(word, phoneticList);
+      addBestGuess(word, phoneticList, editDistance);
 
 
     // We sort a List at the end instead of maintaining a
@@ -216,8 +219,9 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    *
    * @param word - the word we are trying to spell correct
    * @param wordList - the linked list that will get the best guess
+   * @param editDistance - computes the distance between words
    */
-  private void addBestGuess(String word, List<Word> wordList) {
+  private void addBestGuess(String word, List<Word> wordList, EditDistance editDistance) {
     if (!wordList.isEmpty())
       throw new InvalidParameterException("the wordList vector must be empty");
 
@@ -229,7 +233,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     LinkedList<Word> candidates = new LinkedList<>();
 
     for (String similar : simwordlist) {
-      int distance = EditDistance.getDistance(word, similar);
+      int distance = editDistance.getDistance(word, similar);
       if (distance <= bestScore) {
         bestScore = distance;
         candidates.add(new Word(similar, distance));
@@ -244,16 +248,15 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
   }
 
-  private List<Word> getWordsFromCode(String word, Map<String, String> codes) {
-    Configuration config = Configuration.getConfiguration();
+  private List<Word> getWordsFromCode(String word, Map<String, String> codes,
+                                      EditDistance editDistance, int threshold) {
     List<Word> result = new ArrayList<>();
-    final int configDistance = config.getInteger(Configuration.SPELL_THRESHOLD);
 
     for (String code : codes.keySet()) {
       List<String> simwordlist = getWords(code);
       for (String similar : simwordlist) {
-        int distance = EditDistance.getDistance(word, similar);
-        if (distance < configDistance) {
+        int distance = editDistance.getDistance(word, similar);
+        if (distance < threshold) {
           result.add(new Word(similar, distance));
         }
       }

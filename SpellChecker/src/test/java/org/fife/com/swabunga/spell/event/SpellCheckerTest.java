@@ -464,9 +464,32 @@ class SpellCheckerTest {
         String[] words = { "this", "is", "a", "sentence", "with", "errors" };
         addWordsToDictionary(words);
 
-        List<Word> suggestions = checker.getSuggestions("erors", 0);
+        List<Word> suggestions = checker.getSuggestions("erors");
         assertEquals(1, suggestions.size());
         assertEquals("errors", suggestions.getFirst().getWord());
+    }
+
+    @Test
+    void testGetSuggestions_usesConfiguredThreshold() {
+        addWordsToDictionary(new String[] { "change", "chance" });
+        assertEquals(2, checker.getSuggestions("change").size());
+
+        checker.getConfiguration().setInteger(Configuration.SPELL_THRESHOLD, 1); // Only exact matches
+        List<Word> suggestions = checker.getSuggestions("change");
+        assertEquals(1, suggestions.size());
+        assertEquals("change", suggestions.getFirst().getWord());
+    }
+
+    @Test
+    void testGetSuggestions_usesConfiguredEditCosts() {
+        addWordsToDictionary(new String[] { "change", "chance" });
+        assertEquals(2, checker.getSuggestions("change").size());
+
+        // Make "chance" (one substitution away) cost more than the threshold
+        checker.getConfiguration().setInteger(Configuration.COST_SUBST_CHARS, 1000);
+        List<Word> suggestions = checker.getSuggestions("change");
+        assertEquals(1, suggestions.size());
+        assertEquals("change", suggestions.getFirst().getWord());
     }
 
     @Test
