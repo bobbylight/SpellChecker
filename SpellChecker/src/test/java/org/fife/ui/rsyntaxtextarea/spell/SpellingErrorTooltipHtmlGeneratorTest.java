@@ -7,7 +7,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Locale;
 
 /**
@@ -121,6 +126,24 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     }
 
     @Test
+    void testGet_wordWithApostrophe_addLinkContainsWholeWord() {
+        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 8, "would'nt", sc);
+
+        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+
+        Assertions.assertEquals("ADD://would'nt", getHref(html, "ADD://"));
+    }
+
+    @Test
+    void testGet_wordWithApostrophe_ignoreLinkContainsWholeWord() {
+        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 8, "would'nt", sc);
+
+        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+
+        Assertions.assertEquals("IGNORE://would'nt", getHref(html, "IGNORE://"));
+    }
+
+    @Test
     void testGet_ltr() {
         String html = getHtmlWithDefaultLocale(Locale.US);
         Assertions.assertTrue(html.contains("<body dir=\"ltr\">"));
@@ -143,6 +166,27 @@ class SpellingErrorTooltipHtmlGeneratorTest {
             offs = text.indexOf(substring, offs + substring.length());
         }
         return count;
+    }
+
+    /**
+     * Returns the {@code href} of the first link whose {@code href} starts with
+     * the given prefix, as Swing's HTML parser (which renders the tooltip) sees it.
+     */
+    private static String getHref(String html, String prefix) {
+        HTMLEditorKit kit = new HTMLEditorKit();
+        HTMLDocument doc = (HTMLDocument)kit.createDefaultDocument();
+        try {
+            kit.read(new StringReader(html), doc, 0);
+        } catch (IOException | BadLocationException e) {
+            throw new AssertionError(e);
+        }
+        for (HTMLDocument.Iterator it = doc.getIterator(HTML.Tag.A); it.isValid(); it.next()) {
+            Object href = it.getAttributes().getAttribute(HTML.Attribute.HREF);
+            if (href != null && href.toString().startsWith(prefix)) {
+                return href.toString();
+            }
+        }
+        return Assertions.fail("No link found with href starting with: " + prefix);
     }
 
     private String getHtmlWithDefaultLocale(Locale locale) {

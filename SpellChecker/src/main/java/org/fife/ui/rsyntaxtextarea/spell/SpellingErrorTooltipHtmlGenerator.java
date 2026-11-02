@@ -78,11 +78,13 @@ class SpellingErrorTooltipHtmlGenerator {
             sb.append("</center>");
         }
 
+        // As above, the ADD and IGNORE links' hrefs are double-quoted since the
+        // misspelled word can contain single quotes (e.g. "would'nt").
         SpellingParser sp = (SpellingParser)notice.getParser();
         if (sp.getAllowAdd()) {
             sb.append("<img src='add.png' width='16' height='16'>&nbsp;").
-                    append("<a href='").append(SpellingErrorAction.ADD).
-                    append("://").append(word).append("'>").
+                    append("<a href=\"").append(SpellingErrorAction.ADD).
+                    append("://").append(word).append("\">").
                     append(MSG.getString("ErrorToolTip.AddToDictionary")).
                     append("</a><br>");
         }
@@ -91,8 +93,8 @@ class SpellingErrorTooltipHtmlGenerator {
             String text = MSG.getString("ErrorToolTip.IgnoreWord");
             text = MessageFormat.format(text, word);
             sb.append("<img src='cross.png' width='16' height='16'>&nbsp;").
-                    append("<a href='").append(SpellingErrorAction.IGNORE).
-                    append("://").append(word).append("'>").
+                    append("<a href=\"").append(SpellingErrorAction.IGNORE).
+                    append("://").append(word).append("\">").
                     append(text).append("</a>");
         }
 
