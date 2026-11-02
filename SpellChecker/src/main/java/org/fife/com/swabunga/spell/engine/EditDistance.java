@@ -108,22 +108,19 @@ public final class EditDistance {
         }
 
         int costOfSubst = substituteCost + matrix[i - 1][j - 1];
-
-        //if needed, add up the cost of doing a swap
-        int costOfSwap = Integer.MAX_VALUE;
-        boolean isSwap = (i != 1) && (j != 1) && sourceChar == similar.charAt(j - 2) && word.charAt(i - 2) == otherChar;
-        if (isSwap)
-          costOfSwap = swapCost + matrix[i - 2][j - 2];
-
         int costOfDelete = deleteCost + matrix[i][j - 1];
         int costOfInsertion = insertCost + matrix[i - 1][j];
+        int cost = Math.min(costOfSubst, Math.min(costOfDelete, costOfInsertion));
 
-        int costOfCaseChange = Integer.MAX_VALUE;
+        //if needed, consider the cost of doing a swap
+        boolean isSwap = (i != 1) && (j != 1) && sourceChar == similar.charAt(j - 2) && word.charAt(i - 2) == otherChar;
+        if (isSwap)
+          cost = Math.min(cost, swapCost + matrix[i - 2][j - 2]);
 
         if (equalIgnoreCase(sourceChar, otherChar))
-          costOfCaseChange = changeCaseCost + matrix[i - 1][j - 1];
+          cost = Math.min(cost, changeCaseCost + matrix[i - 1][j - 1]);
 
-        matrix[i][j] = minimum(costOfSubst, costOfSwap, costOfDelete, costOfInsertion, costOfCaseChange);
+        matrix[i][j] = cost;
       }
     }
 
@@ -144,19 +141,6 @@ public final class EditDistance {
     return Character.toLowerCase(ch1) == Character.toLowerCase(ch2);
   }
 
-  private static int minimum(int a, int b, int c, int d, int e) {
-    int mi = a;
-    if (b < mi)
-      mi = b;
-    if (c < mi)
-      mi = c;
-    if (d < mi)
-      mi = d;
-    if (e < mi)
-      mi = e;
-
-    return mi;
-  }
 
   /*
    * For testing edit distances.

@@ -470,6 +470,18 @@ class SpellCheckerTest {
     }
 
     @Test
+    void testGetSuggestions_noDuplicatesAcrossDictionaries() throws IOException {
+        // The same word in two dictionaries and the user dictionary
+        checker.addDictionary(new SpellDictionaryHashMap(new StringReader("errors")));
+        checker.addDictionary(new SpellDictionaryHashMap(new StringReader("errors")));
+        checker.setUserDictionary(new SpellDictionaryHashMap(new StringReader("errors")));
+
+        List<Word> suggestions = checker.getSuggestions("erors");
+        assertEquals(1, suggestions.size());
+        assertEquals("errors", suggestions.getFirst().getWord());
+    }
+
+    @Test
     void testGetSuggestions_usesConfiguredThreshold() {
         addWordsToDictionary(new String[] { "change", "chance" });
         assertEquals(2, checker.getSuggestions("change").size());

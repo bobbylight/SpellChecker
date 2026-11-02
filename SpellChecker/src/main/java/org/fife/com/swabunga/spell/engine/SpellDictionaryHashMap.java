@@ -254,29 +254,9 @@ public boolean addWord(String word) {
    */
   protected void putWordUnique(String word) {
 
-    String code = getCode(word);
-    List<String> list = mainDictionary.get(code);
-
-    if (list != null) {
-
-        boolean isAlready = false;
-
-        for (String s : list) {
-            if (word.equalsIgnoreCase(s)) {
-                isAlready = true;
-                break;
-            }
-        }
-
-      if (!isAlready)
-        list.add(word);
-
-    } else {
-
-      list = new ArrayList<>();
+    List<String> list = mainDictionary.computeIfAbsent(getCode(word), k -> new ArrayList<>());
+    if (list.stream().noneMatch(word::equalsIgnoreCase)) {
       list.add(word);
-      mainDictionary.put(code, list);
-
     }
   }
 

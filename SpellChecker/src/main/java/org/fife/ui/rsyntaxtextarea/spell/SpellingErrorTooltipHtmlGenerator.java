@@ -31,7 +31,7 @@ class SpellingErrorTooltipHtmlGenerator {
 
     public String get(SpellChecker sc, SpellingParserNotice notice) {
         StringBuilder sb = new StringBuilder();
-        String spacing = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        String spacing = "&nbsp;".repeat(8);
         String word = notice.getWord();
 
         List<Word> suggestions = sc.getSuggestions(word);

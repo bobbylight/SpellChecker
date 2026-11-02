@@ -30,7 +30,6 @@ import org.fife.com.swabunga.spell.engine.Configuration;
 import org.fife.com.swabunga.spell.engine.SpellDictionary;
 import org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap;
 import org.fife.com.swabunga.spell.engine.Word;
-import org.fife.com.swabunga.util.ListUtil;
 
 
 /**
@@ -376,14 +375,14 @@ public class SpellChecker {
 
       for (SpellDictionary dictionary : dictionaries) {
         if (dictionary != userDictionary)
-          ListUtil.addAllNoDuplicates(suggestions, dictionary.getSuggestions(word, config));
+          addAllNoDuplicates(suggestions, dictionary.getSuggestions(word, config));
       }
 
       if (cache != null && cache.size() < cacheSize)
         cache.put(word, suggestions);
     }
 
-    ListUtil.addAllNoDuplicates(suggestions, userDictionary.getSuggestions(word, config));
+    addAllNoDuplicates(suggestions, userDictionary.getSuggestions(word, config));
     if (suggestions instanceof ArrayList) {
       ((ArrayList<Word>)suggestions).trimToSize();
     }
@@ -392,6 +391,19 @@ public class SpellChecker {
     //float secs = time/1000f;
     //System.out.println("[DEBUG]: Suggestions for '" + word + "' took " + secs + " seconds");
     return suggestions;
+  }
+
+  /**
+   * Appends the words in {@code src} to {@code dest}, skipping any already
+   * in {@code dest} (or appearing earlier in {@code src}).
+   */
+  private static void addAllNoDuplicates(List<Word> dest, List<Word> src) {
+    Set<Word> present = new HashSet<>(dest);
+    for (Word word : src) {
+      if (present.add(word)) {
+        dest.add(word);
+      }
+    }
   }
 
   /**

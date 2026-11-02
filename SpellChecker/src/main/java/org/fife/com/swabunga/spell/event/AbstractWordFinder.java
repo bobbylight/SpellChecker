@@ -45,6 +45,12 @@ public abstract class AbstractWordFinder implements WordFinder {
    * Holds the text to analyze.
    */
   protected String text;
+
+  /**
+   * Passed to {@link #ignore(int, char, int)} when skipping should stop at the
+   * first non-letter or digit character rather than at a specific character.
+   */
+  private static final int NO_END_IGNORE = -1;
   /**
    * An iterator to work through the sentence.
    */
@@ -244,7 +250,7 @@ public abstract class AbstractWordFinder implements WordFinder {
    *         original index if the ignore condition could not be met.
    */
   protected int ignore(int index, char startIgnore) {
-    return ignore(index, startIgnore, null);
+    return ignore(index, startIgnore, NO_END_IGNORE);
   }
 
   /**
@@ -263,39 +269,31 @@ public abstract class AbstractWordFinder implements WordFinder {
    *         original index if the ignore condition could not be met.
    */
   protected int ignore(int index, char startIgnore, char endIgnore) {
-    return ignore(index, Character.valueOf(startIgnore), Character.valueOf(endIgnore));
+    return ignore(index, startIgnore, (int)endIgnore);
   }
 
   /**
-   * Ignores or skip over text starting from the index position specified
-   * if it contains the <code>startIgnore</code>, and until the
-   * <code>endIgnore</code> character is encountered or end of text is
-   * detected.
+   * Implementation of the {@code ignore()} methods.
    *
-   * @param index     The start position in text.
-   * @param startIgnore The character that should be at <code>index</code>
-   *        position to start skipping through.
-   * @param endIgnore   The character which mark the end of skipping through. If
-   *        the value of endIgnore is <code>null</code>, skipping characters stop
-   *        at first non letter or digit character.
-   * @return The index position pointing after the skipped characters or the
-   *         original index if the ignore condition could not be met.
+   * @param endIgnore The character which marks the end of skipping through,
+   *        or {@link #NO_END_IGNORE} to stop at the first non-letter or digit
+   *        character.
    */
-  protected int ignore(int index, Character startIgnore, Character endIgnore) {
+  private int ignore(int index, char startIgnore, int endIgnore) {
     int newIndex = index;
 
     if (newIndex < text.length()) {
-      Character curChar = text.charAt(newIndex);
+      char curChar = text.charAt(newIndex);
 
-      if (curChar.equals(startIgnore)) {
+      if (curChar == startIgnore) {
         newIndex++;
         while (newIndex < text.length()) {
           curChar = text.charAt(newIndex);
-          if (curChar.equals(endIgnore)) {
+          if (curChar == endIgnore) {
             newIndex++;
             break;
           }
-          else if (endIgnore == null && !Character.isLetterOrDigit(curChar)) {
+          else if (endIgnore == NO_END_IGNORE && !Character.isLetterOrDigit(curChar)) {
             break;
           }
           newIndex++;
