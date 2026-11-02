@@ -144,8 +144,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, false);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("thisIs");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(1, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, false);
     }
 
     @Test
@@ -155,8 +155,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, true);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("thisIs");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -167,8 +167,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, false);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("thisISSSpelled");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(1, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, false);
     }
 
     @Test
@@ -179,8 +179,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, false);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("thisISSpelled");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -190,8 +190,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, false);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("seventy9");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(1, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, false);
     }
 
     @Test
@@ -201,8 +201,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, true);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("seventy9");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -212,8 +212,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREINTERNETADDRESSES, false);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("www.example.com");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(1, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, false);
     }
 
     @Test
@@ -223,8 +223,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREINTERNETADDRESSES, true);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("www.example.com");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -236,8 +236,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREMIXEDCASE, false);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("fooBar sentence");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(1, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, false);
     }
 
     @Test
@@ -249,8 +249,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREMIXEDCASE, true);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("fooBar sentence");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -260,8 +260,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION, false);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("test");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(1, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, false);
     }
 
     @Test
@@ -271,8 +271,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION, true);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("test");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -282,8 +282,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESINGLELETTERS, false);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("g");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(1, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, false);
     }
 
     @Test
@@ -293,8 +293,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESINGLELETTERS, true);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("g");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -304,8 +304,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, false);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("FOOBAR");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(1, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, false);
     }
 
     @Test
@@ -315,8 +315,8 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, true);
 
         StringWordTokenizer tokenizer = new StringWordTokenizer("FOOBAR");
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -347,8 +347,8 @@ class SpellCheckerTest {
 
         String text = String.join(" ", words) + ".";
         StringWordTokenizer tokenizer = new StringWordTokenizer(text);
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -358,8 +358,8 @@ class SpellCheckerTest {
 
         String text = "This is a correctlySpelledSentence.";
         StringWordTokenizer tokenizer = new StringWordTokenizer(text);
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_OK, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -369,8 +369,8 @@ class SpellCheckerTest {
 
         String text = "Ths is a sentence with erors.";
         StringWordTokenizer tokenizer = new StringWordTokenizer(text);
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(2, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 2, false);
 
         List<SpellCheckEvent> events = listener.getEvents();
         assertEquals(2, events.size());
@@ -391,8 +391,8 @@ class SpellCheckerTest {
 
         String text = "This is a correktlySpellledSentence.";
         StringWordTokenizer tokenizer = new StringWordTokenizer(text);
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(2, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 2, false);
 
         List<SpellCheckEvent> events = listener.getEvents();
         assertEquals(2, events.size());
@@ -415,8 +415,8 @@ class SpellCheckerTest {
 
         String text = "This is a correktlySpellled sentence.";
         StringWordTokenizer tokenizer = new StringWordTokenizer(text);
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_CANCEL, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, true);
 
         // Only finds the first misspelled word before being canceled
         List<SpellCheckEvent> events = listener.getEvents();
@@ -436,8 +436,8 @@ class SpellCheckerTest {
 
         String text = "This is a correktly spellled sentence.";
         StringWordTokenizer tokenizer = new StringWordTokenizer(text);
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(SpellChecker.SPELLCHECK_CANCEL, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, true);
 
         // Only finds the first misspelled word before being canceled
         List<SpellCheckEvent> events = listener.getEvents();
@@ -504,8 +504,8 @@ class SpellCheckerTest {
         // Checker skips the word as well
         String text = "This is a sentence with erors.";
         StringWordTokenizer tokenizer = new StringWordTokenizer(text);
-        int result = checker.checkSpelling(tokenizer);
-        assertEquals(-1, result);
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
     }
 
     @Test
@@ -591,6 +591,12 @@ class SpellCheckerTest {
     /**
      * Used to verify callback behavior.
      */
+    private static void assertResult(SpellCheckResult result, int expectedErrorCount, boolean expectedCancelled) {
+        assertEquals(expectedErrorCount, result.getErrorCount());
+        assertEquals(expectedErrorCount > 0, result.hasErrors());
+        assertEquals(expectedCancelled, result.isCancelled());
+    }
+
     private static final class TestSpellCheckListener implements SpellCheckListener {
 
         private List<SpellCheckEvent> events = new ArrayList<>();

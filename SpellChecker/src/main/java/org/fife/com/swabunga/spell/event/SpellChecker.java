@@ -48,14 +48,6 @@ import org.fife.com.swabunga.util.ListUtil;
  * @author Jason Height (jheight@chariot.net.au) 19 June 2002
  */
 public class SpellChecker {
-  /**
-   * Flag indicating that the Spell Check completed without any errors present.
-   */
-  public static final int SPELLCHECK_OK = -1;
-  /**
-   * Flag indicating that the Spell Check completed due to user cancellation.
-   */
-  public static final int SPELLCHECK_CANCEL = -2;
 
   private List<SpellCheckListener> eventListeners = new ArrayList<>();
   private List<SpellDictionary> dictionaries = new ArrayList<>();
@@ -465,10 +457,10 @@ public class SpellChecker {
    * SpellCheckEvent.<p>
    *
    * @param tokenizer The media containing the text to analyze.
-   * @return Either SPELLCHECK_OK, SPELLCHECK_CANCEL or the number of errors found. The number of errors are those that
-   *         are found BEFORE any corrections are made.
+   * @return The result of the spell check, including the number of errors
+   *         found and whether a listener cancelled it.
    */
-  public final int checkSpelling(WordTokenizer tokenizer) {
+  public final SpellCheckResult checkSpelling(WordTokenizer tokenizer) {
     int errors = 0;
     boolean terminated = false;
     //Keep track of the previous word
@@ -540,12 +532,7 @@ public class SpellChecker {
       }
     }
 
-    if (terminated)
-      return SPELLCHECK_CANCEL;
-    else if (errors == 0)
-      return SPELLCHECK_OK;
-    else
-      return errors;
+    return new SpellCheckResult(errors, terminated);
   }
 
   private boolean isSupposedToBeCapitalized(String word, WordTokenizer wordTokenizer) {
