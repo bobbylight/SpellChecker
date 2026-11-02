@@ -135,16 +135,10 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 		textArea.setSyntaxEditingStyle(SYNTAX_STYLE_JAVA);
 		ClassLoader cl = getClass().getClassLoader();
 		InputStream in = cl.getResourceAsStream(INPUT_FILE);
-		try {
-			BufferedReader r;
-			if (in!=null) {
-				r = new BufferedReader(new InputStreamReader(in));
-			}
-			else {
-				r = new BufferedReader(new FileReader(INPUT_FILE));
-			}
+		try (BufferedReader r = in != null ?
+				new BufferedReader(new InputStreamReader(in)) :
+				new BufferedReader(new FileReader(INPUT_FILE))) {
 			textArea.read(r, null);
-			r.close();
 		} catch (IOException ioe) {
 			textArea.setText("// Type Java source.  Comments are spell checked.");
 		}

@@ -91,8 +91,8 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap(File wordList) throws IOException {
-    this(new FileReader(wordList));
     dictFile = wordList;
+    createDictionary(wordList);
   }
 
   /**
@@ -106,7 +106,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   public SpellDictionaryHashMap(File wordList, File phonetic) throws IOException {
     super(phonetic);
     dictFile = wordList;
-    createDictionary(new BufferedReader(new FileReader(wordList)));
+    createDictionary(wordList);
   }
 
   /**
@@ -122,7 +122,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   public SpellDictionaryHashMap(File wordList, File phonetic, String phoneticEncoding) throws IOException {
     super(phonetic, phoneticEncoding);
     dictFile = wordList;
-    createDictionary(new BufferedReader(new FileReader(wordList)));
+    createDictionary(wordList);
   }
 
   /**
@@ -169,10 +169,10 @@ public boolean addWord(String word) {
     if (dictFile!=null) {
 	    try {
 	    	// Append new word to user's word file
-	    	BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, true));
-	    	w.write(word);
-	    	w.write("\n");
-	    	w.close();
+	    	try (BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, true))) {
+	    		w.write(word);
+	    		w.write("\n");
+	    	}
 	    	return true;
 	    } catch (IOException ex) {
 	      ex.printStackTrace();
@@ -183,7 +183,16 @@ public boolean addWord(String word) {
   }
 
   /**
-   * Constructs the dictionary from a word list file.
+   * Constructs the dictionary from a word list file, closing it when done.
+   */
+  private void createDictionary(File wordList) throws IOException {
+    try (BufferedReader in = new BufferedReader(new FileReader(wordList))) {
+      createDictionary(in);
+    }
+  }
+
+  /**
+   * Constructs the dictionary from a word list. The reader is not closed.
    * <p>
    * Each word in the reader should be on a separate line.
    * <p>
