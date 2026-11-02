@@ -23,7 +23,6 @@ package org.fife.com.swabunga.spell.engine;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
@@ -223,14 +222,14 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    */
   private void addBestGuess(String word, List<Word> wordList, EditDistance editDistance) {
     if (!wordList.isEmpty())
-      throw new InvalidParameterException("the wordList vector must be empty");
+      throw new IllegalArgumentException("the wordList must be empty");
 
     int bestScore = Integer.MAX_VALUE;
 
     String code = getCode(word);
     List<String> simwordlist = getWords(code);
 
-    LinkedList<Word> candidates = new LinkedList<>();
+    List<Word> candidates = new ArrayList<>();
 
     for (String similar : simwordlist) {
       int distance = editDistance.getDistance(word, similar);

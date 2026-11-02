@@ -194,12 +194,10 @@ public class SpellingParser extends AbstractParser
             // Load words specific to the English dialect.
             List<String> others;
             if (american) {
-                others = new ArrayList<>(Arrays.asList("color", "labeled", "center", "ize",
-                        "yze"));
+                others = new ArrayList<>(List.of("color", "labeled", "center", "ize", "yze"));
             }
             else { // British
-                others = new ArrayList<>(Arrays.asList("colour", "labelled", "centre",
-                        "ise", "yse"));
+                others = new ArrayList<>(List.of("colour", "labelled", "centre", "ise", "yse"));
             }
 
             // Miscellaneous
