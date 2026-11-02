@@ -417,8 +417,7 @@ public class SpellingParser extends AbstractParser
                         // to prevent String allocation.
                         StringWordTokenizer swt =
                                 new StringWordTokenizer(t.getLexeme());
-                        int rc = sc.checkSpelling(swt);
-                        if (rc == SpellChecker.SPELLCHECK_CANCEL) {
+                        if (sc.checkSpelling(swt).isCancelled()) {
                             break; // Stop spell checking comments
                         }
                     }
