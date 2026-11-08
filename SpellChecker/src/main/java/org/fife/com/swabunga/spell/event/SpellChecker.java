@@ -328,11 +328,11 @@ public class SpellChecker {
    * Verifies if the word to analyze is contained in dictionaries. The order
    * of dictionary lookup is:
    * <ul>
-   * <li>The default user dictionary or the one set through
-   * {@link SpellChecker#setUserDictionary}</li>
-   * <li>The dictionary specified at construction time, if any.</li>
-   * <li>Any dictionary in the order they were added through
-   * {@link SpellChecker#addDictionary}</li>
+   * <li>The dictionary specified at construction time.</li>
+   * <li>Any dictionaries, in the order they were added through
+   * {@link SpellChecker#addDictionary}.</li>
+   * <li>The default user dictionary, or the one set through
+   * {@link SpellChecker#setUserDictionary}.</li>
    * </ul>
    *
    * @param word The word to verify that it's spelling is known.
