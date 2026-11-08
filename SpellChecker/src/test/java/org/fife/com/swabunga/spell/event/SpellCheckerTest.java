@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -446,6 +448,75 @@ class SpellCheckerTest {
         SpellCheckEvent e = listener.events.getFirst();
         assertEquals("correktly", e.getInvalidWord());
         assertEquals(10, e.getWordContextPosition());
+    }
+
+    private static DocumentWordTokenizer createDocumentTokenizer(String text) {
+        PlainDocument doc = new PlainDocument();
+        try {
+            doc.insertString(0, text, null);
+        } catch (BadLocationException ble) {
+            throw new IllegalStateException(ble);
+        }
+        return new DocumentWordTokenizer(doc);
+    }
+
+    @Test
+    void testCheckSpelling_hyphenatedWord_partsCorrect() {
+        String[] words = { "this", "is", "a", "well", "known", "fact" };
+        addWordsToDictionary(words);
+
+        SpellCheckResult result = checker.checkSpelling(createDocumentTokenizer("This is a well-known fact."));
+        assertResult(result, 0, false);
+    }
+
+    @Test
+    void testCheckSpelling_hyphenatedWord_partIncorrect() {
+        String[] words = { "this", "is", "a", "well", "known", "fact" };
+        addWordsToDictionary(words);
+
+        SpellCheckResult result = checker.checkSpelling(createDocumentTokenizer("This is a well-knowwn fact."));
+        assertResult(result, 1, false);
+
+        SpellCheckEvent e = listener.getEvents().getFirst();
+        assertEquals("knowwn", e.getInvalidWord());
+        assertEquals(15, e.getWordContextPosition());
+    }
+
+    @Test
+    void testCheckSpelling_hyphenatedWord_wholeWordInDictionary() {
+        String[] words = { "this", "is", "a", "x-ray" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESINGLELETTERS, false);
+
+        SpellCheckResult result = checker.checkSpelling(createDocumentTokenizer("This is a x-ray."));
+        assertResult(result, 0, false);
+    }
+
+    @Test
+    void testCheckSpelling_hyphenatedWord_ignoredPart() {
+        String[] words = { "this", "is", "a", "well", "fact" };
+        addWordsToDictionary(words);
+        checker.ignoreAll("knowwn");
+
+        SpellCheckResult result = checker.checkSpelling(createDocumentTokenizer("This is a well-knowwn fact."));
+        assertResult(result, 0, false);
+    }
+
+    @Test
+    void testCheckSpelling_hyphenatedWord_terminatesWhenListenerSaysTo() {
+        String[] words = { "this", "is", "a", "fact" };
+        addWordsToDictionary(words);
+        TestSpellCheckListenerCancels listener = new TestSpellCheckListenerCancels();
+        checker.addSpellCheckListener(listener);
+
+        SpellCheckResult result = checker.checkSpelling(createDocumentTokenizer("This is a welll-knowwn fact."));
+        assertResult(result, 1, true);
+
+        // Only finds the first misspelled part before being canceled
+        List<SpellCheckEvent> events = listener.getEvents();
+        assertEquals(1, events.size());
+        assertEquals("welll", events.getFirst().getInvalidWord());
+        assertEquals(10, events.getFirst().getWordContextPosition());
     }
 
     @Test
