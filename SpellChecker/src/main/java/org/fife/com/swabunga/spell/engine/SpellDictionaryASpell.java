@@ -23,7 +23,6 @@ package org.fife.com.swabunga.spell.engine;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
@@ -61,7 +60,15 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
 
   /** The reference to a Transformator, used to transform a word into it's phonetic code. */
-  private Transformator tf;
+  private final Transformator tf;
+
+  /**
+   * Constructs a new SpellDictionaryASpell that uses {@link DoubleMeta}
+   * transformation.
+   */
+  protected SpellDictionaryASpell() {
+    tf = new DoubleMeta();
+  }
 
   /**
    * Constructs a new SpellDictionaryASpell.
@@ -72,10 +79,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @throws IOException  indicates problems reading the phonetic information.
    */
   public SpellDictionaryASpell(File phonetic) throws IOException {
-    if (phonetic == null)
-      tf = new DoubleMeta();
-    else
-      tf = new GenericTransformator(phonetic);
+    tf = phonetic == null ? new DoubleMeta() : new GenericTransformator(phonetic);
   }
 
   /**
@@ -88,12 +92,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @throws IOException  indicates problems reading the phonetic information.
    */
   public SpellDictionaryASpell(File phonetic, String encoding) throws IOException {
-    if (phonetic == null) {
-        tf = new DoubleMeta();
-    }
-    else {
-      tf = new GenericTransformator(phonetic, encoding);
-    }
+    tf = phonetic == null ? new DoubleMeta() : new GenericTransformator(phonetic, encoding);
   }
 
   /**
@@ -105,26 +104,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * @throws IOException  indicates problems reading the phonetic information.
    */
   public SpellDictionaryASpell(Reader phonetic) throws IOException {
-    if (phonetic == null)
-      tf = new DoubleMeta();
-    else
-      tf = new GenericTransformator(phonetic);
-  }
-
-  /**
-   * Returns a list of Word objects that are the suggestions to an
-   * incorrect word.
-   * <p>
-   * This method is only needed to provide backward compatibility.
-   *
-   * @param word Suggestions for given misspelled word
-   * @param threshold The lower boundary of similarity to misspelled word
-   * @return a List of suggestions
-   * @see #getSuggestions(String, int, int[][])
-   */
-  @Override
-  public List<Word> getSuggestions(String word, int threshold) {
-  	return getSuggestions(word,threshold,null);
+    tf = phonetic == null ? new DoubleMeta() : new GenericTransformator(phonetic);
   }
 
   /**
@@ -132,24 +112,21 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    * incorrect word.
    *
    * @param word Suggestions for given misspelled word
-   * @param threshold The lower boundary of similarity to misspelled word
-   * @param matrix Two dimensional int array used to calculate
-   *        edit distance. Allocating this memory outside the function will greatly improve efficiency.
+   * @param config The configuration providing the score threshold and edit costs
    * @return a List of suggestions
    */
   @Override
-  public List<Word> getSuggestions(String word, int threshold, int[][] matrix) {
+  public List<Word> getSuggestions(String word, Configuration config) {
 
-  	if (matrix == null) {
-        matrix = new int[0][0];
-    }
+    int threshold = config.getInteger(Configuration.SPELL_THRESHOLD);
+    EditDistance editDistance = new EditDistance(config);
 
     Map<String, String> nearmisscodes = new HashMap<>();
     String code = getCode(word);
 
     // add all words that have the same phonetics
     nearmisscodes.put(code, code);
-    List<Word> phoneticList = getWordsFromCode(word, nearmisscodes);
+    List<Word> phoneticList = getWordsFromCode(word, nearmisscodes, editDistance, threshold);
 
     // do some transformations to pick up more results
     //interchange
@@ -173,8 +150,8 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     char original;
     for (int i = 0; i < word.length(); i++) {
       original = charArray[i];
-      for (int j = 0; j < replacelist.length; j++) {
-        charArray[i] = replacelist[j];
+      for (char c : replacelist) {
+        charArray[i] = c;
         String s = getCode(new String(charArray));
         nearmisscodes.put(s, s);
       }
@@ -185,8 +162,8 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     charArray = (word += " ").toCharArray();
     int iy = charArray.length - 1;
     while (true) {
-      for (int j = 0; j < replacelist.length; j++) {
-        charArray[iy] = replacelist[j];
+      for (char c : replacelist) {
+        charArray[iy] = c;
         String s = getCode(new String(charArray));
         nearmisscodes.put(s, s);
       }
@@ -217,10 +194,10 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
     nearmisscodes.remove(code); //already accounted for in phoneticList
 
-    List<Word> wordlist = getWordsFromCode(word, nearmisscodes);
+    List<Word> wordlist = getWordsFromCode(word, nearmisscodes, editDistance, threshold);
 
     if (wordlist.isEmpty() && phoneticList.isEmpty())
-      addBestGuess(word, phoneticList, matrix);
+      addBestGuess(word, phoneticList, editDistance);
 
 
     // We sort a List at the end instead of maintaining a
@@ -228,8 +205,8 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     // to a tree set it has to be resorted. It's better to do this operation
     // once at the end.
 
-    phoneticList.sort(new Word()); //always sort phonetic matches along the top
-    wordlist.sort(new Word()); //the non-phonetic matches can be listed below
+    phoneticList.sort(Word.COST_COMPARATOR); //always sort phonetic matches along the top
+    wordlist.sort(Word.COST_COMPARATOR); //the non-phonetic matches can be listed below
 
     phoneticList.addAll(wordlist);
     return phoneticList;
@@ -241,26 +218,21 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
    *
    * @param word - the word we are trying to spell correct
    * @param wordList - the linked list that will get the best guess
-   * @param matrix Two dimensional array of int used to calculate
-   *        edit distance. Allocating this memory outside the function will greatly improve efficiency.
+   * @param editDistance - computes the distance between words
    */
-  private void addBestGuess(String word, List<Word> wordList, int[][] matrix) {
-  	if (matrix == null) {
-        matrix = new int[0][0];
-    }
-
+  private void addBestGuess(String word, List<Word> wordList, EditDistance editDistance) {
     if (!wordList.isEmpty())
-      throw new InvalidParameterException("the wordList vector must be empty");
+      throw new IllegalArgumentException("the wordList must be empty");
 
     int bestScore = Integer.MAX_VALUE;
 
     String code = getCode(word);
     List<String> simwordlist = getWords(code);
 
-    LinkedList<Word> candidates = new LinkedList<>();
+    List<Word> candidates = new ArrayList<>();
 
     for (String similar : simwordlist) {
-      int distance = EditDistance.getDistance(word, similar, matrix);
+      int distance = editDistance.getDistance(word, similar);
       if (distance <= bestScore) {
         bestScore = distance;
         candidates.add(new Word(similar, distance));
@@ -275,17 +247,15 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
   }
 
-  private List<Word> getWordsFromCode(String word, Map<String, String> codes) {
-    Configuration config = Configuration.getConfiguration();
+  private List<Word> getWordsFromCode(String word, Map<String, String> codes,
+                                      EditDistance editDistance, int threshold) {
     List<Word> result = new ArrayList<>();
-    int[][] matrix = new int[0][0];
-    final int configDistance = config.getInteger(Configuration.SPELL_THRESHOLD);
 
     for (String code : codes.keySet()) {
       List<String> simwordlist = getWords(code);
       for (String similar : simwordlist) {
-        int distance = EditDistance.getDistance(word, similar, matrix);
-        if (distance < configDistance) {
+        int distance = editDistance.getDistance(word, similar);
+        if (distance < threshold) {
           result.add(new Word(similar, distance));
         }
       }

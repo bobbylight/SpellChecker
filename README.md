@@ -1,7 +1,7 @@
 # SpellChecker
 ![Build](https://github.com/bobbylight/SpellChecker/actions/workflows/gradle.yml/badge.svg)
 ![CodeQL](https://github.com/bobbylight/SpellChecker/actions/workflows/codeql-analysis.yml/badge.svg)
-![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fifesoft/spellchecker/badge.svg)
+![Maven Central](https://maven-badges.sml.io/sonatype-central/com.fifesoft/spellchecker/badge.svg)
 [![codecov](https://codecov.io/gh/bobbylight/SpellChecker/graph/badge.svg?token=xzoUjtmmjf)](https://codecov.io/gh/bobbylight/SpellChecker)
 
 SpellChecker is a spell check add-on for `RSyntaxTextArea`.  For programming languages, it spell-checks text in
@@ -11,9 +11,19 @@ in the color of your choosing, and hovering the mouse over a misspelled word dis
 the spell check white list.
 
 This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Indeed, 99% of the code is just
-Jazzy, with changes made for performance, bug fixes, and Java 8 syntax.
+Jazzy, with changes made for performance, bug fixes, and modern Java syntax.
 
-This library is built with Java 17, but runs on Java 8 and later.
+## Building and Requirements
+Building SpellChecker requires JDK 25 or later:
+
+    ./gradlew build --warning-mode all
+
+The built library runs on Java 11 and later.  The table below lists the requirements for each version:
+
+| Version | Required to build (JDK) | Required to run (JRE) |
+|---------|-------------------------|-----------------------|
+| 4.x     | 25                      | 11                    |
+| 3.4.x   | 17                      | 8                     |
 
 ## Getting a dictionary file
 While the `SpellingParser` class can take any implementation of the `SpellDictionary` interface,

@@ -9,13 +9,6 @@ import org.junit.jupiter.api.Test;
 class WordTest {
 
     @Test
-    void testConstructor_zeroArg() {
-        Word word = new Word();
-        Assertions.assertEquals("", word.getWord());
-        Assertions.assertEquals(0, word.getCost());
-    }
-
-    @Test
     void testConstructor_twoArg() {
         Word word = new Word("foo", 5);
         Assertions.assertEquals("foo", word.getWord());
@@ -26,21 +19,21 @@ class WordTest {
     void testCompare_lessThan() {
         Word word1 = new Word("foo", 5);
         Word word2 = new Word("bar", 10);
-        Assertions.assertEquals(-1, word1.compare(word1, word2));
+        Assertions.assertTrue(Word.COST_COMPARATOR.compare(word1, word2) < 0);
     }
 
     @Test
     void testCompare_greaterThan() {
         Word word1 = new Word("foo", 5);
         Word word2 = new Word("bar", 10);
-        Assertions.assertEquals(1, word1.compare(word2, word1));
+        Assertions.assertTrue(Word.COST_COMPARATOR.compare(word2, word1) > 0);
     }
 
     @Test
     void testCompare_equal() {
         Word word1 = new Word("foo", 5);
         Word word2 = new Word("bar", 5);
-        Assertions.assertEquals(0, word1.compare(word1, word2));
+        Assertions.assertEquals(0, Word.COST_COMPARATOR.compare(word1, word2));
     }
 
     @Test
@@ -64,11 +57,9 @@ class WordTest {
     }
 
     @Test
-    void testGetSetWord() {
+    void testGetWord() {
         Word word = new Word("foo", 5);
         Assertions.assertEquals("foo", word.getWord());
-        word.setWord("bar");
-        Assertions.assertEquals("bar", word.getWord());
     }
 
     @Test

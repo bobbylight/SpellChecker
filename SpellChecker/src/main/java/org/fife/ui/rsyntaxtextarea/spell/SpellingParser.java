@@ -194,12 +194,10 @@ public class SpellingParser extends AbstractParser
             // Load words specific to the English dialect.
             List<String> others;
             if (american) {
-                others = new ArrayList<>(Arrays.asList("color", "labeled", "center", "ize",
-                        "yze"));
+                others = new ArrayList<>(List.of("color", "labeled", "center", "ize", "yze"));
             }
             else { // British
-                others = new ArrayList<>(Arrays.asList("colour", "labelled", "centre",
-                        "ise", "yse"));
+                others = new ArrayList<>(List.of("colour", "labelled", "centre", "ise", "yse"));
             }
 
             // Miscellaneous
@@ -361,7 +359,7 @@ public class SpellingParser extends AbstractParser
                     if (sc.addToDictionary(word)) {
                         textArea.forceReparsing(this);
                         SpellingParserEvent se = new SpellingParserEvent(this,
-                                textArea, SpellingParserEvent.WORD_ADDED, word);
+                                textArea, SpellingParserEvent.Type.WORD_ADDED, word);
                         fireSpellingParserEvent(se);
                     }
                     else { // IO error adding the word
@@ -374,7 +372,7 @@ public class SpellingParser extends AbstractParser
                     sc.ignoreAll(word);
                     textArea.forceReparsing(this);
                     SpellingParserEvent se = new SpellingParserEvent(this,
-                            textArea, SpellingParserEvent.WORD_IGNORED, word);
+                            textArea, SpellingParserEvent.Type.WORD_IGNORED, word);
                     fireSpellingParserEvent(se);
                     break;
             }
@@ -417,8 +415,7 @@ public class SpellingParser extends AbstractParser
                         // to prevent String allocation.
                         StringWordTokenizer swt =
                                 new StringWordTokenizer(t.getLexeme());
-                        int rc = sc.checkSpelling(swt);
-                        if (rc == SpellChecker.SPELLCHECK_CANCEL) {
+                        if (sc.checkSpelling(swt).isCancelled()) {
                             break; // Stop spell checking comments
                         }
                     }

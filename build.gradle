@@ -5,24 +5,24 @@ plugins {
 
 apply plugin: 'io.github.gradle-nexus.publish-plugin'
 
-// We require building with JDK 17 or later. Built artifact compatibility
+// We require building with JDK 25 or later. Built artifact compatibility
 // is controlled by javaLanguageVersion
-assert JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)
+assert JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_25)
 
 group = 'com.fifesoft'
-// NOTE: Local Java 17: /Library/Java/JavaVirtualMachines/jdk-17.0.13+11/Contents/Home
+// NOTE: Local Java 25: /Library/Java/JavaVirtualMachines/jdk-25.0.1+8/Contents/Home
 
 allprojects {
 
     repositories {
         mavenCentral()
         maven {
-            url = 'https://oss.sonatype.org/content/repositories/snapshots'
+            url = 'https://central.sonatype.com/repository/maven-snapshots/'
         }
     }
 
     wrapper {
-        gradleVersion = '9.2.1'
+        gradleVersion = '9.8.2'
     }
 
     tasks.withType(Javadoc) {
@@ -66,11 +66,16 @@ subprojects {
 //        }
 //    }
 
-    compileJava {
-        options.release = Integer.parseInt(javaLanguageVersion)
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        // Only need `options.release` set for `compileJava`, not for tests
         options.debug = true
         options.debugOptions.debugLevel = 'source,vars,lines'
         options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked'
+    }
+
+    compileJava {
+        options.release = Integer.parseInt(javaLanguageVersion)
     }
 }
 

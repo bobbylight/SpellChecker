@@ -1,6 +1,7 @@
 package org.fife.com.swabunga.spell.engine;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -8,44 +9,66 @@ import org.junit.jupiter.api.Test;
  */
 class EditDistanceTest {
 
+    private Configuration config;
+    private EditDistance editDistance;
+
+    @BeforeEach
+    void setUp() {
+        config = Configuration.getConfiguration();
+        editDistance = new EditDistance(config);
+    }
+
     @Test
     void testGetDistance_identicalWords() {
-        Assertions.assertEquals(0, EditDistance.getDistance("test", "test"));
+        Assertions.assertEquals(0, editDistance.getDistance("test", "test"));
     }
 
     @Test
     void testGetDistance_caseInsensitive_firstChar() {
-        Assertions.assertEquals(EditDistance.CONFIG.getInteger(Configuration.COST_CHANGE_CASE),
-                EditDistance.getDistance("test", "Test"));
+        Assertions.assertEquals(config.getInteger(Configuration.COST_CHANGE_CASE),
+                editDistance.getDistance("test", "Test"));
     }
 
     @Test
     void testGetDistance_caseInsensitive_nonFirstChar() {
-        Assertions.assertEquals(EditDistance.CONFIG.getInteger(Configuration.COST_CHANGE_CASE),
-                EditDistance.getDistance("test", "tEst"));
+        Assertions.assertEquals(config.getInteger(Configuration.COST_CHANGE_CASE),
+                editDistance.getDistance("test", "tEst"));
     }
 
     @Test
     void testGetDistance_differentWords() {
-        int expectedDistance = EditDistance.CONFIG.getInteger(Configuration.COST_SUBST_CHARS);
-        Assertions.assertEquals(expectedDistance, EditDistance.getDistance("test", "tent"));
+        int expectedDistance = config.getInteger(Configuration.COST_SUBST_CHARS);
+        Assertions.assertEquals(expectedDistance, editDistance.getDistance("test", "tent"));
     }
 
     @Test
     void testGetDistance_swappedCharacters() {
-        int expectedDistance = EditDistance.CONFIG.getInteger(Configuration.COST_SWAP_CHARS);
-        Assertions.assertEquals(expectedDistance, EditDistance.getDistance("abcd", "abdc"));
+        int expectedDistance = config.getInteger(Configuration.COST_SWAP_CHARS);
+        Assertions.assertEquals(expectedDistance, editDistance.getDistance("abcd", "abdc"));
     }
 
     @Test
     void testGetDistance_insertCharacter() {
-        int expectedDistance = EditDistance.CONFIG.getInteger(Configuration.COST_INSERT_CHAR);
-        Assertions.assertEquals(expectedDistance, EditDistance.getDistance("test", "tests"));
+        int expectedDistance = config.getInteger(Configuration.COST_INSERT_CHAR);
+        Assertions.assertEquals(expectedDistance, editDistance.getDistance("test", "tests"));
     }
 
     @Test
     void testGetDistance_deleteCharacter() {
-        int expectedDistance = EditDistance.CONFIG.getInteger(Configuration.COST_REMOVE_CHAR);
-        Assertions.assertEquals(expectedDistance, EditDistance.getDistance("tests", "test"));
+        int expectedDistance = config.getInteger(Configuration.COST_REMOVE_CHAR);
+        Assertions.assertEquals(expectedDistance, editDistance.getDistance("tests", "test"));
+    }
+
+    @Test
+    void testGetDistance_usesConfiguredCosts() {
+        config.setInteger(Configuration.COST_SUBST_CHARS, 7);
+        Assertions.assertEquals(7, new EditDistance(config).getDistance("test", "tent"));
+    }
+
+    @Test
+    void testGetDistance_costsReadAtConstruction() {
+        int expectedDistance = config.getInteger(Configuration.COST_SUBST_CHARS);
+        config.setInteger(Configuration.COST_SUBST_CHARS, 7);
+        Assertions.assertEquals(expectedDistance, editDistance.getDistance("test", "tent"));
     }
 }

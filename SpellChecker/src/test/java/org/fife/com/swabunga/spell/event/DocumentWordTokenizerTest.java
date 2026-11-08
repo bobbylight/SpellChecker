@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
+import javax.swing.text.Segment;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -131,6 +132,25 @@ class DocumentWordTokenizerTest {
         tokenizer.nextWord(); // Move to "This"
         tokenizer.nextWord(); // Move to "is"
         assertFalse(tokenizer.isNewSentence());
+    }
+
+    @Test
+    void testIsNewSentence_segmentWithNonZeroOffset() throws BadLocationException {
+        // Removing text at the start of a document moves its gap buffer to
+        // offset 0, so the Segment the tokenizer reads has a non-zero offset
+        doc.replace(0, doc.getLength(), "XEnd here. Next one", null);
+        doc.remove(0, 1);
+        Segment segment = new Segment();
+        doc.getText(0, doc.getLength(), segment);
+        assertNotEquals(0, segment.offset, "Test precondition not met");
+
+        tokenizer = new DocumentWordTokenizer(doc);
+        assertEquals("End", tokenizer.nextWord());
+        assertTrue(tokenizer.isNewSentence());
+        assertEquals("here", tokenizer.nextWord());
+        assertFalse(tokenizer.isNewSentence());
+        assertEquals("Next", tokenizer.nextWord());
+        assertTrue(tokenizer.isNewSentence());
     }
 
     @Test

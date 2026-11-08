@@ -211,11 +211,11 @@ public List<String> getWords(String code) {
     int[] posLen = getStartPosAndLen(code);
     if (posLen != null) {
       try {
-        InputStream input = new FileInputStream(new File(db, FILE_DB));
-        input.skip(posLen[0]);
         byte[] bytes = new byte[posLen[1]];
-        input.read(bytes, 0, posLen[1]);
-        input.close();
+        try (InputStream input = new FileInputStream(new File(db, FILE_DB))) {
+          input.skip(posLen[0]);
+          input.read(bytes, 0, posLen[1]);
+        }
 
         String data = new String(bytes);
         String[] lines = split(data, "\n");
@@ -344,22 +344,22 @@ public List<String> getWords(String code) {
      */
     File[] wordFiles = words.listFiles();
       for (File wordFile : wordFiles) {
-          BufferedReader r = new BufferedReader(new FileReader(wordFile));
-          String word;
-          while ((word = r.readLine()) != null) {
-              if (!word.isEmpty()) {
-                  w.add(word.trim());
+          try (BufferedReader r = new BufferedReader(new FileReader(wordFile))) {
+              String word;
+              while ((word = r.readLine()) != null) {
+                  if (!word.isEmpty()) {
+                      w.add(word.trim());
+                  }
               }
           }
-          r.close();
       }
 
     Collections.sort(w);
 
     // FIXME - error handling for running out of disk space would be nice.
     File file = File.createTempFile("jazzy", "sorted");
-    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-    String prev = null;
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+      String prev = null;
       for (String word : w) {
           if (prev == null || !prev.equals(word)) {
               writer.write(word);
@@ -367,7 +367,7 @@ public List<String> getWords(String code) {
           }
           prev = word;
       }
-    writer.close();
+    }
 
     return file;
   }
@@ -375,21 +375,21 @@ public List<String> getWords(String code) {
   private void buildCodeDb(File sortedWords) throws IOException {
     List<CodeWord> codeList = new ArrayList<>();
 
-    BufferedReader reader = new BufferedReader(new FileReader(sortedWords));
-    String word;
-    while ((word = reader.readLine()) != null) {
-      codeList.add(new CodeWord(this.getCode(word), word));
+    try (BufferedReader reader = new BufferedReader(new FileReader(sortedWords))) {
+      String word;
+      while ((word = reader.readLine()) != null) {
+        codeList.add(new CodeWord(this.getCode(word), word));
+      }
     }
-    reader.close();
 
     Collections.sort(codeList);
 
     List<Object[]> index = new ArrayList<>();
 
-    BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File(db, FILE_DB)));
     String currentCode = null;
     int currentPosition = 0;
     int currentLength = 0;
+    try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File(db, FILE_DB)))) {
     for (int i = 0; i < codeList.size(); i++) {
       CodeWord cw = codeList.get(i);
       String thisCode = cw.getCode();
@@ -409,13 +409,13 @@ public List<String> getWords(String code) {
       }
       out.write(bytes);
     }
-    out.close();
+    }
 
     // Output the last iteration
     if (currentCode != null && currentPosition != 0 && currentLength != 0)
       index.add(new Object[]{currentCode, new int[]{currentPosition, currentLength}});
 
-    BufferedWriter writer = new BufferedWriter(new FileWriter(new File(db, FILE_INDEX)));
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(db, FILE_INDEX)))) {
       for (Object[] o : index) {
           writer.write(o[0].toString());
           writer.write(",");
@@ -424,20 +424,20 @@ public List<String> getWords(String code) {
           writer.write(String.valueOf(((int[])o[1])[1]));
           writer.newLine();
       }
-    writer.close();
+    }
   }
 
   private void buildContentsFile() throws IOException {
     File[] wordFiles = words.listFiles();
     if (wordFiles.length > 0) {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(new File(db, FILE_CONTENTS)));
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(db, FILE_CONTENTS)))) {
         for (File wordFile : wordFiles) {
             writer.write(wordFile.getName());
             writer.write(",");
             writer.write(String.valueOf(wordFile.length()));
             writer.newLine();
         }
-      writer.close();
+      }
     } else {
       new File(db, FILE_CONTENTS).delete();
     }
@@ -450,13 +450,13 @@ public List<String> getWords(String code) {
   protected void loadIndex() throws IOException {
     index = new HashMap<>();
     File idx = new File(db, FILE_INDEX);
-    BufferedReader reader = new BufferedReader(new FileReader(idx));
-    String line;
-    while ((line = reader.readLine()) != null) {
-      String[] fields = split(line, ",");
-      index.put(fields[0], new int[]{Integer.parseInt(fields[1]), Integer.parseInt(fields[2])});
+    try (BufferedReader reader = new BufferedReader(new FileReader(idx))) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        String[] fields = split(line, ",");
+        index.put(fields[0], new int[]{Integer.parseInt(fields[1]), Integer.parseInt(fields[2])});
+      }
     }
-    reader.close();
   }
 
   private int[] getStartPosAndLen(String code) {

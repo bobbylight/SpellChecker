@@ -75,7 +75,7 @@ public abstract class Configuration {
   public static final String SPELL_IGNOREUPPERCASE = "SPELL_IGNOREUPPERCASE";
   /**  words that have mixed case are not spell checked, example: "SpellChecker".<br/>(boolean) */
   public static final String SPELL_IGNOREMIXEDCASE = "SPELL_IGNOREMIXEDCASE";
-  /** words that look like an Internet address are not spell checked, example: "http://www.google.com". <br/>(boolean)*/
+  /** words that look like an Internet address are not spellchecked, example: "https://www.google.com". <br/>(boolean)*/
   public static final String SPELL_IGNOREINTERNETADDRESSES = "SPELL_IGNOREINTERNETADDRESS";
   /** words that have digits in them are not spell checked, example: "mach5". <br/>(boolean) */
   public static final String SPELL_IGNOREDIGITWORDS = "SPELL_IGNOREDIGITWORDS";

@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.spell.event;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,7 +30,6 @@ import org.fife.com.swabunga.spell.engine.Configuration;
 import org.fife.com.swabunga.spell.engine.SpellDictionary;
 import org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap;
 import org.fife.com.swabunga.spell.engine.Word;
-import org.fife.com.swabunga.util.ListUtil;
 
 
 /**
@@ -49,18 +47,10 @@ import org.fife.com.swabunga.util.ListUtil;
  * @author Jason Height (jheight@chariot.net.au) 19 June 2002
  */
 public class SpellChecker {
-  /**
-   * Flag indicating that the Spell Check completed without any errors present.
-   */
-  public static final int SPELLCHECK_OK = -1;
-  /**
-   * Flag indicating that the Spell Check completed due to user cancellation.
-   */
-  public static final int SPELLCHECK_CANCEL = -2;
 
   private List<SpellCheckListener> eventListeners = new ArrayList<>();
   private List<SpellDictionary> dictionaries = new ArrayList<>();
-  private SpellDictionary userDictionary;
+  private SpellDictionary userDictionary = new SpellDictionaryHashMap();
 
   private Configuration config = Configuration.getConfiguration();
 
@@ -81,11 +71,6 @@ public class SpellChecker {
    * @param dictionary The dictionary used for looking up words.
    */
   public SpellChecker(SpellDictionary dictionary) {
-    try {
-      userDictionary = new SpellDictionaryHashMap();
-    } catch (IOException e) {
-      throw new RuntimeException("this exception should never happen because we are using null phonetic file", e);
-    }
     addDictionary(dictionary);
   }
 
@@ -176,7 +161,7 @@ public class SpellChecker {
   /**
    * Checks if the word that is being spell checked contains an Internet
    * address. This method look for typical protocol or the habitual string
-   * in the word:
+   * in the word (case-insensitively):
    * <ul>
    * <li>http://</li>
    * <li>ftp://</li>
@@ -196,17 +181,19 @@ public class SpellChecker {
    */
   public static boolean beginsAsINETWord(String word) {
     // robert: In standard Jazzy distributions, this is "isINETWord(String)".
-    // robert: Since "word" may be the entire rest of the document (line), we'll try
-    // to micro-optimize a little here and just get the smallest lower-case String
-    // we need.
-    //String lowerCaseWord = word.toLowerCase();
-    int last = Math.min(8, word.length());
-    String lowerCaseWord = word.substring(0, last);
-    return lowerCaseWord.startsWith("http://") ||
-        lowerCaseWord.startsWith("www.") ||
-        lowerCaseWord.startsWith("ftp://") ||
-        lowerCaseWord.startsWith("https://") ||
-        lowerCaseWord.startsWith("ftps://");
+    // robert: Since "word" may be the entire rest of the document (line), we
+    // compare prefixes in place rather than creating a lower-cased copy.
+    // Prefixes are checked roughly in order of how commonly they're seen.
+    return startsWithIgnoreCase(word, "https://") ||
+        startsWithIgnoreCase(word, "www.") ||
+        startsWithIgnoreCase(word, "http://") ||
+        startsWithIgnoreCase(word, "ftp://") ||
+        startsWithIgnoreCase(word, "ftps://");
+  }
+
+
+  private static boolean startsWithIgnoreCase(String str, String prefix) {
+    return str.regionMatches(true, 0, prefix, 0, prefix.length());
   }
 
 
@@ -361,14 +348,17 @@ public class SpellChecker {
    * Produces a list of suggested word after looking for suggestions in various
    * dictionaries. The dictionary specified in the constructor is checked first,
    * then any other dictionaries added, and finally the user dictionary.
+   * <p>
+   * The score threshold and edit costs come from this spell checker's
+   * {@link #getConfiguration() configuration}.
    *
    * @param word    The word for which we want to gather suggestions
-   * @param threshold the cost value above which any suggestions are
-   *          thrown away
    * @return the list of words suggested
+   * @see Configuration#SPELL_THRESHOLD
    */
-  public List<Word> getSuggestions(String word, int threshold) {
+  public List<Word> getSuggestions(String word) {
     //long start = System.currentTimeMillis();
+    int threshold = config.getInteger(Configuration.SPELL_THRESHOLD);
     if (this.threshold != threshold && cache != null) {
       this.threshold = threshold;
       cache.clear();
@@ -385,14 +375,14 @@ public class SpellChecker {
 
       for (SpellDictionary dictionary : dictionaries) {
         if (dictionary != userDictionary)
-          ListUtil.addAllNoDuplicates(suggestions, dictionary.getSuggestions(word, threshold));
+          addAllNoDuplicates(suggestions, dictionary.getSuggestions(word, config));
       }
 
       if (cache != null && cache.size() < cacheSize)
         cache.put(word, suggestions);
     }
 
-    ListUtil.addAllNoDuplicates(suggestions, userDictionary.getSuggestions(word, threshold));
+    addAllNoDuplicates(suggestions, userDictionary.getSuggestions(word, config));
     if (suggestions instanceof ArrayList) {
       ((ArrayList<Word>)suggestions).trimToSize();
     }
@@ -401,6 +391,19 @@ public class SpellChecker {
     //float secs = time/1000f;
     //System.out.println("[DEBUG]: Suggestions for '" + word + "' took " + secs + " seconds");
     return suggestions;
+  }
+
+  /**
+   * Appends the words in {@code src} to {@code dest}, skipping any already
+   * in {@code dest} (or appearing earlier in {@code src}).
+   */
+  private static void addAllNoDuplicates(List<Word> dest, List<Word> src) {
+    Set<Word> present = new HashSet<>(dest);
+    for (Word word : src) {
+      if (present.add(word)) {
+        dest.add(word);
+      }
+    }
   }
 
   /**
@@ -466,10 +469,10 @@ public class SpellChecker {
    * SpellCheckEvent.<p>
    *
    * @param tokenizer The media containing the text to analyze.
-   * @return Either SPELLCHECK_OK, SPELLCHECK_CANCEL or the number of errors found. The number of errors are those that
-   *         are found BEFORE any corrections are made.
+   * @return The result of the spell check, including the number of errors
+   *         found and whether a listener cancelled it.
    */
-  public final int checkSpelling(WordTokenizer tokenizer) {
+  public final SpellCheckResult checkSpelling(WordTokenizer tokenizer) {
     int errors = 0;
     boolean terminated = false;
     //Keep track of the previous word
@@ -541,12 +544,7 @@ public class SpellChecker {
       }
     }
 
-    if (terminated)
-      return SPELLCHECK_CANCEL;
-    else if (errors == 0)
-      return SPELLCHECK_OK;
-    else
-      return errors;
+    return new SpellCheckResult(errors, terminated);
   }
 
   private boolean isSupposedToBeCapitalized(String word, WordTokenizer wordTokenizer) {

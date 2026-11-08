@@ -116,7 +116,9 @@ public class GenericTransformator implements Transformator {
    *         the phonetic file
    */
   public GenericTransformator(File phonetic) throws IOException {
-    buildRules(new BufferedReader(new FileReader(phonetic)));
+    try (BufferedReader r = new BufferedReader(new FileReader(phonetic))) {
+      buildRules(r);
+    }
     alphabetString = washAlphabetIntoReplaceList(getReplaceList());
   }
 
@@ -128,7 +130,9 @@ public class GenericTransformator implements Transformator {
    * @throws IOException indicates a problem while reading the phonetic file.
    */
   public GenericTransformator(File phonetic, String encoding) throws IOException {
-    buildRules(new BufferedReader(new InputStreamReader(new FileInputStream(phonetic), encoding)));
+    try (BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(phonetic), encoding))) {
+      buildRules(r);
+    }
     alphabetString = washAlphabetIntoReplaceList(getReplaceList());
   }
 

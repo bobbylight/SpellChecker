@@ -291,15 +291,14 @@ public class DocumentWordTokenizer implements WordTokenizer {
   public boolean isNewSentence() {
     // BreakIterator doesn't work when the first word in a sentence is not
     // capitalized, but we need to check for capitalization
-    if (startsSentence || currentWordPos < 2)
+    if (startsSentence || currentWordPos - text.getBeginIndex() < 2)
       return true;
 
-    String textBefore;
-    try {
-      textBefore = document.getText(currentWordPos - 2, 2);
-    } catch (BadLocationException ex) {
-      return false;
-    }
-    return (textBefore != null && ".".equals(textBefore.trim()));
+    // currentWordPos is an index into text.array, not a document offset
+    // (they differ when text.offset != 0), so read from the segment directly.
+    // A new sentence is a '.' adjacent to whitespace (chars <= ' ').
+    char before2 = text.array[currentWordPos - 2];
+    char before1 = text.array[currentWordPos - 1];
+    return (before2 == '.' && before1 <= ' ') || (before2 <= ' ' && before1 == '.');
   }
 }

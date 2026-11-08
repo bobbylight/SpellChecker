@@ -223,8 +223,8 @@ class SpellingParserTest {
 
         // Proper event fired
         assertEquals(1, events.size());
-        SpellingParserEvent event = events.get(0);
-        assertEquals(SpellingParserEvent.WORD_ADDED, event.getType());
+        SpellingParserEvent event = events.getFirst();
+        assertEquals(SpellingParserEvent.Type.WORD_ADDED, event.getType());
         assertEquals(parser, event.getParser());
         assertEquals(textArea, event.getTextArea());
         assertEquals("newword", event.getWord());
@@ -257,8 +257,8 @@ class SpellingParserTest {
         parser.linkClicked(textArea, e);
 
         assertEquals(1, events.size());
-        SpellingParserEvent event = events.get(0);
-        assertEquals(SpellingParserEvent.WORD_IGNORED, event.getType());
+        SpellingParserEvent event = events.getFirst();
+        assertEquals(SpellingParserEvent.Type.WORD_IGNORED, event.getType());
         assertEquals(parser, event.getParser());
         assertEquals(textArea, event.getTextArea());
         assertEquals("newword", event.getWord());
@@ -320,7 +320,7 @@ class SpellingParserTest {
         // Correct notices
         List<ParserNotice> notices = result.getNotices();
         assertEquals(1, notices.size());
-        ParserNotice notice = notices.get(0);
+        ParserNotice notice = notices.getFirst();
         assertEquals(0, notice.getOffset());
         assertEquals(5, notice.getLength());
         assertTrue(notice.getKnowsOffsetAndLength());
@@ -347,7 +347,7 @@ class SpellingParserTest {
         // Correct notices
         List<ParserNotice> notices = result.getNotices();
         assertEquals(1, notices.size());
-        ParserNotice notice = notices.get(0);
+        ParserNotice notice = notices.getFirst();
         assertEquals(3, notice.getOffset());
         assertEquals(5, notice.getLength());
         assertTrue(notice.getKnowsOffsetAndLength());
@@ -375,7 +375,7 @@ class SpellingParserTest {
         // Only the first spelling error is found, since the check is canceled at 1
         List<ParserNotice> notices = result.getNotices();
         assertEquals(1, notices.size());
-        ParserNotice notice = notices.get(0);
+        ParserNotice notice = notices.getFirst();
         assertEquals(3, notice.getOffset());
         assertEquals(5, notice.getLength());
         assertTrue(notice.getKnowsOffsetAndLength());

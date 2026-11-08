@@ -31,12 +31,15 @@ java {
 }
 jar {
     manifest {
-        attributes('Class-Path': 'rsyntaxtextarea.jar',
-                'Specification-Title': 'SpellChecker',
+        attributes('Specification-Title': 'SpellChecker',
+                'Automatic-Module-Name': 'org.fife.SpellChecker', // jdk 9+ module name
                 'Specification-Version': version,
                 'Implementation-Title': 'org.fife.ui',
                 'Implementation-Version': version)
 
+    }
+    from(rootProject.file('LICENSE.md')) {
+        into 'META-INF'
     }
 }
 
@@ -47,9 +50,19 @@ task createDictionaryZip(type: Zip) {
 }
 build.dependsOn createDictionaryZip
 
-repositories {
-	mavenCentral()
+test {
+    testLogging {
+        events 'failed' //, 'passed', 'skipped', 'standardOut', 'standardError'
+
+        showExceptions = true
+        exceptionFormat = 'full'
+        showCauses = true
+        showStackTraces = true
+
+        showStandardStreams = false
+    }
 }
+
 publishing {
     publications {
         maven(MavenPublication) {
@@ -69,8 +82,8 @@ publishing {
                 packaging = 'jar'
                 licenses {
                     license {
-                        name = 'Modified BSD License'
-                        url = 'http://fifesoft.com/rsyntaxtextarea/RSyntaxTextArea.License.txt'
+                        name = 'LGPL-2.1-or-later'
+                        url = 'https://github.com/bobbylight/SpellChecker/blob/master/LICENSE.md'
                     }
                 }
                 developers {
@@ -82,7 +95,7 @@ publishing {
                     url = 'https://github.com/bobbylight/SpellChecker'
                     connection = 'scm:git:git://github.com/bobbylight/SpellChecker'
                     developerConnection = 'scm:git:git@github.com:bobbylight/SpellChecker'
-                    if (!project.version.endsWith('-SNAPSHOT')) {
+                    if (isReleaseVersion) {
                         tag = project.version
                     }
                 }

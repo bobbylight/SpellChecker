@@ -66,11 +66,9 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   /**
    * Creates an empty dictionary.
    *
-   * @throws IOException If an IO error occurs.
    * @see #addWord(String)
    */
-  public SpellDictionaryHashMap() throws IOException {
-    super((File) null);
+  public SpellDictionaryHashMap() {
   }
 
   /**
@@ -83,7 +81,6 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap(Reader wordList) throws IOException {
-    super((File) null);
     createDictionary(new BufferedReader(wordList));
   }
 
@@ -94,8 +91,8 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap(File wordList) throws IOException {
-    this(new FileReader(wordList));
     dictFile = wordList;
+    createDictionary(wordList);
   }
 
   /**
@@ -109,7 +106,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   public SpellDictionaryHashMap(File wordList, File phonetic) throws IOException {
     super(phonetic);
     dictFile = wordList;
-    createDictionary(new BufferedReader(new FileReader(wordList)));
+    createDictionary(wordList);
   }
 
   /**
@@ -125,7 +122,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   public SpellDictionaryHashMap(File wordList, File phonetic, String phoneticEncoding) throws IOException {
     super(phonetic, phoneticEncoding);
     dictFile = wordList;
-    createDictionary(new BufferedReader(new FileReader(wordList)));
+    createDictionary(wordList);
   }
 
   /**
@@ -172,10 +169,10 @@ public boolean addWord(String word) {
     if (dictFile!=null) {
 	    try {
 	    	// Append new word to user's word file
-	    	BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, true));
-	    	w.write(word);
-	    	w.write("\n");
-	    	w.close();
+	    	try (BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, true))) {
+	    		w.write(word);
+	    		w.write("\n");
+	    	}
 	    	return true;
 	    } catch (IOException ex) {
 	      ex.printStackTrace();
@@ -186,7 +183,16 @@ public boolean addWord(String word) {
   }
 
   /**
-   * Constructs the dictionary from a word list file.
+   * Constructs the dictionary from a word list file, closing it when done.
+   */
+  private void createDictionary(File wordList) throws IOException {
+    try (BufferedReader in = new BufferedReader(new FileReader(wordList))) {
+      createDictionary(in);
+    }
+  }
+
+  /**
+   * Constructs the dictionary from a word list. The reader is not closed.
    * <p>
    * Each word in the reader should be on a separate line.
    * <p>
@@ -248,29 +254,9 @@ public boolean addWord(String word) {
    */
   protected void putWordUnique(String word) {
 
-    String code = getCode(word);
-    List<String> list = mainDictionary.get(code);
-
-    if (list != null) {
-
-        boolean isAlready = false;
-
-        for (String s : list) {
-            if (word.equalsIgnoreCase(s)) {
-                isAlready = true;
-                break;
-            }
-        }
-
-      if (!isAlready)
-        list.add(word);
-
-    } else {
-
-      list = new ArrayList<>();
+    List<String> list = mainDictionary.computeIfAbsent(getCode(word), k -> new ArrayList<>());
+    if (list.stream().noneMatch(word::equalsIgnoreCase)) {
       list.add(word);
-      mainDictionary.put(code, list);
-
     }
   }
 
@@ -284,19 +270,5 @@ public boolean addWord(String word) {
     if (mainDictResult == null)
       return Collections.emptyList();
     return mainDictResult;
-  }
-
-  /**
-   * Returns true if the word is correctly spelled against the current word list.
-   */
-  @Override
-  public boolean isCorrect(String word) {
-    List<String> possible = getWords(getCode(word));
-    if (possible.contains(word)) {
-      return true;
-    }
-    //JMH should we always try the lowercase version. If I dont then capitalized
-    //words are always returned as incorrect.
-    return possible.contains(word.toLowerCase());
   }
 }
