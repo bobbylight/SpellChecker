@@ -12,10 +12,11 @@ import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.*;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.swing.UIManager;
@@ -78,8 +79,6 @@ public class SpellingParser extends AbstractParser
     private boolean allowAdd;
     private boolean allowIgnore;
     private Color squiggleUnderlineColor;
-    private String noticePrefix;
-    private String noticeSuffix;
     private EventListenerList listenerList;
     private SpellCheckableTokenIdentifier spellCheckableTokenIdentifier;
 
@@ -118,15 +117,6 @@ public class SpellingParser extends AbstractParser
         setAllowIgnore(true);
         setSpellCheckableTokenIdentifier(
                 new DefaultSpellCheckableTokenIdentifier());
-
-        // Since the spelling callback can possibly be called many times
-        // per parsing, we're extremely cheap here and pre-split our message
-        // format instead of using MessageFormat.
-        String temp = MSG.getString("IncorrectSpelling");
-        int offs = temp.indexOf("{0}");
-        noticePrefix = temp.substring(0, offs);
-        noticeSuffix = temp.substring(offs + 3);
-
         listenerList = new EventListenerList();
 
     }
@@ -186,8 +176,7 @@ public class SpellingParser extends AbstractParser
         try (ZipFile zf = new ZipFile(zip)) {
 
             // Words common to American and British English
-            InputStream in = zf.getInputStream(zf.getEntry("eng_com.dic"));
-            try (BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
+            try (BufferedReader r = openEntry(zf, "eng_com.dic")) {
                 dict = new SpellDictionaryHashMap(r);
             }
 
@@ -206,8 +195,7 @@ public class SpellingParser extends AbstractParser
             }
 
             for (String other : others) {
-                in = zf.getInputStream(zf.getEntry(other + ".dic"));
-                try (BufferedReader r = new BufferedReader(new InputStreamReader(in))) {
+                try (BufferedReader r = openEntry(zf, other + ".dic")) {
                     dict.addDictionary(r);
                 }
             }
@@ -219,6 +207,24 @@ public class SpellingParser extends AbstractParser
 
         return new SpellingParser(dict);
 
+    }
+
+
+    /**
+     * Opens a reader on an entry in a dictionary zip file.
+     *
+     * @param zf The zip file.
+     * @param name The name of the entry.
+     * @return A reader on the entry. The caller should close it.
+     * @throws IOException If the entry does not exist or cannot be read.
+     */
+    private static BufferedReader openEntry(ZipFile zf, String name) throws IOException {
+        ZipEntry entry = zf.getEntry(name);
+        if (entry == null) {
+            throw new IOException("Dictionary zip file " + zf.getName() +
+                    " has no entry named " + name);
+        }
+        return new BufferedReader(new InputStreamReader(zf.getInputStream(entry)));
     }
 
 
@@ -560,7 +566,7 @@ public class SpellingParser extends AbstractParser
         String word = e.getInvalidWord();
         int offs = startOffs + e.getWordContextPosition();
         int line = getLineOfOffset(offs);
-        String text = noticePrefix + word + noticeSuffix;
+        String text = MessageFormat.format(MSG.getString("IncorrectSpelling"), word);
         SpellingParserNotice notice =
                 new SpellingParserNotice(this, text, line, offs, word, sc);
         result.addNotice(notice);

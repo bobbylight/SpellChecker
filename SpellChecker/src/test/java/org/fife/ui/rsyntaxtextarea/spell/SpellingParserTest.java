@@ -124,6 +124,21 @@ class SpellingParserTest {
     }
 
     @Test
+    void testCreateEnglishSpellingParser_missingEntry() throws IOException {
+        File zipFile = File.createTempFile("scUnitTests_spellingParser_missing_entry", ".zip");
+        zipFile.deleteOnExit();
+        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile))) {
+            zos.putNextEntry(new ZipEntry("eng_com.dic"));
+            zos.write("aardvark\n".getBytes());
+            zos.closeEntry();
+        }
+
+        IOException e = assertThrows(IOException.class,
+                () -> SpellingParser.createEnglishSpellingParser(zipFile, true, false));
+        assertTrue(e.getMessage().contains("color.dic"), e.getMessage());
+    }
+
+    @Test
     void testGetSetAllowAdd() {
         assertTrue(parser.getAllowAdd());
         parser.setAllowAdd(false);
