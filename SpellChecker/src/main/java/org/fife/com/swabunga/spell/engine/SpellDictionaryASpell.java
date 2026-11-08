@@ -121,80 +121,22 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     int threshold = config.getInteger(Configuration.SPELL_THRESHOLD);
     EditDistance editDistance = new EditDistance(config);
 
-    Map<String, String> nearmisscodes = new HashMap<>();
     String code = getCode(word);
 
     // add all words that have the same phonetics
-    nearmisscodes.put(code, code);
-    List<Word> phoneticList = getWordsFromCode(word, nearmisscodes, editDistance, threshold);
+    List<Word> phoneticList = getWordsFromCode(word, Set.of(code), editDistance, threshold);
 
     // do some transformations to pick up more results
-    //interchange
-    nearmisscodes = new HashMap<>();
-    char[] charArray = word.toCharArray();
+    Set<String> nearMissCodes = new HashSet<>();
+    char[] replaceList = tf.getReplaceList();
+    addSwapCodes(word, nearMissCodes);
+    addReplacementCodes(word, replaceList, nearMissCodes);
+    addInsertionCodes(word, replaceList, nearMissCodes);
+    addDeletionCodes(word, nearMissCodes);
 
-    for (int i = 0; i < word.length() - 1; i++) {
-      char temp = charArray[i];
-      charArray[i] = charArray[i + 1];
-      charArray[i + 1] = temp;
-      String s = getCode(new String(charArray));
-      nearmisscodes.put(s, s);
-      charArray[i + 1] = charArray[i];
-      charArray[i] = temp;
-    }
+    nearMissCodes.remove(code); //already accounted for in phoneticList
 
-    char[] replacelist = tf.getReplaceList();
-
-    //change
-    charArray = word.toCharArray();
-    char original;
-    for (int i = 0; i < word.length(); i++) {
-      original = charArray[i];
-      for (char c : replacelist) {
-        charArray[i] = c;
-        String s = getCode(new String(charArray));
-        nearmisscodes.put(s, s);
-      }
-      charArray[i] = original;
-    }
-
-    //add
-    charArray = (word += " ").toCharArray();
-    int iy = charArray.length - 1;
-    while (true) {
-      for (char c : replacelist) {
-        charArray[iy] = c;
-        String s = getCode(new String(charArray));
-        nearmisscodes.put(s, s);
-      }
-      if (iy == 0)
-        break;
-      charArray[iy] = charArray[iy - 1];
-      --iy;
-    }
-
-    //delete
-    word = word.trim();
-    charArray = word.toCharArray();
-    char[] charArray2 = new char[charArray.length - 1];
-    System.arraycopy(charArray, 0, charArray2, 0, charArray2.length);
-
-    char a = charArray[charArray.length - 1];
-    int ii = charArray2.length;
-    while (true) {
-      String s = getCode(new String(charArray));
-      nearmisscodes.put(s, s);
-      if (ii == 0)
-        break;
-      char b = a;
-      a = charArray2[ii - 1];
-      charArray2[ii - 1] = b;
-      --ii;
-    }
-
-    nearmisscodes.remove(code); //already accounted for in phoneticList
-
-    List<Word> wordlist = getWordsFromCode(word, nearmisscodes, editDistance, threshold);
+    List<Word> wordlist = getWordsFromCode(word, nearMissCodes, editDistance, threshold);
 
     if (wordlist.isEmpty() && phoneticList.isEmpty())
       addBestGuess(word, phoneticList, editDistance);
@@ -210,6 +152,89 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
     phoneticList.addAll(wordlist);
     return phoneticList;
+  }
+
+  /**
+   * Adds the phonetic codes of every variant of {@code word} with two
+   * adjacent characters swapped.
+   */
+  private void addSwapCodes(String word, Set<String> codes) {
+    char[] chars = word.toCharArray();
+    for (int i = 0; i < chars.length - 1; i++) {
+      swap(chars, i, i + 1);
+      codes.add(getCode(new String(chars)));
+      swap(chars, i, i + 1);
+    }
+  }
+
+  /**
+   * Adds the phonetic codes of every variant of {@code word} with one
+   * character replaced by a character from {@code replaceList}.
+   */
+  private void addReplacementCodes(String word, char[] replaceList, Set<String> codes) {
+    char[] chars = word.toCharArray();
+    for (int i = 0; i < chars.length; i++) {
+      char original = chars[i];
+      for (char c : replaceList) {
+        chars[i] = c;
+        codes.add(getCode(new String(chars)));
+      }
+      chars[i] = original;
+    }
+  }
+
+  /**
+   * Adds the phonetic codes of every variant of {@code word} with a character
+   * from {@code replaceList} inserted at any position, working from the end
+   * of the word to the start.
+   */
+  private void addInsertionCodes(String word, char[] replaceList, Set<String> codes) {
+    char[] chars = (word + ' ').toCharArray();
+    for (int i = chars.length - 1; ; i--) {
+      for (char c : replaceList) {
+        chars[i] = c;
+        codes.add(getCode(new String(chars)));
+      }
+      if (i == 0) {
+        break;
+      }
+      chars[i] = chars[i - 1]; // shift the insertion point one to the left
+    }
+  }
+
+  /**
+   * Meant to add the phonetic codes of every variant of {@code word} with one
+   * character deleted.
+   * <p>
+   * TODO: This currently generates no deletions. It computes the code of
+   * {@code chars} (the whole word) on every iteration instead of
+   * {@code deleted}, and that code is then removed from the near-miss codes
+   * by {@link #getSuggestions(String, Configuration)}. This bug comes from
+   * upstream Jazzy; fixing it will change suggestion results.
+   */
+  private void addDeletionCodes(String word, Set<String> codes) {
+    char[] chars = word.toCharArray();
+    char[] deleted = new char[chars.length - 1];
+    System.arraycopy(chars, 0, deleted, 0, deleted.length);
+
+    char a = chars[chars.length - 1];
+    int i = deleted.length;
+    while (true) {
+      codes.add(getCode(new String(chars)));
+      if (i == 0) {
+        break;
+      }
+      char b = a;
+      a = deleted[i - 1];
+      deleted[i - 1] = b;
+      --i;
+    }
+  }
+
+  private static void swap(char[] chars, int i, int j) {
+    char temp = chars[i];
+    chars[i] = chars[j];
+    chars[j] = temp;
   }
 
   /**
@@ -247,11 +272,11 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
 
   }
 
-  private List<Word> getWordsFromCode(String word, Map<String, String> codes,
+  private List<Word> getWordsFromCode(String word, Set<String> codes,
                                       EditDistance editDistance, int threshold) {
     List<Word> result = new ArrayList<>();
 
-    for (String code : codes.keySet()) {
+    for (String code : codes) {
       List<String> simwordlist = getWords(code);
       for (String similar : simwordlist) {
         int distance = editDistance.getDistance(word, similar);
