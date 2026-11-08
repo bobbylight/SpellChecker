@@ -203,14 +203,8 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
   }
 
   /**
-   * Meant to add the phonetic codes of every variant of {@code word} with one
-   * character deleted.
-   * <p>
-   * TODO: This currently generates no deletions. It computes the code of
-   * {@code chars} (the whole word) on every iteration instead of
-   * {@code deleted}, and that code is then removed from the near-miss codes
-   * by {@link #getSuggestions(String, Configuration)}. This bug comes from
-   * upstream Jazzy; fixing it will change suggestion results.
+   * Adds the phonetic codes of every variant of {@code word} with one
+   * character deleted, working from the end of the word to the start.
    */
   private void addDeletionCodes(String word, Set<String> codes) {
     char[] chars = word.toCharArray();
@@ -220,7 +214,7 @@ public abstract class SpellDictionaryASpell implements SpellDictionary {
     char a = chars[chars.length - 1];
     int i = deleted.length;
     while (true) {
-      codes.add(getCode(new String(chars)));
+      codes.add(getCode(new String(deleted)));
       if (i == 0) {
         break;
       }
