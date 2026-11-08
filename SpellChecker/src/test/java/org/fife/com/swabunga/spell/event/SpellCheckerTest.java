@@ -570,6 +570,32 @@ class SpellCheckerTest {
     }
 
     @Test
+    void testGetSuggestions_cached_callerChangesDoNotAffectCache() {
+        checker.setCacheSize(10);
+        addWordsToDictionary(new String[] { "errors" });
+
+        checker.getSuggestions("erors").clear();
+
+        List<Word> suggestions = checker.getSuggestions("erors");
+        assertEquals(1, suggestions.size());
+        assertEquals("errors", suggestions.getFirst().getWord());
+    }
+
+    @Test
+    void testGetSuggestions_cached_userDictionarySuggestionsAreNotCached() throws IOException {
+        checker.setCacheSize(10);
+        addWordsToDictionary(new String[] { "errors" });
+        checker.setUserDictionary(new SpellDictionaryHashMap(new StringReader("erros")));
+        assertEquals(2, checker.getSuggestions("erors").size());
+
+        // A new user dictionary's suggestions replace the old one's
+        checker.setUserDictionary(new SpellDictionaryHashMap());
+        List<Word> suggestions = checker.getSuggestions("erors");
+        assertEquals(1, suggestions.size());
+        assertEquals("errors", suggestions.getFirst().getWord());
+    }
+
+    @Test
     void testGetSuggestions_usesConfiguredThreshold() {
         addWordsToDictionary(new String[] { "change", "chance" });
         assertEquals(2, checker.getSuggestions("change").size());
