@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Unit tests for {@link SpellDictionaryHashMap}.
@@ -131,6 +132,20 @@ class SpellDictionaryHashMapTest {
         List<String> lines = Files.readAllLines(wordFile.toPath());
         Assertions.assertEquals(1, lines.size());
         Assertions.assertEquals("added", lines.getFirst());
+    }
+
+    @Test
+    void testIsCorrect_capitalizedWord_independentOfDefaultLocale() throws IOException {
+        Locale orig = Locale.getDefault();
+        try {
+            // Turkish lowercases 'I' to a dotless i
+            Locale.setDefault(Locale.of("tr", "TR"));
+            SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("item\nidle\n"));
+            Assertions.assertTrue(dic.isCorrect("Item"));
+            Assertions.assertTrue(dic.isCorrect("Idle"));
+        } finally {
+            Locale.setDefault(orig);
+        }
     }
 
     @Test

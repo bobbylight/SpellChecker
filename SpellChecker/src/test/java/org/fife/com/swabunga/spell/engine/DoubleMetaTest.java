@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
+
 /**
  * Unit tests for {@link DoubleMeta}.
  */
@@ -40,6 +42,19 @@ class DoubleMetaTest {
     @Test
     void testTransform_caseInsensitive() {
         Assertions.assertEquals("TST", doubleMeta.transform("Test"));
+    }
+
+    @Test
+    void testTransform_independentOfDefaultLocale() {
+        String expected = doubleMeta.transform("item");
+        Locale orig = Locale.getDefault();
+        try {
+            // Turkish uppercases 'i' to a dotted capital I, which isn't a vowel to DoubleMeta
+            Locale.setDefault(Locale.of("tr", "TR"));
+            Assertions.assertEquals(expected, doubleMeta.transform("item"));
+        } finally {
+            Locale.setDefault(orig);
+        }
     }
 
     @Test

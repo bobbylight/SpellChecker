@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Locale;
 
 /**
  * Unit tests for {@link GenericTransformator}.
@@ -46,6 +47,20 @@ class GenericTransformatorTest {
         GenericTransformator transformator = new GenericTransformator(file);
         String input = "wonderful";
         Assertions.assertEquals("WONDERFUL", transformator.transform(input));
+    }
+
+    @Test
+    void testTransform_noRules_independentOfDefaultLocale() throws IOException {
+        File file = File.createTempFile(TEMP_FILE_PREFIX, ".txt");
+        file.deleteOnExit();
+        GenericTransformator transformator = new GenericTransformator(file);
+        Locale orig = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.of("tr", "TR"));
+            Assertions.assertEquals("WIFI", transformator.transform("wifi"));
+        } finally {
+            Locale.setDefault(orig);
+        }
     }
 
     @Test

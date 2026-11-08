@@ -23,6 +23,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -201,7 +202,7 @@ public char[] getReplaceList() {
 public String transform(String word) {
 
     // robert: Use StringBuilder
-    StringBuilder str = new StringBuilder(word.toUpperCase());
+    StringBuilder str = new StringBuilder(word.toUpperCase(Locale.ROOT));
     int strLength = str.length();
     int startPos = 0;
     int add = 1;

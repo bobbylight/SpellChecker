@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -513,7 +514,7 @@ public class SpellChecker {
 
           // Ignore mixed-case word parts, if necessary
           if (!config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) || !isUpperCaseWord(part)) {
-            String partLower = part.toLowerCase();
+            String partLower = part.toLowerCase(Locale.ROOT);
             if (!isCorrect(partLower) && !isIgnored(partLower)) {
               reportError(part, wordStart + offs, state);
               if (state.terminated) {
