@@ -365,28 +365,29 @@ public class SpellChecker {
       cache.clear();
     }
 
-    List<Word> suggestions = null;
+    // The cache only holds suggestions from the main dictionaries. It is
+    // never handed out, so neither callers nor user dictionary suggestions
+    // can change it.
+    List<Word> dictionarySuggestions = null;
 
     if (cache != null) {
-        suggestions = cache.get(word);
+        dictionarySuggestions = cache.get(word);
     }
 
-    if (suggestions == null) {
-      suggestions = new ArrayList<>();
+    if (dictionarySuggestions == null) {
+      dictionarySuggestions = new ArrayList<>();
 
       for (SpellDictionary dictionary : dictionaries) {
         if (dictionary != userDictionary)
-          addAllNoDuplicates(suggestions, dictionary.getSuggestions(word, config));
+          addAllNoDuplicates(dictionarySuggestions, dictionary.getSuggestions(word, config));
       }
 
       if (cache != null && cache.size() < cacheSize)
-        cache.put(word, suggestions);
+        cache.put(word, dictionarySuggestions);
     }
 
+    List<Word> suggestions = new ArrayList<>(dictionarySuggestions);
     addAllNoDuplicates(suggestions, userDictionary.getSuggestions(word, config));
-    if (suggestions instanceof ArrayList) {
-      ((ArrayList<Word>)suggestions).trimToSize();
-    }
 
     //long time = System.currentTimeMillis() - start;
     //float secs = time/1000f;
