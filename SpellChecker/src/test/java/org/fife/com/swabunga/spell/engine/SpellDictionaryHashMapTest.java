@@ -216,6 +216,21 @@ class SpellDictionaryHashMapTest {
     }
 
     @Test
+    void testGetSuggestions_extraLetterChangesPhoneticCode() throws IOException {
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("school\nsatchel\n"));
+
+        // The extra letter gives these a different phonetic code from the
+        // intended word, so only deleting a letter finds it
+        List<Word> suggestions = dic.getSuggestions("schotol", Configuration.getConfiguration());
+        Assertions.assertEquals(1, suggestions.size());
+        Assertions.assertEquals("school", suggestions.getFirst().getWord());
+
+        suggestions = dic.getSuggestions("satrchel", Configuration.getConfiguration());
+        Assertions.assertEquals(1, suggestions.size());
+        Assertions.assertEquals("satchel", suggestions.getFirst().getWord());
+    }
+
+    @Test
     void testGetWords_existingWord() throws IOException {
         SpellDictionaryHashMap dic = createDictionary_zeroArg();
         List<String> words = dic.getWords(dic.getCode("test"));
