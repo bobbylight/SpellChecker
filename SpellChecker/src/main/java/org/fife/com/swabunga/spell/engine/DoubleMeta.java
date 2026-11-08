@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.spell.engine;
 
+import java.util.Locale;
+
 
 /**
  * A phonetic encoding algorithm that takes an English word and computes a phonetic version of it. This
@@ -200,7 +202,7 @@ public final String transform(String word) {
       return "";
     }
 	StringBuilder primary = new StringBuilder(word.length() + 5);
-    String in = word.toUpperCase() + "     ";
+    String in = word.toUpperCase(Locale.ROOT) + "     ";
     int current = 0;
     int length = in.length();
     int last = length - 1;

@@ -316,6 +316,6 @@ public boolean isCorrect(String word) {
       return true;
     //JMH should we always try the lowercase version. If I don't then
     // capitalized words are always returned as incorrect.
-    return possible.contains(word.toLowerCase());
+    return possible.contains(word.toLowerCase(Locale.ROOT));
   }
 }

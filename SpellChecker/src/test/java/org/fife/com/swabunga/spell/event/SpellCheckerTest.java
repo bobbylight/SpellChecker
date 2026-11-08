@@ -16,6 +16,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -159,6 +160,22 @@ class SpellCheckerTest {
         StringWordTokenizer tokenizer = new StringWordTokenizer("thisIs");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
+    }
+
+    @Test
+    void testCheckSpelling_config_analyzeCamelCase_true_independentOfDefaultLocale() {
+        addWordsToDictionary(new String[] { "get", "item", "is", "idle" });
+        checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, true);
+
+        Locale orig = Locale.getDefault();
+        try {
+            // Turkish lowercases 'I' to a dotless i
+            Locale.setDefault(Locale.of("tr", "TR"));
+            SpellCheckResult result = checker.checkSpelling(new StringWordTokenizer("getItem isIdle"));
+            assertResult(result, 0, false);
+        } finally {
+            Locale.setDefault(orig);
+        }
     }
 
     @Test
