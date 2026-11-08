@@ -31,6 +31,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -85,7 +86,8 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   }
 
   /**
-   * Dictionary convenience Constructor.
+   * Dictionary convenience Constructor. The word list is read, and words
+   * added via {@link #addWord(String)} are appended to it, as UTF-8.
    *
    * @param wordList The file containing the words list for the dictionary
    * @throws IOException If an IO error occurs.
@@ -112,7 +114,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   /**
    * Dictionary constructor that uses an aspell phonetic file to
    * build the transformation table. Encoding is used for phonetic file only;
-   * default encoding is used for wordList
+   * the word list is read as UTF-8.
    *
    * @param wordList The file containing the words list for the dictionary
    * @param phonetic The file to use for phonetic transformation of the wordlist.
@@ -169,7 +171,7 @@ public boolean addWord(String word) {
     if (dictFile!=null) {
 	    try {
 	    	// Append new word to user's word file
-	    	try (BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, true))) {
+	    	try (BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, StandardCharsets.UTF_8, true))) {
 	    		w.write(word);
 	    		w.write("\n");
 	    	}
@@ -186,7 +188,7 @@ public boolean addWord(String word) {
    * Constructs the dictionary from a word list file, closing it when done.
    */
   private void createDictionary(File wordList) throws IOException {
-    try (BufferedReader in = new BufferedReader(new FileReader(wordList))) {
+    try (BufferedReader in = new BufferedReader(new FileReader(wordList, StandardCharsets.UTF_8))) {
       createDictionary(in);
     }
   }

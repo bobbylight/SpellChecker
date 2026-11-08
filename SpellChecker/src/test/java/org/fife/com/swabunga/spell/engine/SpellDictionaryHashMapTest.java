@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Locale;
@@ -146,6 +147,28 @@ class SpellDictionaryHashMapTest {
         } finally {
             Locale.setDefault(orig);
         }
+    }
+
+    @Test
+    void testConstructor_file_readsUtf8() throws IOException {
+        File wordFile = File.createTempFile("scUnitTest", ".dic");
+        wordFile.deleteOnExit();
+        Files.write(wordFile.toPath(), "caf\u00e9\n".getBytes(StandardCharsets.UTF_8));
+
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile);
+        Assertions.assertTrue(dic.isCorrect("caf\u00e9"));
+    }
+
+    @Test
+    void testAddWord_file_writesUtf8() throws IOException {
+        File wordFile = File.createTempFile("scUnitTest", ".dic");
+        wordFile.deleteOnExit();
+
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile);
+        Assertions.assertTrue(dic.addWord("na\u00efve"));
+
+        byte[] expected = "na\u00efve\n".getBytes(StandardCharsets.UTF_8);
+        Assertions.assertArrayEquals(expected, Files.readAllBytes(wordFile.toPath()));
     }
 
     @Test

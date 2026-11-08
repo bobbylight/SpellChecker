@@ -22,6 +22,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,6 +137,28 @@ class SpellingParserTest {
         IOException e = assertThrows(IOException.class,
                 () -> SpellingParser.createEnglishSpellingParser(zipFile, true, false));
         assertTrue(e.getMessage().contains("color.dic"), e.getMessage());
+    }
+
+    @Test
+    void testCreateEnglishSpellingParser_readsEntriesAsUtf8() throws IOException, BadLocationException {
+        File zipFile = File.createTempFile("scUnitTests_spellingParser_utf8", ".zip");
+        zipFile.deleteOnExit();
+        String[] entries = { "eng_com.dic", "color.dic", "labeled.dic", "center.dic", "ize.dic", "yze.dic" };
+        try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile))) {
+            for (String entry : entries) {
+                zos.putNextEntry(new ZipEntry(entry));
+                if ("eng_com.dic".equals(entry)) {
+                    zos.write("caf\u00e9\n".getBytes(StandardCharsets.UTF_8));
+                }
+                zos.closeEntry();
+            }
+        }
+
+        SpellingParser utf8Parser = SpellingParser.createEnglishSpellingParser(zipFile, true, false);
+        RSyntaxDocument doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
+        doc.insertString(0, "caf\u00e9", null);
+        ParseResult result = utf8Parser.parse(doc, SyntaxConstants.SYNTAX_STYLE_NONE);
+        assertTrue(result.getNotices().isEmpty(), () -> result.getNotices().toString());
     }
 
     @Test
