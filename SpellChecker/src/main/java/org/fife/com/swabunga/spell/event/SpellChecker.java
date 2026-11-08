@@ -473,83 +473,122 @@ public class SpellChecker {
    *         found and whether a listener cancelled it.
    */
   public final SpellCheckResult checkSpelling(WordTokenizer tokenizer) {
-    int errors = 0;
-    boolean terminated = false;
-    //Keep track of the previous word
-    //  String previousWord = null;
-    while (tokenizer.hasMoreWords() && !terminated) {
+    CheckState state = new CheckState();
+    while (tokenizer.hasMoreWords() && !state.terminated) {
       String word = tokenizer.nextWord();
-      //Check the spelling of the word
-      if (!isCorrect(word)) {
+      checkWord(word, tokenizer.getCurrentWordPosition(), tokenizer.isNewSentence(), state);
+    }
+    return new SpellCheckResult(state.errors, state.terminated);
+  }
 
-        boolean isNewSentence = tokenizer.isNewSentence();
-        boolean isMixedCaseWord = isMixedCaseWord(word, isNewSentence);
+  /**
+   * Checks the spelling of a single word, firing an event for each error found.
+   *
+   * @param word The word to check.
+   * @param wordStart The offset of the word in the text being checked.
+   * @param isNewSentence Whether the word starts a sentence.
+   * @param state Tracks the error count and whether a listener cancelled
+   *        the spell check.
+   */
+  private void checkWord(String word, int wordStart, boolean isNewSentence, CheckState state) {
+    //Check the spelling of the word
+    if (!isCorrect(word)) {
 
-        // robert: If this is a mixed-case word, check spelling of each part
-        if (config.getBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS) && isMixedCaseWord) {
+      // Hyphenated compounds such as "well-known" are rarely in the
+      // dictionary, so check each part as a word of its own
+      if (word.indexOf('-') > -1) {
+        checkHyphenatedWordParts(word, wordStart, isNewSentence, state);
+        return;
+      }
 
-          List<String> parts = splitMixedCaseWord(word);
+      boolean isMixedCaseWord = isMixedCaseWord(word, isNewSentence);
 
-          int offs = 0;
-          for (String part : parts) {
+      // robert: If this is a mixed-case word, check spelling of each part
+      if (config.getBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS) && isMixedCaseWord) {
 
-            // Ignore mixed-case word parts, if necessary
-            if (!config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) || !isUpperCaseWord(part)) {
-              String partLower = part.toLowerCase();
-              if (!isCorrect(partLower) && !isIgnored(partLower)) {
-                errors++;
-                int wordOffs = tokenizer.getCurrentWordPosition() + offs;
-                SpellCheckEvent event = new BasicSpellCheckEvent(part, wordOffs);
-                terminated = fireAndHandleEvent(event);
-                if (terminated) {
-                  break;
-                }
+        List<String> parts = splitMixedCaseWord(word);
+
+        int offs = 0;
+        for (String part : parts) {
+
+          // Ignore mixed-case word parts, if necessary
+          if (!config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) || !isUpperCaseWord(part)) {
+            String partLower = part.toLowerCase();
+            if (!isCorrect(partLower) && !isIgnored(partLower)) {
+              reportError(part, wordStart + offs, state);
+              if (state.terminated) {
+                return;
               }
             }
+          }
 
-            offs += part.length();
-          }
-        }
-        else if ((config.getBoolean(Configuration.SPELL_IGNOREMIXEDCASE) && isMixedCaseWord) ||
-            (config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) && isUpperCaseWord(word)) ||
-            (config.getBoolean(Configuration.SPELL_IGNORESINGLELETTERS) && word.length() == 1) ||
-            (config.getBoolean(Configuration.SPELL_IGNOREDIGITWORDS) && isDigitWord(word)) ||
-            (config.getBoolean(Configuration.SPELL_IGNOREINTERNETADDRESSES) && isINETWord(word))) {
-          //Null event. Since we are ignoring this word due
-          //to one of the above cases.
-        }
-        else {
-          //We can't ignore this misspelled word
-          //For this invalid word are we ignoring the misspelling?
-          if (!isIgnored(word)) {
-            errors++;
-            SpellCheckEvent event = new BasicSpellCheckEvent(word, tokenizer);
-            terminated = fireAndHandleEvent(event);
-          }
+          offs += part.length();
         }
       }
+      else if ((config.getBoolean(Configuration.SPELL_IGNOREMIXEDCASE) && isMixedCaseWord) ||
+          (config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) && isUpperCaseWord(word)) ||
+          (config.getBoolean(Configuration.SPELL_IGNORESINGLELETTERS) && word.length() == 1) ||
+          (config.getBoolean(Configuration.SPELL_IGNOREDIGITWORDS) && isDigitWord(word)) ||
+          (config.getBoolean(Configuration.SPELL_IGNOREINTERNETADDRESSES) && isINETWord(word))) {
+        //Null event. Since we are ignoring this word due
+        //to one of the above cases.
+      }
       else {
-        //This is a correctly spelled word. However, perform some extra checks
-        /*
-         *  JMH TBD      //Check for multiple words
-         *  if (!ignoreMultipleWords &&) {
-         *  }
-         */
-        //Check for capitalization
-        if (isSupposedToBeCapitalized(word, tokenizer)) {
-          errors++;
-          SpellCheckEvent event = new BasicSpellCheckEvent(word, tokenizer);
-          terminated = fireAndHandleEvent(event);
+        //We can't ignore this misspelled word
+        //For this invalid word are we ignoring the misspelling?
+        if (!isIgnored(word)) {
+          reportError(word, wordStart, state);
         }
       }
     }
-
-    return new SpellCheckResult(errors, terminated);
+    else {
+      //This is a correctly spelled word. However, perform some extra checks
+      //Check for capitalization
+      if (isSupposedToBeCapitalized(word, isNewSentence)) {
+        reportError(word, wordStart, state);
+      }
+    }
   }
 
-  private boolean isSupposedToBeCapitalized(String word, WordTokenizer wordTokenizer) {
+  /**
+   * Checks each hyphen-separated part of a word as a word of its own.
+   * Only the first part can start a sentence.
+   */
+  private void checkHyphenatedWordParts(String word, int wordStart, boolean isNewSentence,
+                                        CheckState state) {
+    int partStart = 0;
+    while (partStart <= word.length()) {
+      int partEnd = word.indexOf('-', partStart);
+      if (partEnd == -1) {
+        partEnd = word.length();
+      }
+      if (partEnd > partStart) {
+        String part = word.substring(partStart, partEnd);
+        checkWord(part, wordStart + partStart, isNewSentence && partStart == 0, state);
+        if (state.terminated) {
+          return;
+        }
+      }
+      partStart = partEnd + 1;
+    }
+  }
+
+  private void reportError(String word, int wordStart, CheckState state) {
+    state.errors++;
+    state.terminated = fireAndHandleEvent(new BasicSpellCheckEvent(word, wordStart));
+  }
+
+  private boolean isSupposedToBeCapitalized(String word, boolean isNewSentence) {
     boolean configCapitalize = !config.getBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION);
-    return configCapitalize && wordTokenizer.isNewSentence() && Character.isLowerCase(word.charAt(0));
+    return configCapitalize && isNewSentence && Character.isLowerCase(word.charAt(0));
+  }
+
+  /**
+   * The running totals of a single {@link #checkSpelling(WordTokenizer)} call.
+   */
+  private static final class CheckState {
+    private int errors;
+    private boolean terminated;
   }
 
 }

@@ -324,6 +324,21 @@ class SpellingParserTest {
         assertEquals(0, events.size());
     }
 
+    @Test
+    void testParse_plainText_hyphenatedWords() throws BadLocationException {
+        RSyntaxDocument doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
+        doc.insertString(0, "This is a bat-cave test-caev.", null);
+        ParseResult result = parser.parse(doc, SyntaxConstants.SYNTAX_STYLE_NONE);
+
+        // Only the misspelled part of a hyphenated word is flagged
+        List<ParserNotice> notices = result.getNotices();
+        assertEquals(1, notices.size());
+        ParserNotice notice = notices.getFirst();
+        assertEquals(24, notice.getOffset());
+        assertEquals(4, notice.getLength());
+        assertEquals("Incorrectly spelled word: caev", notice.getMessage());
+    }
+
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = SyntaxConstants.SYNTAX_STYLE_NONE)
