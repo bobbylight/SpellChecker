@@ -244,19 +244,19 @@ public class SpellChecker {
 
   /**
    * Verifies if the word that is being spell checked contains lower and
-   * upper-cased characters. Note that a phrase beginning with an upper-cased
-   * character is not considered a mixed case word.
+   * upper-cased characters. A word whose only upper-cased character is the
+   * first one, such as "Hello", is not considered a mixed case word, whether
+   * or not it starts a sentence.
    *
    * @param word       The word to analyze for mixed cases characters
-   * @param startsSentence True if this word is at the start of a sentence
    * @return true if this word contains mixed case characters
    */
-  private static boolean isMixedCaseWord(CharSequence word, boolean startsSentence) {
+  private static boolean isMixedCaseWord(CharSequence word) {
     int strLen = word.length();
     boolean isUpper = Character.isUpperCase(word.charAt(0));
-    //Ignore the first character if this word starts the sentence and the first
-    //character was upper-cased, since this is normal behaviour
-    if ((startsSentence) && isUpper && (strLen > 1))
+    //Ignore the first character if it was upper-cased, since a capitalized
+    //word (sentence start, proper noun, title) is normal
+    if (isUpper && (strLen > 1))
       isUpper = Character.isUpperCase(word.charAt(1));
     if (isUpper) {
       for (int i = word.length() - 1; i > 0; i--) {
@@ -503,7 +503,7 @@ public class SpellChecker {
         return;
       }
 
-      boolean isMixedCaseWord = isMixedCaseWord(word, isNewSentence);
+      boolean isMixedCaseWord = isMixedCaseWord(word);
 
       // robert: If this is a mixed-case word, check spelling of each part
       if (config.getBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS) && isMixedCaseWord) {

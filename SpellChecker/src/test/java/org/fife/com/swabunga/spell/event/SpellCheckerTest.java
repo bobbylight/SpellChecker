@@ -273,6 +273,31 @@ class SpellCheckerTest {
     }
 
     @Test
+    void testCheckSpelling_config_ignoreMixedCase_true_capitalizedWordIsNotMixedCase() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, false);
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREMIXEDCASE, true);
+
+        // A capitalized misspelling mid-sentence is still reported
+        StringWordTokenizer tokenizer = new StringWordTokenizer("this is a Sentenc");
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 1, false);
+    }
+
+    @Test
+    void testCheckSpelling_ignoredCapitalizedWord_midSentence() {
+        String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
+        addWordsToDictionary(words);
+        // The tooltip's "Ignore" link passes the word as it appears
+        checker.ignoreAll("Sentenc");
+
+        StringWordTokenizer tokenizer = new StringWordTokenizer("this is a Sentenc");
+        SpellCheckResult result = checker.checkSpelling(tokenizer);
+        assertResult(result, 0, false);
+    }
+
+    @Test
     void testCheckSpelling_config_ignoreSentenceCapitalization_false() {
         String[] words = { "test" };
         addWordsToDictionary(words);
