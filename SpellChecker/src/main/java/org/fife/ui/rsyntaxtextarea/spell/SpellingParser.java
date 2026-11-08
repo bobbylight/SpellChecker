@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -224,7 +225,7 @@ public class SpellingParser extends AbstractParser
             throw new IOException("Dictionary zip file " + zf.getName() +
                     " has no entry named " + name);
         }
-        return new BufferedReader(new InputStreamReader(zf.getInputStream(entry)));
+        return new BufferedReader(new InputStreamReader(zf.getInputStream(entry), StandardCharsets.UTF_8));
     }
 
 
@@ -535,7 +536,9 @@ public class SpellingParser extends AbstractParser
      * If this is non-<code>null</code>, then on the focusable tool tip for
      * spelling errors, there will be an option available: "Add word to
      * dictionary."  If this is clicked then the "error" word is added to the
-     * user's dictionary and the document is reparsed.
+     * user's dictionary and the document is reparsed.<p>
+     *
+     * The file is read and written as UTF-8.
      *
      * @param dictionaryFile The dictionary file.  If this is <code>null</code>
      *        then the user will not be able to add words.
