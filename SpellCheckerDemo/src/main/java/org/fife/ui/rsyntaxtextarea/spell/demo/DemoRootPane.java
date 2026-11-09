@@ -12,11 +12,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -133,12 +133,12 @@ public class DemoRootPane extends JRootPane implements HyperlinkListener,
 	private RSyntaxTextArea createTextArea() {
 		RSyntaxTextArea textArea = new RSyntaxTextArea(25, 70);
 		textArea.setSyntaxEditingStyle(SYNTAX_STYLE_JAVA);
-		ClassLoader cl = getClass().getClassLoader();
-		InputStream in = cl.getResourceAsStream(INPUT_FILE);
-		try (BufferedReader r = in != null ?
-				new BufferedReader(new InputStreamReader(in)) :
-				new BufferedReader(new FileReader(INPUT_FILE))) {
-			textArea.read(r, null);
+		// Sample text, stored next to this class in src/main/resources
+		try (InputStream in = getClass().getResourceAsStream(INPUT_FILE)) {
+			if (in == null) {
+				throw new IOException("Resource not found: " + INPUT_FILE);
+			}
+			textArea.read(new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)), null);
 		} catch (IOException ioe) {
 			textArea.setText("// Type Java source.  Comments are spell checked.");
 		}

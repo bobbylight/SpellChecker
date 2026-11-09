@@ -14,13 +14,11 @@ public class Input {
 	 */
 	private String value;
 
-
 	/**
 	 * This si the constructor.
 	 */
 	public Input() {
 	}
-
 
 	/**
 	 * Get the valu.
@@ -32,7 +30,6 @@ public class Input {
 		return value;
 	}
 
-
 	/**
 	 * Sets the value.
 	 *
@@ -42,6 +39,5 @@ public class Input {
 	public void setValue(String value) {
 		this.value = value;
 	}
-
 
 }
