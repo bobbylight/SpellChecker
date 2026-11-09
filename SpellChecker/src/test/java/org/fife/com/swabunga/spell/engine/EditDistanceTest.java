@@ -60,6 +60,21 @@ class EditDistanceTest {
     }
 
     @Test
+    void testGetDistance_insertAndRemoveCostsAreDistinct() {
+        // "word" is the original; the distance is the cost of turning it into "similar"
+        config.setInteger(Configuration.COST_REMOVE_CHAR, 10);
+        config.setInteger(Configuration.COST_INSERT_CHAR, 100);
+        EditDistance distance = new EditDistance(config);
+
+        Assertions.assertEquals(10, distance.getDistance("tests", "test")); // remove 's'
+        Assertions.assertEquals(100, distance.getDistance("test", "tests")); // insert 's'
+        Assertions.assertEquals(10, distance.getDistance("xtest", "test")); // remove at the start
+        Assertions.assertEquals(100, distance.getDistance("test", "xtest")); // insert at the start
+        Assertions.assertEquals(20, distance.getDistance("ab", "")); // remove everything
+        Assertions.assertEquals(200, distance.getDistance("", "ab")); // insert everything
+    }
+
+    @Test
     void testGetDistance_usesConfiguredCosts() {
         config.setInteger(Configuration.COST_SUBST_CHARS, 7);
         Assertions.assertEquals(7, new EditDistance(config).getDistance("test", "tent"));
