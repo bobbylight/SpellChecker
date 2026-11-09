@@ -180,6 +180,30 @@ class SpellDictionaryHashMapTest {
     }
 
     @Test
+    void testIsCorrect_wordsFromEverySource() throws IOException {
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\n"));
+        dic.addDictionary(new StringReader("banana\n"));
+        dic.addWord("cherry");
+
+        Assertions.assertTrue(dic.isCorrect("apple"));
+        Assertions.assertTrue(dic.isCorrect("banana"));
+        Assertions.assertTrue(dic.isCorrect("cherry"));
+        Assertions.assertFalse(dic.isCorrect("durian"));
+    }
+
+    @Test
+    void testIsCorrect_capitalizedAndUpperCaseForms() throws IOException {
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\nNASA\n"));
+
+        Assertions.assertTrue(dic.isCorrect("Apple"));
+        Assertions.assertTrue(dic.isCorrect("APPLE"));
+        Assertions.assertTrue(dic.isCorrect("NASA"));
+        // Only the word itself and its lower-case form are looked up
+        Assertions.assertFalse(dic.isCorrect("nasa"));
+        Assertions.assertFalse(dic.isCorrect("Nasa"));
+    }
+
+    @Test
     void testPutWordUnique_nullMainDictionary() throws IOException{
         SpellDictionaryHashMap dic = new SpellDictionaryHashMap();
         Assertions.assertFalse(dic.isCorrect("test"));
