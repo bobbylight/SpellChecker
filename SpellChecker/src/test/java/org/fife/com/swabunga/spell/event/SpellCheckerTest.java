@@ -179,6 +179,38 @@ class SpellCheckerTest {
     }
 
     @Test
+    void testCheckSpelling_config_analyzeCamelCase_true_ignoredPartAsReported() {
+        addWordsToDictionary(new String[] { "get" });
+        // The tooltip's "Ignore" link passes the part as reported, "Fooo"
+        checker.ignoreAll("Fooo");
+
+        SpellCheckResult result = checker.checkSpelling(new StringWordTokenizer("getFooo"));
+        assertResult(result, 0, false);
+    }
+
+    @Test
+    void testCheckSpelling_config_analyzeCamelCase_true_ignoredPartLowerCase() {
+        addWordsToDictionary(new String[] { "get" });
+        checker.ignoreAll("fooo");
+
+        SpellCheckResult result = checker.checkSpelling(new StringWordTokenizer("getFooo"));
+        assertResult(result, 0, false);
+    }
+
+    @Test
+    void testCheckSpelling_config_analyzeCamelCase_true_partAddedToUserDictionary() throws IOException {
+        addWordsToDictionary(new String[] { "get" });
+        File userDictFile = File.createTempFile(TEMP_FILE_PREFIX, ".txt");
+        userDictFile.deleteOnExit();
+        checker.setUserDictionary(new SpellDictionaryHashMap(userDictFile));
+        // The tooltip's "Add" link passes the part as reported, "Fooo"
+        assertTrue(checker.addToDictionary("Fooo"));
+
+        SpellCheckResult result = checker.checkSpelling(new StringWordTokenizer("getFooo"));
+        assertResult(result, 0, false);
+    }
+
+    @Test
     void testCheckSpelling_config_analyzeCamelCase_true_ignoreUpperCase_false_andIncorrect() {
         String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
         addWordsToDictionary(words);

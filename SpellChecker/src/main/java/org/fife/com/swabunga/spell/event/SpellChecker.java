@@ -515,8 +515,7 @@ public class SpellChecker {
 
           // Ignore mixed-case word parts, if necessary
           if (!config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) || !isUpperCaseWord(part)) {
-            String partLower = part.toLowerCase(Locale.ROOT);
-            if (!isCorrect(partLower) && !isIgnored(partLower)) {
+            if (!isPartCorrectOrIgnored(part)) {
               reportError(part, wordStart + offs, state);
               if (state.terminated) {
                 return;
@@ -550,6 +549,20 @@ public class SpellChecker {
         reportError(word, wordStart, state);
       }
     }
+  }
+
+  /**
+   * Returns whether a part of a camelCase word is spelled correctly or
+   * ignored. The part is checked lowercased, so the "Item" in "getItem"
+   * matches the dictionary word "item", and also as written, since that's
+   * what the tool tip's "Ignore" and "Add" options store.
+   */
+  private boolean isPartCorrectOrIgnored(String part) {
+    String partLower = part.toLowerCase(Locale.ROOT);
+    if (isCorrect(partLower) || isIgnored(partLower)) {
+      return true;
+    }
+    return !part.equals(partLower) && (isCorrect(part) || isIgnored(part));
   }
 
   /**
