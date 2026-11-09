@@ -92,10 +92,10 @@ public final class EditDistance {
     matrix[0][0] = 0;
 
     for (int i = 1; i != aSize; ++i)
-      matrix[i][0] = matrix[i - 1][0] + insertCost; //initialize the first column
+      matrix[i][0] = matrix[i - 1][0] + deleteCost; //initialize the first column: delete all of word's chars
 
     for (int j = 1; j != bSize; ++j)
-      matrix[0][j] = matrix[0][j - 1] + deleteCost; //initialize the first row
+      matrix[0][j] = matrix[0][j - 1] + insertCost; //initialize the first row: insert all of similar's chars
 
     for (int i = 1; i != aSize; ++i) {
       sourceChar = word.charAt(i-1);
@@ -108,8 +108,10 @@ public final class EditDistance {
         }
 
         int costOfSubst = substituteCost + matrix[i - 1][j - 1];
-        int costOfDelete = deleteCost + matrix[i][j - 1];
-        int costOfInsertion = insertCost + matrix[i - 1][j];
+        // matrix[i][j] is the cost of turning word's first i chars into
+        // similar's first j chars
+        int costOfDelete = deleteCost + matrix[i - 1][j]; // delete word's i-th char
+        int costOfInsertion = insertCost + matrix[i][j - 1]; // insert similar's j-th char
         int cost = Math.min(costOfSubst, Math.min(costOfDelete, costOfInsertion));
 
         //if needed, consider the cost of doing a swap
