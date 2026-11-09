@@ -61,6 +61,12 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    */
   private Map<String, List<String>> mainDictionary = new HashMap<>(INITIAL_CAPACITY);
 
+  /**
+   * Every word in {@link #mainDictionary}, for exact lookups in
+   * {@link #isCorrect(String)} without computing a phonetic code.
+   */
+  private final Set<String> words = new HashSet<>(INITIAL_CAPACITY);
+
   /** Holds the dictionary file for appending. */
   private File dictFile;
 
@@ -245,6 +251,7 @@ public boolean addWord(String word) {
     String code = getCode(word);
     List<String> list = mainDictionary.computeIfAbsent(code, k -> new ArrayList<>());
     list.add(word);
+    words.add(word);
   }
 
   /**
@@ -259,7 +266,19 @@ public boolean addWord(String word) {
     List<String> list = mainDictionary.computeIfAbsent(getCode(word), k -> new ArrayList<>());
     if (list.stream().noneMatch(word::equalsIgnoreCase)) {
       list.add(word);
+      words.add(word);
     }
+  }
+
+  /**
+   * Returns true if the word, or its lower-case form, is in this dictionary.
+   * This gives the same answer as the superclass, which looks the word up
+   * by its phonetic code, but without computing that code. Every word is
+   * stored under its own code, and the phonetic transformations ignore case.
+   */
+  @Override
+  public boolean isCorrect(String word) {
+    return words.contains(word) || words.contains(word.toLowerCase(Locale.ROOT));
   }
 
   /**
