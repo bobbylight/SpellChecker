@@ -475,7 +475,7 @@ public class SpellChecker {
    *         found and whether a listener cancelled it.
    */
   public final SpellCheckResult checkSpelling(WordTokenizer tokenizer) {
-    CheckState state = new CheckState();
+    CheckState state = new CheckState(config);
     while (tokenizer.hasMoreWords() && !state.terminated) {
       String word = tokenizer.nextWord();
       checkWord(word, tokenizer.getCurrentWordPosition(), tokenizer.isNewSentence(), state);
@@ -506,7 +506,7 @@ public class SpellChecker {
       boolean isMixedCaseWord = isMixedCaseWord(word);
 
       // robert: If this is a mixed-case word, check spelling of each part
-      if (config.getBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS) && isMixedCaseWord) {
+      if (isMixedCaseWord && state.get(CheckState.ANALYZE_CAMEL_CASE)) {
 
         List<String> parts = splitMixedCaseWord(word);
 
@@ -514,7 +514,7 @@ public class SpellChecker {
         for (String part : parts) {
 
           // Ignore mixed-case word parts, if necessary
-          if (!config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) || !isUpperCaseWord(part)) {
+          if (!state.get(CheckState.IGNORE_UPPER_CASE) || !isUpperCaseWord(part)) {
             if (!isPartCorrectOrIgnored(part)) {
               reportError(part, wordStart + offs, state);
               if (state.terminated) {
@@ -526,11 +526,11 @@ public class SpellChecker {
           offs += part.length();
         }
       }
-      else if ((config.getBoolean(Configuration.SPELL_IGNOREMIXEDCASE) && isMixedCaseWord) ||
-          (config.getBoolean(Configuration.SPELL_IGNOREUPPERCASE) && isUpperCaseWord(word)) ||
-          (config.getBoolean(Configuration.SPELL_IGNORESINGLELETTERS) && word.length() == 1) ||
-          (config.getBoolean(Configuration.SPELL_IGNOREDIGITWORDS) && isDigitWord(word)) ||
-          (config.getBoolean(Configuration.SPELL_IGNOREINTERNETADDRESSES) && isINETWord(word))) {
+      else if ((isMixedCaseWord && state.get(CheckState.IGNORE_MIXED_CASE)) ||
+          (state.get(CheckState.IGNORE_UPPER_CASE) && isUpperCaseWord(word)) ||
+          (word.length() == 1 && state.get(CheckState.IGNORE_SINGLE_LETTERS)) ||
+          (state.get(CheckState.IGNORE_DIGIT_WORDS) && isDigitWord(word)) ||
+          (state.get(CheckState.IGNORE_INTERNET_ADDRESSES) && isINETWord(word))) {
         //Null event. Since we are ignoring this word due
         //to one of the above cases.
       }
@@ -545,7 +545,8 @@ public class SpellChecker {
     else {
       //This is a correctly spelled word. However, perform some extra checks
       //Check for capitalization
-      if (isSupposedToBeCapitalized(word, isNewSentence)) {
+      if (isNewSentence && Character.isLowerCase(word.charAt(0)) &&
+          !state.get(CheckState.IGNORE_SENTENCE_CAPITALIZATION)) {
         reportError(word, wordStart, state);
       }
     }
@@ -593,17 +594,65 @@ public class SpellChecker {
     state.terminated = fireAndHandleEvent(new BasicSpellCheckEvent(word, wordStart));
   }
 
-  private boolean isSupposedToBeCapitalized(String word, boolean isNewSentence) {
-    boolean configCapitalize = !config.getBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION);
-    return configCapitalize && isNewSentence && Character.isLowerCase(word.charAt(0));
-  }
-
   /**
-   * The running totals of a single {@link #checkSpelling(WordTokenizer)} call.
+   * The settings and running totals of a single
+   * {@link #checkSpelling(WordTokenizer)} call. Each setting is read from
+   * the configuration at most once per call, and only if it's needed, rather
+   * than for every word. Reading them lazily matters for code, where each
+   * comment is checked with its own call and is often only a few words long.
    */
   private static final class CheckState {
+
+    private static final int ANALYZE_CAMEL_CASE = 0;
+    private static final int IGNORE_UPPER_CASE = 1;
+    private static final int IGNORE_MIXED_CASE = 2;
+    private static final int IGNORE_SINGLE_LETTERS = 3;
+    private static final int IGNORE_DIGIT_WORDS = 4;
+    private static final int IGNORE_INTERNET_ADDRESSES = 5;
+    private static final int IGNORE_SENTENCE_CAPITALIZATION = 6;
+
+    private static final String[] KEYS = {
+      Configuration.SPELL_ANALYZECAMELCASEWORDS,
+      Configuration.SPELL_IGNOREUPPERCASE,
+      Configuration.SPELL_IGNOREMIXEDCASE,
+      Configuration.SPELL_IGNORESINGLELETTERS,
+      Configuration.SPELL_IGNOREDIGITWORDS,
+      Configuration.SPELL_IGNOREINTERNETADDRESSES,
+      Configuration.SPELL_IGNORESENTENCECAPITALIZATION,
+    };
+
+    private final Configuration config;
+
+    /** Bit {@code n} is set once setting {@code n} has been read. */
+    private int readSettings;
+
+    /** Bit {@code n} is the value of setting {@code n}, once read. */
+    private int settingValues;
+
     private int errors;
     private boolean terminated;
+
+    private CheckState(Configuration config) {
+      this.config = config;
+    }
+
+    /**
+     * Returns a boolean setting, reading it from the configuration the
+     * first time it's asked for.
+     *
+     * @param setting One of the setting constants in this class.
+     * @return The setting's value.
+     */
+    private boolean get(int setting) {
+      int bit = 1 << setting;
+      if ((readSettings & bit) == 0) {
+        readSettings |= bit;
+        if (config.getBoolean(KEYS[setting])) {
+          settingValues |= bit;
+        }
+      }
+      return (settingValues & bit) != 0;
+    }
   }
 
 }
