@@ -246,7 +246,7 @@ class SpellingParserTest {
     }
 
     @Test
-    void testLinkClicked_listenersNotified_addWithoutUserDictionary_noNotification() throws IOException {
+    void testLinkClicked_listenersNotified_addWithUserDictionary_notification() throws IOException {
         List<SpellingParserEvent> events = new ArrayList<>();
         SpellingParserListener listener = events::add;
         parser.addSpellingParserListener(listener);
@@ -272,7 +272,7 @@ class SpellingParserTest {
     }
 
     @Test
-    void testLinkClicked_listenersNotified_addWithUserDictionary_notification() {
+    void testLinkClicked_listenersNotified_addWithoutUserDictionary_noNotification() throws BadLocationException {
         List<SpellingParserEvent> events = new ArrayList<>();
         SpellingParserListener listener = events::add;
         parser.addSpellingParserListener(listener);
@@ -282,6 +282,11 @@ class SpellingParserTest {
         parser.linkClicked(textArea, e);
 
         assertEquals(0, events.size());
+
+        // The word isn't added to the in-memory user dictionary either
+        RSyntaxDocument doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
+        doc.insertString(0, "newword", null);
+        assertEquals(1, parser.parse(doc, SyntaxConstants.SYNTAX_STYLE_NONE).getNotices().size());
     }
 
     @Test

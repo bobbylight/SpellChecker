@@ -11,6 +11,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Locale;
@@ -29,6 +30,11 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         dictionary = new SpellDictionaryHashMap();
         sc = new SpellChecker(dictionary);
         parser = new SpellingParser(dictionary);
+
+        // The "Add to dictionary" link is only shown with a user dictionary
+        File userDictFile = File.createTempFile("scUnitTests_tooltipGenerator", ".txt");
+        userDictFile.deleteOnExit();
+        parser.setUserDictionary(userDictFile);
     }
 
     @Test
@@ -110,6 +116,17 @@ class SpellingErrorTooltipHtmlGeneratorTest {
 
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
 
+        Assertions.assertFalse(html.contains("Add to dictionary"));
+    }
+
+    @Test
+    void testGet_options_noUserDictionary() throws IOException {
+        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
+        parser.setUserDictionary(null);
+
+        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+
+        // Adding a word can't work without a user dictionary
         Assertions.assertFalse(html.contains("Add to dictionary"));
     }
 
