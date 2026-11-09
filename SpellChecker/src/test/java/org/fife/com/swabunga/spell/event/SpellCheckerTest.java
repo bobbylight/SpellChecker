@@ -235,6 +235,17 @@ class SpellCheckerTest {
     }
 
     @Test
+    void testCheckSpelling_config_changesApplyToNextCall() {
+        addWordsToDictionary(new String[] { "this", "is", "a", "sentence" });
+
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, true);
+        assertResult(checker.checkSpelling(new StringWordTokenizer("this is a 2nd sentence")), 0, false);
+
+        checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, false);
+        assertResult(checker.checkSpelling(new StringWordTokenizer("this is a 2nd sentence")), 1, false);
+    }
+
+    @Test
     void testCheckSpelling_config_ignoreDigitWords_false() {
         String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
         addWordsToDictionary(words);
