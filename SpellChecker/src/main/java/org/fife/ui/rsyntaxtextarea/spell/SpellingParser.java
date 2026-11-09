@@ -249,8 +249,8 @@ public class SpellingParser extends AbstractParser
 
     /**
      * Returns whether an "Add word to dictionary" link is added to tool tips
-     * returned by this parser.  Note that for an add operation to be
-     * successful, a user dictionary must also be defined.
+     * returned by this parser.  Note that the link is only shown when a
+     * user dictionary is also defined.
      *
      * @return Whether words can be added to the user dictionary.
      * @see #setAllowAdd(boolean)
@@ -361,6 +361,7 @@ public class SpellingParser extends AbstractParser
                         // TODO: Add callback for application to prompt to create
                         // a user dictionary
                         UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+                        break;
                     }
                     String word = tokens[0];
                     if (sc.addToDictionary(word)) {
@@ -465,8 +466,8 @@ public class SpellingParser extends AbstractParser
 
     /**
      * Sets whether an "Add word to dictionary" link is added to tool tips
-     * returned by this parser.  Note that for an add operation to be
-     * successful, a user dictionary must also be defined.
+     * returned by this parser.  Note that the link is only shown when a
+     * user dictionary is also defined.
      *
      * @param add Whether the option should be available.
      * @see #getAllowAdd()
