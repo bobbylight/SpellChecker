@@ -511,11 +511,8 @@ public class SpellingParser extends AbstractParser
      */
     public void setSpellCheckableTokenIdentifier(
             SpellCheckableTokenIdentifier scti) {
-        if (scti == null) {
-            throw new IllegalArgumentException(
-                    "SpellCheckableTokenIdentifier cannot be null");
-        }
-        this.spellCheckableTokenIdentifier = scti;
+        this.spellCheckableTokenIdentifier = Objects.requireNonNull(scti,
+                "SpellCheckableTokenIdentifier cannot be null");
     }
 
 

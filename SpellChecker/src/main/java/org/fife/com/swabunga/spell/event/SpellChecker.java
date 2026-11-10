@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.fife.com.swabunga.spell.engine.Configuration;
@@ -83,10 +84,7 @@ public class SpellChecker {
    * @param dictionary the dictionary to add at the end of the dictionary list.
    */
   public void addDictionary(SpellDictionary dictionary) {
-    if (dictionary == null) {
-      throw new IllegalArgumentException("dictionary must be non-null");
-    }
-    this.dictionaries.add(dictionary);
+    this.dictionaries.add(Objects.requireNonNull(dictionary, "dictionary must be non-null"));
   }
 
   /**
@@ -96,10 +94,7 @@ public class SpellChecker {
    *        to add. This cannot be {@code null}.
    */
   public void setUserDictionary(SpellDictionary dictionary) {
-    if (dictionary == null) {
-      throw new IllegalArgumentException("dictionary must be non-null");
-    }
-    userDictionary = dictionary;
+    userDictionary = Objects.requireNonNull(dictionary, "dictionary must be non-null");
   }
 
   /**
@@ -150,12 +145,7 @@ public class SpellChecker {
    * @return true if the word contains at least a digit.
    */
   private static boolean isDigitWord(CharSequence word) {
-    for (int i = word.length() - 1; i >= 0; i--) {
-      if (Character.isDigit(word.charAt(i))) {
-        return true;
-      }
-    }
-    return false;
+    return word.codePoints().anyMatch(Character::isDigit);
   }
 
 
@@ -233,12 +223,7 @@ public class SpellChecker {
    * @return true if this word contains all upper case characters
    */
   private static boolean isUpperCaseWord(CharSequence word) {
-    for (int i = word.length() - 1; i >= 0; i--) {
-      if (Character.isLowerCase(word.charAt(i))) {
-        return false;
-      }
-    }
-    return true;
+    return word.codePoints().noneMatch(Character::isLowerCase);
   }
 
 

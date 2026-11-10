@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 package org.fife.com.swabunga.spell.engine;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +84,7 @@ public class GenericTransformator implements Transformator {
    * Phonetic file lines starting with the keywords are skipped.
    * Comments, starting with '#', are also skipped to the end of line.
    */
-  public static final String[] IGNORED_KEYWORDS = {"version", "followup", "collapse_result"};
+  public static final List<String> IGNORED_KEYWORDS = List.of("version", "followup", "collapse_result");
 
   /**
    * Start a group of characters which can be appended to the match expression
@@ -110,14 +111,15 @@ public class GenericTransformator implements Transformator {
   private char[] alphabetString = DEFAULT_ENGLISH_ALPHABET;
 
   /**
-   * Construct a transformation table from the phonetic file.
+   * Construct a transformation table from the phonetic file, read as UTF-8.
    *
    * @param phonetic the phonetic file as specified in aspell
    * @throws java.io.IOException indicates a problem while reading
    *         the phonetic file
+   * @see #GenericTransformator(File, String)
    */
   public GenericTransformator(File phonetic) throws IOException {
-    try (BufferedReader r = new BufferedReader(new FileReader(phonetic))) {
+    try (BufferedReader r = new BufferedReader(new FileReader(phonetic, StandardCharsets.UTF_8))) {
       buildRules(r);
     }
     alphabetString = washAlphabetIntoReplaceList(getReplaceList());
@@ -331,7 +333,7 @@ public String transform(String word) {
     if (pos != -1) {
       row = row.substring(0, pos);
     }
-    return row.trim();
+    return row.strip();
   }
 
   /*

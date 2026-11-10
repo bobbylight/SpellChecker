@@ -23,6 +23,7 @@ package org.fife.com.swabunga.spell.engine;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,6 +32,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -199,6 +201,26 @@ public boolean addWord(String word) {
   }
 
   /**
+   * Skips exactly {@code count} bytes of a stream.
+   *
+   * @param in The stream.
+   * @param count The number of bytes to skip.
+   * @throws IOException If the stream ends first, or an IO error occurs.
+   */
+  private static void skipFully(InputStream in, long count) throws IOException {
+    while (count > 0) {
+      long skipped = in.skip(count);
+      if (skipped <= 0) {
+        if (in.read() == -1) {
+          throw new EOFException("Unexpected end of stream");
+        }
+        skipped = 1;
+      }
+      count -= skipped;
+    }
+  }
+
+  /**
    * Returns a list of words that have the same phonetic code.
    *
    * @param code The phonetic code common to the list of words
@@ -213,11 +235,13 @@ public List<String> getWords(String code) {
       try {
         byte[] bytes = new byte[posLen[1]];
         try (InputStream input = new FileInputStream(new File(db, FILE_DB))) {
-          input.skip(posLen[0]);
-          input.read(bytes, 0, posLen[1]);
+          skipFully(input, posLen[0]);
+          if (input.readNBytes(bytes, 0, posLen[1]) != posLen[1]) {
+            throw new EOFException("Unexpected end of " + FILE_DB);
+          }
         }
 
-        String data = new String(bytes);
+        String data = new String(bytes, StandardCharsets.UTF_8);
         String[] lines = split(data, "\n");
           for (String line : lines) {
               String[] s = split(line, ",");
@@ -304,7 +328,7 @@ public List<String> getWords(String code) {
     List<FileSize> contents = new ArrayList<>();
     File c = new File(db, FILE_CONTENTS);
     if (c.exists()) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(c))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(c, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 // format of file should be [filename],[size]
@@ -344,11 +368,11 @@ public List<String> getWords(String code) {
      */
     File[] wordFiles = words.listFiles();
       for (File wordFile : wordFiles) {
-          try (BufferedReader r = new BufferedReader(new FileReader(wordFile))) {
+          try (BufferedReader r = new BufferedReader(new FileReader(wordFile, StandardCharsets.UTF_8))) {
               String word;
               while ((word = r.readLine()) != null) {
-                  if (!word.isEmpty()) {
-                      w.add(word.trim());
+                  if (!word.isBlank()) {
+                      w.add(word.strip());
                   }
               }
           }
@@ -358,7 +382,7 @@ public List<String> getWords(String code) {
 
     // FIXME - error handling for running out of disk space would be nice.
     File file = File.createTempFile("jazzy", "sorted");
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8))) {
       String prev = null;
       for (String word : w) {
           if (prev == null || !prev.equals(word)) {
@@ -375,7 +399,7 @@ public List<String> getWords(String code) {
   private void buildCodeDb(File sortedWords) throws IOException {
     List<CodeWord> codeList = new ArrayList<>();
 
-    try (BufferedReader reader = new BufferedReader(new FileReader(sortedWords))) {
+    try (BufferedReader reader = new BufferedReader(new FileReader(sortedWords, StandardCharsets.UTF_8))) {
       String word;
       while ((word = reader.readLine()) != null) {
         codeList.add(new CodeWord(this.getCode(word), word));
@@ -396,7 +420,7 @@ public List<String> getWords(String code) {
       //      if (thisCode.length() > 3) thisCode = thisCode.substring(0, 3);
       thisCode = getIndexCode(thisCode, codeList);
       String toWrite = cw.getCode() + "," + cw.getWord() + "\n";
-      byte[] bytes = toWrite.getBytes();
+      byte[] bytes = toWrite.getBytes(StandardCharsets.UTF_8);
 
       if (currentCode == null) currentCode = thisCode;
       if (!currentCode.equals(thisCode)) {
@@ -415,7 +439,7 @@ public List<String> getWords(String code) {
     if (currentCode != null && currentPosition != 0 && currentLength != 0)
       index.add(new Object[]{currentCode, new int[]{currentPosition, currentLength}});
 
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(db, FILE_INDEX)))) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(db, FILE_INDEX), StandardCharsets.UTF_8))) {
       for (Object[] o : index) {
           writer.write(o[0].toString());
           writer.write(",");
@@ -430,7 +454,8 @@ public List<String> getWords(String code) {
   private void buildContentsFile() throws IOException {
     File[] wordFiles = words.listFiles();
     if (wordFiles.length > 0) {
-      try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(db, FILE_CONTENTS)))) {
+      try (BufferedWriter writer = new BufferedWriter(
+              new FileWriter(new File(db, FILE_CONTENTS), StandardCharsets.UTF_8))) {
         for (File wordFile : wordFiles) {
             writer.write(wordFile.getName());
             writer.write(",");
@@ -450,7 +475,7 @@ public List<String> getWords(String code) {
   protected void loadIndex() throws IOException {
     index = new HashMap<>();
     File idx = new File(db, FILE_INDEX);
-    try (BufferedReader reader = new BufferedReader(new FileReader(idx))) {
+    try (BufferedReader reader = new BufferedReader(new FileReader(idx, StandardCharsets.UTF_8))) {
       String line;
       while ((line = reader.readLine()) != null) {
         String[] fields = split(line, ",");

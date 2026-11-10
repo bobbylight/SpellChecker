@@ -271,6 +271,6 @@ public boolean addWord(String word) {
     List<String> mainDictResult = mainDictionary.get(code);
     if (mainDictResult == null)
       return Collections.emptyList();
-    return mainDictResult;
+    return Collections.unmodifiableList(mainDictResult);
   }
 }
