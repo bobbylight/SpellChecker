@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -33,6 +34,19 @@ class SpellDictionaryDiskTest {
 
         dictionary = new SpellDictionaryDisk(tempDir, null, true);
         assertTrue(dictionary.isReady());
+    }
+
+    @Test
+    void testIsCorrect_nonAsciiWord() throws IOException {
+        File tempDir = Files.createTempDirectory(TEST_DIR_PREFIX).toFile();
+        File wordsDir = new File(tempDir, "words");
+        assertTrue(wordsDir.mkdirs());
+        File wordsFile = new File(wordsDir, "words.txt");
+        Files.write(wordsFile.toPath(), "caf\u00e9\nna\u00efve\n".getBytes(StandardCharsets.UTF_8));
+
+        dictionary = new SpellDictionaryDisk(tempDir, null, true);
+        assertTrue(dictionary.isCorrect("caf\u00e9"));
+        assertTrue(dictionary.isCorrect("na\u00efve"));
     }
 
     @Test

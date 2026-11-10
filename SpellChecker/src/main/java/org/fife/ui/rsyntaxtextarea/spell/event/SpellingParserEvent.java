@@ -9,6 +9,7 @@
 package org.fife.ui.rsyntaxtextarea.spell.event;
 
 import java.util.EventObject;
+import java.util.Objects;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.spell.SpellingParser;
@@ -50,17 +51,14 @@ public class SpellingParserEvent extends EventObject {
 	 * @param textArea The text area that was parsed.
 	 * @param type The type of event.  This cannot be <code>null</code>.
 	 * @param word The word being added or ignored.
-	 * @throws IllegalArgumentException If <code>type</code> is
+	 * @throws NullPointerException If <code>type</code> is
 	 *         <code>null</code>.
 	 */
 	public SpellingParserEvent(SpellingParser source, RSyntaxTextArea textArea,
 								Type type, String word) {
 		super(source);
-		if (type == null) {
-			throw new IllegalArgumentException("type cannot be null");
-		}
 		this.textArea = textArea;
-		this.type = type;
+		this.type = Objects.requireNonNull(type, "type cannot be null");
 		this.word = word;
 	}
 

@@ -53,12 +53,12 @@ class SpellCheckerTest {
 
     @Test
     void testConstructor_oneArg_errorOnNull() {
-        assertThrows(IllegalArgumentException.class, () -> new SpellChecker(null));
+        assertThrows(NullPointerException.class, () -> new SpellChecker(null));
     }
 
     @Test
     void testAddDictionary_errorOnNull() {
-        assertThrows(IllegalArgumentException.class, () -> checker.addDictionary(null));
+        assertThrows(NullPointerException.class, () -> checker.addDictionary(null));
     }
 
     @Test
@@ -714,7 +714,7 @@ class SpellCheckerTest {
 
     @Test
     void testSetUserDictionary_throwsIfNull() {
-        assertThrows(IllegalArgumentException.class, () -> checker.setUserDictionary(null));
+        assertThrows(NullPointerException.class, () -> checker.setUserDictionary(null));
     }
 
     @Test

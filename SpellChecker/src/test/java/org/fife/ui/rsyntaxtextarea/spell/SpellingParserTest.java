@@ -192,7 +192,7 @@ class SpellingParserTest {
 
     @Test
     void testGetSetSpellCheckableTokenIdentifier_nullDisallowed() {
-        assertThrows(IllegalArgumentException.class, () -> parser.setSpellCheckableTokenIdentifier(null));
+        assertThrows(NullPointerException.class, () -> parser.setSpellCheckableTokenIdentifier(null));
     }
 
     @Test

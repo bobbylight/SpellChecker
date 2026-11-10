@@ -172,6 +172,14 @@ class SpellDictionaryHashMapTest {
     }
 
     @Test
+    void testGetWords_unmodifiable() throws IOException {
+        SpellDictionaryHashMap dic = createDictionary_zeroArg();
+        List<String> words = dic.getWords(dic.getCode("test"));
+        Assertions.assertTrue(words.contains("test"));
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> words.add("foo"));
+    }
+
+    @Test
     void testPutWordUnique_nullMainDictionary() throws IOException{
         SpellDictionaryHashMap dic = new SpellDictionaryHashMap();
         Assertions.assertFalse(dic.isCorrect("test"));
