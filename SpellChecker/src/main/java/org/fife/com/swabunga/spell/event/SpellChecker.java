@@ -54,7 +54,7 @@ public class SpellChecker {
   private List<SpellDictionary> dictionaries = new ArrayList<>();
   private SpellDictionary userDictionary = new SpellDictionaryHashMap();
 
-  private Configuration config = Configuration.getConfiguration();
+  private final Configuration config;
 
   /**
    * This variable holds all the words that are to be always ignored.
@@ -68,11 +68,26 @@ public class SpellChecker {
   private int cacheSize;
 
   /**
-   * Constructs the SpellChecker. The default threshold is used
+   * Constructs the SpellChecker with the default configuration, as returned
+   * by {@link Configuration#getConfiguration()}.
    *
    * @param dictionary The dictionary used for looking up words.
+   * @see #SpellChecker(SpellDictionary, Configuration)
    */
   public SpellChecker(SpellDictionary dictionary) {
+    this(dictionary, Configuration.getConfiguration());
+  }
+
+  /**
+   * Constructs the SpellChecker with a specific configuration.
+   *
+   * @param dictionary The dictionary used for looking up words.
+   * @param config The configuration holding the spell checking engine
+   *        parameters. This cannot be {@code null}.
+   * @see #SpellChecker(SpellDictionary)
+   */
+  public SpellChecker(SpellDictionary dictionary, Configuration config) {
+    this.config = Objects.requireNonNull(config, "config must be non-null");
     addDictionary(dictionary);
   }
 

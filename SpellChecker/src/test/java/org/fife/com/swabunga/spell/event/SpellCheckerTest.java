@@ -57,6 +57,37 @@ class SpellCheckerTest {
     }
 
     @Test
+    void testConstructor_twoArg() {
+        Configuration config = Configuration.getConfiguration();
+        SpellChecker checker = new SpellChecker(new SpellDictionaryHashMap(), config);
+        assertSame(config, checker.getConfiguration());
+    }
+
+    @Test
+    void testConstructor_twoArg_errorOnNullDictionary() {
+        Configuration config = Configuration.getConfiguration();
+        assertThrows(NullPointerException.class, () -> new SpellChecker(null, config));
+    }
+
+    @Test
+    void testConstructor_twoArg_errorOnNullConfig() {
+        SpellDictionary dictionary = new SpellDictionaryHashMap();
+        assertThrows(NullPointerException.class, () -> new SpellChecker(dictionary, null));
+    }
+
+    @Test
+    void testConstructor_twoArg_configIsUsed() {
+        Configuration config = Configuration.getConfiguration();
+        config.setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, true);
+        SpellChecker checker = new SpellChecker(new SpellDictionaryHashMap(), config);
+
+        assertEquals(0, checker.checkSpelling(new StringWordTokenizer("abc123")).getErrorCount());
+
+        config.setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, false);
+        assertEquals(1, checker.checkSpelling(new StringWordTokenizer("abc123")).getErrorCount());
+    }
+
+    @Test
     void testAddDictionary_errorOnNull() {
         assertThrows(NullPointerException.class, () -> checker.addDictionary(null));
     }
