@@ -17,6 +17,15 @@ class SpellingParserNotice extends DefaultParserNotice {
     private String word;
     private SpellChecker sc;
 
+    /**
+     * The tooltip, computed the first time it's asked for. Swing asks again
+     * on every mouse move while a tooltip is showing, and each time means
+     * computing spelling suggestions. A notice only lives until the next
+     * parse, and adding or ignoring a word forces a reparse, so this never
+     * outlives the dictionaries it was computed from.
+     */
+    private String toolTipText;
+
     SpellingParserNotice(SpellingParser parser, String msg,
                          int line, int offs, String word,
                          SpellChecker sc) {
@@ -33,7 +42,10 @@ class SpellingParserNotice extends DefaultParserNotice {
 
     @Override
     public String getToolTipText() {
-        return new SpellingErrorTooltipHtmlGenerator().get(sc, this);
+        if (toolTipText == null) {
+            toolTipText = new SpellingErrorTooltipHtmlGenerator().get(sc, this);
+        }
+        return toolTipText;
     }
 
     /**
