@@ -87,46 +87,53 @@ public final class EditDistance {
     int aSize = word.length() + 1;
     int bSize = similar.length() + 1;
 
-    int[][] matrix = new int[aSize][bSize];
-
-    matrix[0][0] = 0;
-
-    for (int i = 1; i != aSize; ++i)
-      matrix[i][0] = matrix[i - 1][0] + deleteCost; //initialize the first column: delete all of word's chars
+    // Row i of the cost matrix only depends on rows i - 1 and i - 2 (the
+    // latter for swaps), so only those three rows are kept rather than the
+    // whole matrix. curr[j] is the cost of turning word's first i chars into
+    // similar's first j chars.
+    int[] prev2 = new int[bSize]; // row i - 2
+    int[] prev = new int[bSize]; // row i - 1
+    int[] curr = new int[bSize]; // row i
 
     for (int j = 1; j != bSize; ++j)
-      matrix[0][j] = matrix[0][j - 1] + insertCost; //initialize the first row: insert all of similar's chars
+      prev[j] = prev[j - 1] + insertCost; //initialize the first row: insert all of similar's chars
 
     for (int i = 1; i != aSize; ++i) {
+      curr[0] = prev[0] + deleteCost; // the first column: delete all of word's first i chars
       sourceChar = word.charAt(i-1);
       for (int j = 1; j != bSize; ++j) {
 
         otherChar = similar.charAt(j-1);
         if (sourceChar == otherChar) {
-          matrix[i][j] = matrix[i - 1][j - 1]; //no change required, so just carry the current cost up
+          curr[j] = prev[j - 1]; //no change required, so just carry the current cost up
           continue;
         }
 
-        int costOfSubst = substituteCost + matrix[i - 1][j - 1];
-        // matrix[i][j] is the cost of turning word's first i chars into
-        // similar's first j chars
-        int costOfDelete = deleteCost + matrix[i - 1][j]; // delete word's i-th char
-        int costOfInsertion = insertCost + matrix[i][j - 1]; // insert similar's j-th char
+        int costOfSubst = substituteCost + prev[j - 1];
+        int costOfDelete = deleteCost + prev[j]; // delete word's i-th char
+        int costOfInsertion = insertCost + curr[j - 1]; // insert similar's j-th char
         int cost = Math.min(costOfSubst, Math.min(costOfDelete, costOfInsertion));
 
         //if needed, consider the cost of doing a swap
         boolean isSwap = (i != 1) && (j != 1) && sourceChar == similar.charAt(j - 2) && word.charAt(i - 2) == otherChar;
         if (isSwap)
-          cost = Math.min(cost, swapCost + matrix[i - 2][j - 2]);
+          cost = Math.min(cost, swapCost + prev2[j - 2]);
 
         if (equalIgnoreCase(sourceChar, otherChar))
-          cost = Math.min(cost, changeCaseCost + matrix[i - 1][j - 1]);
+          cost = Math.min(cost, changeCaseCost + prev[j - 1]);
 
-        matrix[i][j] = cost;
+        curr[j] = cost;
       }
+
+      // Rotate the rows: this row becomes i - 1, and the old i - 2 row is
+      // reused for the next row
+      int[] temp = prev2;
+      prev2 = prev;
+      prev = curr;
+      curr = temp;
     }
 
-    return matrix[aSize - 1][bSize - 1];
+    return prev[bSize - 1];
   }
 
   /**
