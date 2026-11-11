@@ -84,9 +84,10 @@ public Word next() {
   private int getNextWordEnd(String text, int startPos) {
     // If we're dealing with a possible 'internet word' we need to provide
     // some special handling
-    //if (SpellChecker.isINETWord(text.substring(startPos))) {
     // robert: trying to be smarter avoiding email addresses (see SpellChecker changes)
-    if (SpellChecker.beginsAsINETWord(text.substring(startPos))) {
+    // Checked in place: copying the rest of the text here, at every word,
+    // made long text quadratic.
+    if (SpellChecker.beginsAsINETWord(text, startPos)) {
       for (int i = startPos; i < text.length(); i++) {
         char ch = text.charAt(i);
         if (Character.isLetterOrDigit(ch))
