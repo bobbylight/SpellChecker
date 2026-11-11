@@ -179,11 +179,12 @@ public class DoubleMeta implements Transformator {
   private static boolean stringAt(String string, int start, int length, String[] list) {
     if ((start < 0) || (start >= string.length()) || list.length == 0)
       return false;
-    String substr = string.substring(start, start + length);
-      for (String s : list) {
-          if (s.equals(substr))
-              return true;
-      }
+    // Compared in place rather than via a substring, since this runs many
+    // times for every word encoded
+    for (String s : list) {
+      if (s.length() == length && string.regionMatches(start, s, 0, length))
+        return true;
+    }
     return false;
   }
 
