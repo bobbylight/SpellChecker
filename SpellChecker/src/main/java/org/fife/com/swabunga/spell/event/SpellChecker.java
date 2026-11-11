@@ -150,9 +150,8 @@ public class SpellChecker {
 
 
   /**
-   * Checks if the word that is being spell checked contains an Internet
-   * address. This method look for typical protocol or the habitual string
-   * in the word (case-insensitively):
+   * Returns whether the text at an offset starts like an Internet address,
+   * that is, with one of these prefixes (case-insensitively):
    * <ul>
    * <li>http://</li>
    * <li>ftp://</li>
@@ -161,30 +160,29 @@ public class SpellChecker {
    * <li>www.</li>
    * </ul>
    * <p>
-   * One limitation is that this method cannot currently recognize email
-   * addresses. Since the 'word' that is passed in, may in fact contain
-   * the rest of the document to be checked, it is not (yet!) a good
-   * idea to scan for the @ character.
+   * This doesn't recognize email addresses. The text may be the rest of
+   * the document (or line), so it isn't scanned for an {@code @}.
+   * The prefixes are compared in place, without copying the text.
    *
-   * @param word The word to analyze for an Internet address.
-   * @return true if this word looks like an Internet address.
+   * @param text The text.
+   * @param offset The offset in {@code text} to check.
+   * @return Whether the text at {@code offset} starts like an Internet address.
    * @see #isINETWord(String)
    */
-  public static boolean beginsAsINETWord(String word) {
+  static boolean beginsAsINETWord(String text, int offset) {
     // robert: In standard Jazzy distributions, this is "isINETWord(String)".
-    // robert: Since "word" may be the entire rest of the document (line), we
-    // compare prefixes in place rather than creating a lower-cased copy.
-    // Prefixes are checked roughly in order of how commonly they're seen.
-    return startsWithIgnoreCase(word, "https://") ||
-        startsWithIgnoreCase(word, "www.") ||
-        startsWithIgnoreCase(word, "http://") ||
-        startsWithIgnoreCase(word, "ftp://") ||
-        startsWithIgnoreCase(word, "ftps://");
+    // Prefixes are compared in place, and checked roughly in order of how
+    // commonly they're seen.
+    return startsWithIgnoreCase(text, offset, "https://") ||
+        startsWithIgnoreCase(text, offset, "www.") ||
+        startsWithIgnoreCase(text, offset, "http://") ||
+        startsWithIgnoreCase(text, offset, "ftp://") ||
+        startsWithIgnoreCase(text, offset, "ftps://");
   }
 
 
-  private static boolean startsWithIgnoreCase(String str, String prefix) {
-    return str.regionMatches(true, 0, prefix, 0, prefix.length());
+  private static boolean startsWithIgnoreCase(String str, int offset, String prefix) {
+    return str.regionMatches(true, offset, prefix, 0, prefix.length());
   }
 
 
@@ -204,14 +202,14 @@ public class SpellChecker {
    * It is assumed that <code>word</code> is just the word to scan, without
    * any trailing characters.  This is different from the standard Jazzy
    * distribution's implementation (which has been renamed to
-   * <code>beginsAsINETWord(String)</code>).
+   * <code>beginsAsINETWord(String, int)</code>).
    *
    * @param word The word to analyze for an Internet address.
    * @return true if this word looks like an Internet address.
-   * @see #beginsAsINETWord(String)
+   * @see #beginsAsINETWord(String, int)
    */
   public static boolean isINETWord(String word) {
-    return beginsAsINETWord(word) || word.indexOf('@') > 0;
+    return beginsAsINETWord(word, 0) || word.indexOf('@') > 0;
   }
 
 

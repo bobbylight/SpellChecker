@@ -103,30 +103,41 @@ class SpellCheckerTest {
 
     @Test
     void testBeginsAsINETWord() {
-        assertTrue(SpellChecker.beginsAsINETWord("http://google.com"));
-        assertTrue(SpellChecker.beginsAsINETWord("https://google.com"));
-        assertTrue(SpellChecker.beginsAsINETWord("www.google.com"));
-        assertTrue(SpellChecker.beginsAsINETWord("ftp://google.com"));
-        assertTrue(SpellChecker.beginsAsINETWord("ftps://google.com"));
-        assertFalse(SpellChecker.beginsAsINETWord("help@google.com"));
-        assertFalse(SpellChecker.beginsAsINETWord("google.com"));
+        assertTrue(SpellChecker.beginsAsINETWord("http://google.com", 0));
+        assertTrue(SpellChecker.beginsAsINETWord("https://google.com", 0));
+        assertTrue(SpellChecker.beginsAsINETWord("www.google.com", 0));
+        assertTrue(SpellChecker.beginsAsINETWord("ftp://google.com", 0));
+        assertTrue(SpellChecker.beginsAsINETWord("ftps://google.com", 0));
+        assertFalse(SpellChecker.beginsAsINETWord("help@google.com", 0));
+        assertFalse(SpellChecker.beginsAsINETWord("google.com", 0));
     }
 
     @Test
     void testBeginsAsINETWord_caseInsensitive() {
-        assertTrue(SpellChecker.beginsAsINETWord("HTTPS://GOOGLE.COM"));
-        assertTrue(SpellChecker.beginsAsINETWord("WWW.google.com"));
-        assertTrue(SpellChecker.beginsAsINETWord("Http://google.com"));
-        assertTrue(SpellChecker.beginsAsINETWord("FTP://google.com"));
-        assertTrue(SpellChecker.beginsAsINETWord("FtPs://google.com"));
+        assertTrue(SpellChecker.beginsAsINETWord("HTTPS://GOOGLE.COM", 0));
+        assertTrue(SpellChecker.beginsAsINETWord("WWW.google.com", 0));
+        assertTrue(SpellChecker.beginsAsINETWord("Http://google.com", 0));
+        assertTrue(SpellChecker.beginsAsINETWord("FTP://google.com", 0));
+        assertTrue(SpellChecker.beginsAsINETWord("FtPs://google.com", 0));
+    }
+
+    @Test
+    void testBeginsAsINETWord_atOffset() {
+        String text = "see https://google.com or www.example.com";
+        assertTrue(SpellChecker.beginsAsINETWord(text, 4));
+        assertTrue(SpellChecker.beginsAsINETWord(text, 26));
+        assertFalse(SpellChecker.beginsAsINETWord(text, 0));
+        assertFalse(SpellChecker.beginsAsINETWord(text, 5));
+        // A prefix that runs past the end of the text doesn't match
+        assertFalse(SpellChecker.beginsAsINETWord("see http", 4));
     }
 
     @Test
     void testBeginsAsINETWord_shorterThanPrefixes() {
-        assertFalse(SpellChecker.beginsAsINETWord(""));
-        assertFalse(SpellChecker.beginsAsINETWord("w"));
-        assertFalse(SpellChecker.beginsAsINETWord("www"));
-        assertFalse(SpellChecker.beginsAsINETWord("https:/"));
+        assertFalse(SpellChecker.beginsAsINETWord("", 0));
+        assertFalse(SpellChecker.beginsAsINETWord("w", 0));
+        assertFalse(SpellChecker.beginsAsINETWord("www", 0));
+        assertFalse(SpellChecker.beginsAsINETWord("https:/", 0));
     }
 
     @Test

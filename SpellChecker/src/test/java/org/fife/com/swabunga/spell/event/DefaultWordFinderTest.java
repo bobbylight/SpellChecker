@@ -163,4 +163,15 @@ class DefaultWordFinderTest {
         assertEquals(0, word.getStart());
         assertEquals(18, word.getEnd());
     }
+
+    @Test
+    void testNextWord_urlAfterOtherWords() {
+        DefaultWordFinder finder = new DefaultWordFinder("see HTTPS://google.com today");
+        assertEquals("see", finder.next().getText());
+        Word word = finder.next();
+        assertEquals("HTTPS://google.com", word.getText());
+        assertEquals(4, word.getStart());
+        assertEquals("today", finder.next().getText());
+        assertFalse(finder.hasNext());
+    }
 }
