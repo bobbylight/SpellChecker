@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 package org.fife.com.swabunga.spell.engine;
 
-import java.io.EOFException;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -34,14 +35,19 @@ import java.util.List;
  * <p>
  * This implementation requires a special dictionary file, with "code*word" lines sorted by code.
  * It's using a dichotomy algorithm to search for words in the dictionary
+ * <p>
+ * The dictionary file stays open until {@link #close()} is called.
  *
  * @author Damien Guillaume
  * @version 0.1
  */
-public class SpellDictionaryDichoDisk extends SpellDictionaryASpell {
+public class SpellDictionaryDichoDisk extends SpellDictionaryASpell implements Closeable {
 
   /** Holds the dictionary file for reading. */
   private RandomAccessFile dictFile;
+
+  /** Whether {@link #close()} has been called. */
+  private boolean closed;
 
   /** dictionary and phonetic file encoding. */
   private String encoding;
@@ -176,23 +182,28 @@ public class SpellDictionaryDichoDisk extends SpellDictionaryASpell {
    }
 
    /**
-    * Read a line of dictFile with a specific encoding.
+    * Read a line of dictFile with a specific encoding. Like
+    * {@link RandomAccessFile#readLine()}, a line ends with {@code "\n"},
+    * {@code "\r"}, {@code "\r\n"} or the end of the file, and the line
+    * terminator isn't included.
     */
    private String dictReadLine() throws IOException {
-     int max = 255;
-     byte b=0;
-    byte[] buf = new byte[max];
-    int i=0;
-     try {
-       for (; b != '\n' && b != '\r' && i<max-1; i++) {
-        b = dictFile.readByte();
-         buf[i] = b;
+    ByteArrayOutputStream buf = new ByteArrayOutputStream();
+    int b;
+    while ((b = dictFile.read()) != -1) {
+      if (b == '\n') {
+        break;
       }
-    } catch (EOFException ex) {
+      if (b == '\r') {
+        long pos = dictFile.getFilePointer();
+        if (dictFile.read() != '\n') {
+          dictFile.seek(pos);
+        }
+        break;
+      }
+      buf.write(b);
     }
-    if (i == 0)
-      return "";
-    return new String(buf, 0, i-1, encoding);
+    return buf.toString(encoding);
    }
 
   /**
@@ -203,6 +214,9 @@ public class SpellDictionaryDichoDisk extends SpellDictionaryASpell {
    */
   @Override
   public List<String> getWords(String code) {
+    if (closed) {
+      throw new IllegalStateException("Dictionary is closed");
+    }
     //System.out.println("getWords("+code+")");
     LinkedList<String> list;
     try {
@@ -213,6 +227,19 @@ public class SpellDictionaryDichoDisk extends SpellDictionaryASpell {
       list = new LinkedList<>();
     }
     return list;
+  }
+
+  /**
+   * Closes the dictionary file. After this, looking up words throws an
+   * {@code IllegalStateException}. Closing an already-closed dictionary
+   * has no effect.
+   *
+   * @throws IOException If an error occurs closing the file.
+   */
+  @Override
+  public void close() throws IOException {
+    closed = true;
+    dictFile.close();
   }
 
 }
