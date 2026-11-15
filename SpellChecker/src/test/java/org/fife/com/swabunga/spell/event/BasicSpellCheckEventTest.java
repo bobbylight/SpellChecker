@@ -34,11 +34,6 @@ class BasicSpellCheckEventTest {
     }
 
     @Test
-    void testGetWordContext() {
-        assertNull(event.getWordContext());
-    }
-
-    @Test
     void testGetWordContextPosition() {
         assertEquals(0, event.getWordContextPosition());
     }

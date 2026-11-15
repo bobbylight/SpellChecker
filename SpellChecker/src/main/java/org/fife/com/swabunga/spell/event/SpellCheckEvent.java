@@ -39,13 +39,6 @@ public interface SpellCheckEvent {
   String getInvalidWord();
 
   /**
-   * Returns the context in which the misspelled word is used.
-   *
-   * @return The text containing the context
-   */
-  String getWordContext();
-
-  /**
    * Returns the start position of the misspelled word in the context.
    *
    * @return The position of the word

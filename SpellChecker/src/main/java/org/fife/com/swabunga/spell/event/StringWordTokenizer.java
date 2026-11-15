@@ -23,11 +23,6 @@ package org.fife.com.swabunga.spell.event;
 /**
  * This class tokenizes a input string.
  *
- * <p>
- * It also allows for the string to be altered by calls to replaceWord(). The result after the spell
- * checking is completed is available to the call to getContext.
- * </p>
- *
  * @author Jason Height (jheight@chariot.net.au)
  * @author Anthony Roy  (ajr@antroy.co.uk)
  */
@@ -62,29 +57,5 @@ public class StringWordTokenizer extends AbstractWordTokenizer {
   public StringWordTokenizer(String s, WordFinder finder) {
     super(finder);
     finder.setText(s);
-  }
-
-
-  /**
-   * Returns the final text.
-   *
-   * @return the final text.
-   * @deprecated use getContext() instead as per the WordTokenizer
-   *             interface specification.
-   */
-  @Deprecated
-  public String getFinalText() {
-    return getContext();
-  }
-
-  /**
-   * Replace the current word in the iteration with the String s.
-   *
-   * @param s the String to replace the current word.
-   * @throws WordNotFoundException current word not yet set.
-   */
-  @Override
-  public void replaceWord(String s) {
-    finder.replace(s);
   }
 }

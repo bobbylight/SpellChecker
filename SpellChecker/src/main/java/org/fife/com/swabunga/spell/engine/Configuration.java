@@ -79,8 +79,6 @@ public abstract class Configuration {
   public static final String SPELL_IGNOREINTERNETADDRESSES = "SPELL_IGNOREINTERNETADDRESS";
   /** words that have digits in them are not spell checked, example: "mach5". <br/>(boolean) */
   public static final String SPELL_IGNOREDIGITWORDS = "SPELL_IGNOREDIGITWORDS";
-  /** I don't know what this does. It doesn't seem to be used. <br/>(boolean) */
-  public static final String SPELL_IGNOREMULTIPLEWORDS = "SPELL_IGNOREMULTIPLEWORDS";
   /** the first word of a sentence is expected to start with an upper case letter <br/>(boolean). */
   public static final String SPELL_IGNORESENTENCECAPITALIZATION = "SPELL_IGNORESENTENCECAPTILIZATION";
 
