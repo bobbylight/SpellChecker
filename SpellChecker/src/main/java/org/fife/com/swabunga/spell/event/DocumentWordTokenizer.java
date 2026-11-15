@@ -239,9 +239,13 @@ public class DocumentWordTokenizer implements WordTokenizer {
 
     // currentWordPos is an index into text.array, not a document offset
     // (they differ when text.offset != 0), so read from the segment directly.
-    // A new sentence is a '.' adjacent to whitespace (chars <= ' ').
+    // A new sentence is a '.', '?' or '!' adjacent to whitespace (chars <= ' ').
     char before2 = text.array[currentWordPos - 2];
     char before1 = text.array[currentWordPos - 1];
-    return (before2 == '.' && before1 <= ' ') || (before2 <= ' ' && before1 == '.');
+    return (isSentenceEnd(before2) && before1 <= ' ') || (before2 <= ' ' && isSentenceEnd(before1));
+  }
+
+  private static boolean isSentenceEnd(char ch) {
+    return ch == '.' || ch == '?' || ch == '!';
   }
 }

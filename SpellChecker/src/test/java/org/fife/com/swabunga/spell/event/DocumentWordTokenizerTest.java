@@ -126,6 +126,50 @@ class DocumentWordTokenizerTest {
     }
 
     @Test
+    void testIsNewSentence_afterQuestionMark_lowerCase() throws BadLocationException {
+        doc.replace(0, doc.getLength(), "Is it? yes it is", null);
+        tokenizer = new DocumentWordTokenizer(doc);
+        assertEquals("Is", tokenizer.nextWord());
+        assertEquals("it", tokenizer.nextWord());
+        assertEquals("yes", tokenizer.nextWord());
+        assertTrue(tokenizer.isNewSentence());
+        assertEquals("it", tokenizer.nextWord());
+        assertFalse(tokenizer.isNewSentence());
+    }
+
+    @Test
+    void testIsNewSentence_afterExclamationMark_lowerCase() throws BadLocationException {
+        doc.replace(0, doc.getLength(), "Stop! now please", null);
+        tokenizer = new DocumentWordTokenizer(doc);
+        assertEquals("Stop", tokenizer.nextWord());
+        assertEquals("now", tokenizer.nextWord());
+        assertTrue(tokenizer.isNewSentence());
+        assertEquals("please", tokenizer.nextWord());
+        assertFalse(tokenizer.isNewSentence());
+    }
+
+    @Test
+    void testIsNewSentence_afterPeriod_lowerCase() throws BadLocationException {
+        doc.replace(0, doc.getLength(), "The end. then more", null);
+        tokenizer = new DocumentWordTokenizer(doc);
+        assertEquals("The", tokenizer.nextWord());
+        assertEquals("end", tokenizer.nextWord());
+        assertEquals("then", tokenizer.nextWord());
+        assertTrue(tokenizer.isNewSentence());
+        assertEquals("more", tokenizer.nextWord());
+        assertFalse(tokenizer.isNewSentence());
+    }
+
+    @Test
+    void testIsNewSentence_questionMarkInsideWordRun() throws BadLocationException {
+        doc.replace(0, doc.getLength(), "what?no", null);
+        tokenizer = new DocumentWordTokenizer(doc);
+        assertEquals("what", tokenizer.nextWord());
+        assertEquals("no", tokenizer.nextWord());
+        assertFalse(tokenizer.isNewSentence());
+    }
+
+    @Test
     void testPosStartFullWordFrom_offset0() {
         tokenizer.posStartFullWordFrom(0);
         assertEquals("This", tokenizer.nextWord());
