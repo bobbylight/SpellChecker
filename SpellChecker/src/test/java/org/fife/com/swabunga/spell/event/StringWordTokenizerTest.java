@@ -19,33 +19,21 @@ class StringWordTokenizerTest {
 
     @Test
     void testConstructor_withString() {
-        assertNotNull(tokenizer);
-        assertEquals("This is a test.", tokenizer.getContext());
+        assertEquals("This", tokenizer.nextWord());
     }
 
     @Test
     void testConstructor_withWordFinder() {
         WordFinder finder = new DefaultWordFinder("Another test.");
         tokenizer = new StringWordTokenizer(finder);
-        assertNotNull(tokenizer);
-        assertEquals("Another test.", tokenizer.getContext());
+        assertEquals("Another", tokenizer.nextWord());
     }
 
     @Test
     void testConstructor_withStringAndWordFinder() {
         WordFinder finder = new DefaultWordFinder();
         tokenizer = new StringWordTokenizer("Yet another test.", finder);
-        assertNotNull(tokenizer);
-        assertEquals("Yet another test.", tokenizer.getContext());
-    }
-
-    @Test
-    void testGetCurrentWordCount() {
-        assertEquals(0, tokenizer.getCurrentWordCount());
-        tokenizer.nextWord();
-        assertEquals(1, tokenizer.getCurrentWordCount());
-        tokenizer.nextWord();
-        assertEquals(2, tokenizer.getCurrentWordCount());
+        assertEquals("Yet", tokenizer.nextWord());
     }
 
     @Test
@@ -68,41 +56,5 @@ class StringWordTokenizerTest {
     @Test
     void testGetCurrentWordPosition_errorIfNoWord() {
         assertThrows(WordNotFoundException.class, () -> tokenizer.getCurrentWordPosition());
-    }
-
-    @Test
-    void testGetFinalText() {
-        assertEquals("This is a test.", tokenizer.getFinalText());
-    }
-
-    @Test
-    void testGetWordEnd() {
-        WordFinder finder = new DefaultWordFinder();
-        tokenizer = new StringWordTokenizer("Yet another test.", finder);
-        assertNotNull(tokenizer);
-        assertEquals("Yet another test.", tokenizer.getContext());
-    }
-
-    @Test
-    void testReplaceWord_beforeAnyWords() {
-        tokenizer.replaceWord("That");
-        assertEquals("ThatThis is a test.", tokenizer.getContext());
-    }
-
-    @Test
-    void testReplaceWord_onFirstWord() {
-        tokenizer.nextWord(); // We're initially before any word
-        tokenizer.replaceWord("That");
-        assertEquals("That is a test.", tokenizer.getContext());
-    }
-
-    @Test
-    void testReplaceWord_noCurrentWord() {
-        assertThrows(WordNotFoundException.class, () -> {
-            WordFinder wordFinder = new DefaultWordFinder();
-            wordFinder.next();
-            tokenizer = new StringWordTokenizer(wordFinder);
-            tokenizer.replaceWord("That");
-        });
     }
 }

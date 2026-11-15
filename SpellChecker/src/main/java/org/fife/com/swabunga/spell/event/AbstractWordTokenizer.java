@@ -25,11 +25,6 @@ import java.text.BreakIterator;
 /**
  * This class tokenizes an input string.
  *
- * <p>
- * It also allows for the string to be mutated. The result after the spell
- * checking is completed is available to the call to getFinalText.
- * </p>
- *
  * @author Jason Height(jheight@chariot.net.au)
  * @author Anthony Roy  (ajr@antroy.co.uk)
  */
@@ -49,11 +44,6 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
     protected BreakIterator sentenceIterator;
 
     /**
-     * The cumulative word count that have been processed.
-     */
-    private int wordCount;
-
-    /**
      * Creates a new AbstractWordTokenizer object.
      *
      * @param text the text to process.
@@ -69,16 +59,6 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
      */
     public AbstractWordTokenizer(WordFinder wf) {
         this.finder = wf;
-    }
-
-    /**
-     * Returns the current number of words that have been processed.
-     *
-     * @return number of words so far iterated.
-     */
-    @Override
-    public int getCurrentWordCount() {
-        return wordCount;
     }
 
     /**
@@ -128,28 +108,7 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
     @Override
     public String nextWord() {
         currentWord = finder.next();
-        wordCount++;
         return currentWord.getText();
-    }
-
-    /**
-     * Replaces the current word token.
-     *
-     * @param newWord replacement word.
-     * @throws WordNotFoundException current word has not yet been set.
-     */
-    @Override
-    public abstract void replaceWord(String newWord);
-
-    /**
-     * Returns the current text that is being tokenized (includes any changes
-     * that have been made).
-     *
-     * @return the text being tokenized.
-     */
-    @Override
-    public String getContext() {
-        return finder.toString();
     }
 
     /**

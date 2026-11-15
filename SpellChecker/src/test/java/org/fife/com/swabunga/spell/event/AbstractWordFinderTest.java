@@ -18,13 +18,6 @@ class AbstractWordFinderTest {
     }
 
     @Test
-    void testReplace_throwsIfNoCurrentWord() {
-        assertThrows(WordNotFoundException.class, () ->
-            new BrokenWordFinder().replace("foo")
-        );
-    }
-
-    @Test
     void testStartsSentence_throwsIfNoCurrentWord() {
         assertThrows(WordNotFoundException.class, () ->
             new BrokenWordFinder().startsSentence()

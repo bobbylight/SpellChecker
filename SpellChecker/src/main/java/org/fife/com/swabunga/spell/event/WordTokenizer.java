@@ -28,8 +28,8 @@ package org.fife.com.swabunga.spell.event;
  * <P>
  * When the object is instantiated, and before the first call to <CODE>next()</CODE> is made,
  * the following methods should throw a <CODE>WordNotFoundException</CODE>:<br>
- * <CODE>getCurrentWordEnd()</CODE>, <CODE>getCurrentWordPosition()</CODE>,
- *  <CODE>isNewSentence()</CODE> and <CODE>replaceWord()</CODE>.
+ * <CODE>getCurrentWordEnd()</CODE>, <CODE>getCurrentWordPosition()</CODE> and
+ *  <CODE>isNewSentence()</CODE>.
  * </P>
  *
  * <P>A call to <CODE>next()</CODE> when <CODE>hasMoreWords()</CODE> returns false
@@ -38,20 +38,6 @@ package org.fife.com.swabunga.spell.event;
  * @author Jason Height (jheight@chariot.net.au)
  */
 public interface WordTokenizer {
-
-  /**
-   * Returns the context text that is being tokenized (should include any changes that have been made).
-   *
-   * @return the text being searched.
-   */
-  String getContext();
-
-  /**
-   * Returns the number of word tokens that have been processed thus far.
-   *
-   * @return the number of words found so far.
-   */
-  int getCurrentWordCount();
 
   /**
    * Returns an index representing the end location of the current word in the text.
@@ -93,17 +79,4 @@ public interface WordTokenizer {
    * @throws WordNotFoundException search string contains no more words.
    */
   String nextWord();
-
-  /**
-   * Replaces the current word token
-   * <p/>
-   * When a word is replaced care should be taken that the WordTokenizer
-   * repositions itself such that the words that were added aren't rechecked.
-   * Of course this is not mandatory, maybe there is a case when an
-   * application doesn't need to do this.
-   *
-   * @param newWord the string which should replace the current word.
-   * @throws WordNotFoundException current word has not yet been set.
-   */
-  void replaceWord(String newWord);
 }

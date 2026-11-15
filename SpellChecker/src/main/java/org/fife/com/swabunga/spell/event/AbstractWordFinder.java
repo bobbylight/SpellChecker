@@ -84,8 +84,7 @@ public abstract class AbstractWordFinder implements WordFinder {
   public abstract Word next();
 
   /**
-   * Return the text being searched. May have changed since first set
-   * through calls to replace.
+   * Return the text being searched.
    *
    * @return the text being searched.
    */
@@ -130,34 +129,6 @@ public abstract class AbstractWordFinder implements WordFinder {
   }
 
   /**
-   * Replace the current word in the search with a replacement string..
-   *
-   * @param newWord the replacement string.
-   * @throws WordNotFoundException current word has not yet been set.
-   */
-  @Override
-  public void replace(String newWord) {
-
-    if (currentWord == null) {
-      throw new WordNotFoundException("No Words in current String");
-    }
-
-    text = text.substring(0, currentWord.getStart()) + newWord + text.substring(currentWord.getEnd());
-    int diff = newWord.length() - currentWord.getText().length();
-    currentWord.setText(newWord);
-    /* Added Conditional to ensure a NullPointerException is avoided (11 Feb 2003) */
-    if (nextWord != null) {
-      nextWord.setStart(nextWord.getStart() + diff);
-    }
-
-    sentenceIterator.setText(text);
-    int start = currentWord.getStart();
-    sentenceIterator.following(start);
-    startsSentence = sentenceIterator.current() == start;
-
-  }
-
-  /**
    * @return true if the current word starts a new sentence.
    * @throws WordNotFoundException current word has not yet been set.
    */
@@ -170,8 +141,7 @@ public abstract class AbstractWordFinder implements WordFinder {
   }
 
   /**
-   * Return the text being searched. May have changed since first set
-   * through calls to replace.
+   * Return the text being searched.
    *
    * @return the text being searched.
    */

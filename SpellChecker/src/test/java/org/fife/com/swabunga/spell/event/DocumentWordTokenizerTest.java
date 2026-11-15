@@ -25,21 +25,6 @@ class DocumentWordTokenizerTest {
     }
 
     @Test
-    void testGetCurrentWordCount() {
-        assertEquals(0, tokenizer.getCurrentWordCount());
-        assertEquals("This", tokenizer.nextWord());
-        assertEquals(1, tokenizer.getCurrentWordCount());
-        assertEquals("is", tokenizer.nextWord());
-        assertEquals(2, tokenizer.getCurrentWordCount());
-        assertEquals("a", tokenizer.nextWord());
-        assertEquals(3, tokenizer.getCurrentWordCount());
-        assertEquals("test", tokenizer.nextWord());
-        assertEquals(4, tokenizer.getCurrentWordCount());
-        assertEquals("document", tokenizer.nextWord());
-        assertEquals(5, tokenizer.getCurrentWordCount());
-    }
-
-    @Test
     void testHasMoreWords_emptyDocument() {
         doc = new PlainDocument();
         tokenizer = new DocumentWordTokenizer(doc);
@@ -99,19 +84,6 @@ class DocumentWordTokenizerTest {
             tokenizer.nextWord();
         }
         assertFalse(tokenizer.hasMoreWords());
-    }
-
-    @Test
-    void testReplaceWord() throws BadLocationException {
-        tokenizer.nextWord(); // Move to "This"
-        tokenizer.replaceWord("That");
-        assertEquals("That is a test document.", doc.getText(0, doc.getLength()));
-    }
-
-    @Test
-    void testGetContext() {
-        tokenizer.nextWord();
-        assertEquals("This is a test document.", tokenizer.getContext());
     }
 
     @Test

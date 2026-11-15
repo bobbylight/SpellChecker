@@ -26,8 +26,7 @@ import java.text.BreakIterator;
 
 
 /**
- * This class tokenizes a swing document model. It also allows for the
- * document model to be changed when corrections occur.
+ * This class tokenizes a swing document model.
  *
  * @author Jason Height (jheight@chariot.net.au)
  */
@@ -52,10 +51,6 @@ public class DocumentWordTokenizer implements WordTokenizer {
    * The character iterator over the document.
    */
   private Segment text;
-  /**
-   * The cumulative word count that have been processed.
-   */
-  private int wordCount;
   /**
    * Flag indicating if there are any more tokens (words) left.
    */
@@ -224,62 +219,10 @@ public class DocumentWordTokenizer implements WordTokenizer {
       ex.printStackTrace();
       moreTokens = false;
     }
-    wordCount++;
     first = false;
     if (nextWordPos == -1)
       moreTokens = false;
     return word;
-  }
-
-  /**
-   * Returns the number of word tokens that have been processed thus far.
-   *
-   * @return the number of words found so far.
-   */
-  @Override
-  public int getCurrentWordCount() {
-    return wordCount;
-  }
-
-  /**
-   * Replaces the current word token.
-   *
-   * @param newWord The new word to replace the misspelled one
-   */
-  @Override
-  public void replaceWord(String newWord) {
-    if (currentWordPos != -1) {
-      try {
-        document.remove(currentWordPos, currentWordEnd - currentWordPos);
-        document.insertString(currentWordPos, newWord, null);
-        //Need to reset the segment
-        document.getText(0, document.getLength(), text);
-      } catch (BadLocationException ex) {
-        throw new RuntimeException(ex.getMessage());
-      }
-      //Position after the newly replaced word(s)
-      first = true;
-      currentWordPos = getNextWordStart(text, currentWordPos + newWord.length());
-      if (currentWordPos != -1) {
-        currentWordEnd = getNextWordEnd(text, currentWordPos);
-        nextWordPos = getNextWordStart(text, currentWordEnd);
-        sentenceIterator.setText(text);
-        sentenceIterator.following(currentWordPos);
-      }
-      else
-        moreTokens = false;
-    }
-  }
-
-  /**
-   * Returns the current text that is being tokenized (includes any changes
-   * that have been made).
-   *
-   * @return The text, including changes.
-   */
-  @Override
-  public String getContext() {
-    return text.toString();
   }
 
   /**

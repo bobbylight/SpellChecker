@@ -27,8 +27,8 @@ package org.fife.com.swabunga.spell.event;
  * <P>
  * When the object is instantiated, and before the first call to <CODE>next()</CODE> is made,
  * the following methods should throw a <CODE>WordNotFoundException</CODE>:<br>
- * <CODE>current()</CODE>,
- *  <CODE>startsSentence()</CODE> and <CODE>replace()</CODE>.
+ * <CODE>current()</CODE> and
+ *  <CODE>startsSentence()</CODE>.
  * </P>
  *
  * <P>A call to <CODE>next()</CODE> when <CODE>hasMoreWords()</CODE> returns false
@@ -41,9 +41,8 @@ public interface WordFinder {
 
   /**
    * This method returns the text through which the WordFinder is iterating.
-   * The text may have been modified through calls to replace().
    *
-   * @return the (possibly modified) text being searched.
+   * @return the text being searched.
    */
   String getText();
 
@@ -80,15 +79,6 @@ public interface WordFinder {
    * @throws WordNotFoundException search string contains no more words.
    */
   Word next();
-
-  /**
-   * This method should replace the current Word object with a Word object
-   * representing the String newWord.
-   *
-   * @param newWord the word to replace the current word with.
-   * @throws WordNotFoundException current word has not yet been set.
-   */
-  void replace(String newWord);
 
   /**
    * Indicates if the current word starts a new sentence.
