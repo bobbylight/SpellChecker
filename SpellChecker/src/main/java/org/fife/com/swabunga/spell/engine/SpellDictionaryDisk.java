@@ -89,12 +89,17 @@ public class SpellDictionaryDisk extends SpellDictionaryASpell {
   private File base;
   private File words;
   private File db;
-  private Map<String, int[]> index;
+  /**
+   * Maps index codes to their start position and length in the db file.
+   * This is {@code null} until the index is loaded, which may happen on a
+   * background thread.
+   */
+  private volatile Map<String, int[]> index;
   /**
    * The flag indicating if the initial preparation or loading of the on
-   * disk dictionary is complete.
+   * disk dictionary is complete. It may be set from a background thread.
    */
-  protected boolean ready;
+  protected volatile boolean ready;
 
   /* used at time of creation of index to speed up determining the number of words per index entry. */
   private List<String> indexCodeCache;
@@ -224,7 +229,8 @@ public boolean addWord(String word) {
    * Returns a list of words that have the same phonetic code.
    *
    * @param code The phonetic code common to the list of words
-   * @return A list of words having the same phonetic code
+   * @return A list of words having the same phonetic code. This is empty
+   *         if the dictionary isn't {@link #isReady() ready} yet.
    */
   @Override
 public List<String> getWords(String code) {
@@ -473,18 +479,24 @@ public List<String> getWords(String code) {
    * into the dictionary db file.
    */
   protected void loadIndex() throws IOException {
-    index = new HashMap<>();
+    // Fully populated before it's published, since lookups may run on other threads
+    Map<String, int[]> newIndex = new HashMap<>();
     File idx = new File(db, FILE_INDEX);
     try (BufferedReader reader = new BufferedReader(new FileReader(idx, StandardCharsets.UTF_8))) {
       String line;
       while ((line = reader.readLine()) != null) {
         String[] fields = split(line, ",");
-        index.put(fields[0], new int[]{Integer.parseInt(fields[1]), Integer.parseInt(fields[2])});
+        newIndex.put(fields[0], new int[]{Integer.parseInt(fields[1]), Integer.parseInt(fields[2])});
       }
     }
+    index = newIndex;
   }
 
   private int[] getStartPosAndLen(String code) {
+    Map<String, int[]> index = this.index;
+    if (index == null) { // Still being built on a background thread
+      return null;
+    }
     while (!code.isEmpty()) {
       int[] posLen = index.get(code);
       if (posLen == null) {
