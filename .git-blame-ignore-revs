@@ -1,0 +1,12 @@
+# Commits that only changed line endings, for `git blame` to skip.
+# GitHub's blame view reads this file automatically. To use it locally, run:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# chore: normalize line endings to LF and enforce them (#92)
+52cd48bf3dd682d03207feafae6ffaf68aa74956
+
+# chore: restore CRLF line endings in SpellChecker.java
+619d7f677d56c1080c7b3bb6fae37aac91855b10
+
+# chore: convert SpellDictionaryCachedDichoDisk to LF line endings (#76)
+b3a09e2c902297a1f367924cd34f7fe2d84ed417
