@@ -1,0 +1,11 @@
+# Store text files with LF line endings, and check them out with LF on every
+# platform, regardless of each developer's core.autocrlf setting.
+* text=auto eol=lf
+
+# Windows batch files need CRLF line endings.
+*.bat text eol=crlf
+
+# Binary files.
+*.jar binary
+*.png binary
+*.zip binary

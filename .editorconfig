@@ -1,3 +1,16 @@
-# This is purposely sparse since the original Jazzy source has a lot of inconsistencies.
+# https://editorconfig.org
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+# Windows batch files need CRLF line endings.
+[*.bat]
+end_of_line = crlf
+
+# Indentation is purposely left unset, since the original Jazzy source mixes
+# tabs, two spaces and four spaces.
 [*.java]
 trim_trailing_whitespace = true
