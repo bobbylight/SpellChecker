@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,6 +25,15 @@ class SpellDictionaryDiskTest {
     private static final String[] WORDS = { "aardvark", "apple", "bat" };
 
     private static final String TEST_DIR_PREFIX = "scUnitTests";
+
+    /**
+     * Lets a test hold {@link BlockingSpellDictionaryDisk}'s background
+     * database build until it has checked the "not ready" state. Static
+     * because the build starts from the superclass constructor, before the
+     * subclass's own fields are assigned.
+     */
+    private static CountDownLatch buildStarted;
+    private static CountDownLatch releaseBuild;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -60,6 +71,36 @@ class SpellDictionaryDiskTest {
         dictionary = new SpellDictionaryDisk(tempDir, null, false);
         Thread.sleep(1000); // Allow time for the thread to complete
         assertTrue(dictionary.isReady());
+    }
+
+    @Test
+    void testConstructor_async_lookupsBeforeIndexLoaded() throws Exception {
+        File tempDir = Files.createTempDirectory(TEST_DIR_PREFIX).toFile();
+        File wordsDir = new File(tempDir, "words");
+        assertTrue(wordsDir.mkdirs());
+        File wordsFile = new File(wordsDir, "words.txt");
+        Files.writeString(wordsFile.toPath(), String.join("\n", WORDS));
+
+        buildStarted = new CountDownLatch(1);
+        releaseBuild = new CountDownLatch(1);
+        try {
+            dictionary = new BlockingSpellDictionaryDisk(tempDir);
+            assertTrue(buildStarted.await(10, TimeUnit.SECONDS));
+
+            // The index isn't loaded yet, so there are no words to find
+            assertFalse(dictionary.isReady());
+            assertEquals(List.of(), dictionary.getWords("APL"));
+            assertFalse(dictionary.isCorrect("apple"));
+        } finally {
+            releaseBuild.countDown();
+        }
+
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (!dictionary.isReady() && System.nanoTime() < deadline) {
+            Thread.sleep(10);
+        }
+        assertTrue(dictionary.isReady());
+        assertTrue(dictionary.isCorrect("apple"));
     }
 
     @Test
@@ -274,4 +315,26 @@ class SpellDictionaryDiskTest {
        SpellDictionaryDisk.FileSize fileSize = new SpellDictionaryDisk.FileSize("file.txt", 100);
        assertNotEquals(0, fileSize.hashCode());
    }
+
+    /**
+     * Holds the background database build until the test releases it.
+     */
+    private static final class BlockingSpellDictionaryDisk extends SpellDictionaryDisk {
+
+        BlockingSpellDictionaryDisk(File base) throws IOException {
+            super(base, null, false);
+        }
+
+        @Override
+        protected void buildNewDictionaryDatabase() throws IOException {
+            buildStarted.countDown();
+            try {
+                releaseBuild.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IOException(e);
+            }
+            super.buildNewDictionaryDatabase();
+        }
+    }
 }
