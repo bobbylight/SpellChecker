@@ -23,6 +23,7 @@ import java.util.zip.ZipFile;
 import javax.swing.UIManager;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 
 import org.fife.com.swabunga.spell.engine.SpellDictionary;
@@ -335,6 +336,24 @@ public class SpellingParser extends AbstractParser
     }
 
 
+    /**
+     * Returns whether a text area contains specific text at an offset.
+     *
+     * @param textArea The text area.
+     * @param offs The offset.
+     * @param len The length of the text to compare.
+     * @param text The expected text.
+     * @return Whether that text is at that offset.
+     */
+    private static boolean isTextAt(RSyntaxTextArea textArea, int offs, int len, String text) {
+        try {
+            return text.equals(textArea.getText(offs, len));
+        } catch (BadLocationException ble) { // The document is now shorter
+            return false;
+        }
+    }
+
+
     @Override
     public void linkClicked(RSyntaxTextArea textArea, HyperlinkEvent e) {
 
@@ -351,6 +370,16 @@ public class SpellingParser extends AbstractParser
                     int offs = Integer.parseInt(tokens[0]);
                     int len = Integer.parseInt(tokens[1]);
                     String replacement = tokens[2];
+                    String misspelled = tokens[3];
+                    // The offset is from the last parse. If the text has
+                    // changed since, e.g. the tool tip was shown after an
+                    // edit but before the reparse that follows it, the word
+                    // may no longer be there. Don't replace the wrong text.
+                    if (!isTextAt(textArea, offs, len, misspelled)) {
+                        UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+                        textArea.forceReparsing(this);
+                        break;
+                    }
                     textArea.replaceRange(replacement, offs, offs + len);
                     textArea.setSelectionStart(offs);
                     textArea.setSelectionEnd(offs + replacement.length());

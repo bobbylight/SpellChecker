@@ -57,11 +57,14 @@ class SpellingErrorTooltipHtmlGenerator {
                     suggestion = Character.toUpperCase(suggestion.charAt(0)) + suggestion.substring(1);
                 }
                 // Surround with double quotes, not single, since
-                // replacement words can have single quotes in them.
+                // replacement words can have single quotes in them. The
+                // misspelled word is included so that SpellingParser can
+                // check it's still at this offset before replacing it.
                 sb.append("<a href=\"").append(SpellingErrorAction.REPLACE).append("://").
                         append(notice.getOffset()).append(',').
                         append(notice.getLength()).append(',').
-                        append(suggestion).
+                        append(suggestion).append(',').
+                        append(word).
                         append("\">").
                         append(suggestion).
                         append("</a>").

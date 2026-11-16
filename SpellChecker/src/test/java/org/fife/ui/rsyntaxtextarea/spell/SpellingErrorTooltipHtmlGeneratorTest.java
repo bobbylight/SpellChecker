@@ -68,7 +68,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
 
         // Both the replacement in the link and the displayed text are capitalized
-        Assertions.assertTrue(html.contains("<a href=\"REPLACE://4,9,Misspelled\">Misspelled</a>"));
+        Assertions.assertTrue(html.contains("<a href=\"REPLACE://4,9,Misspelled,Mispelled\">Misspelled</a>"));
         Assertions.assertFalse(html.contains("misspelled"));
     }
 
