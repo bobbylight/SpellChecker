@@ -19,6 +19,8 @@ import org.mockito.Mockito;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.BadLocationException;
 import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -314,12 +318,81 @@ class SpellingParserTest {
         parser.addSpellingParserListener(listener);
         textArea.setText("0123456789");
 
-        String desc = "REPLACE://1,3,replacement";
+        String desc = "REPLACE://1,3,replacement,123";
         HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
         parser.linkClicked(textArea, e);
 
         assertEquals(0, events.size());
         assertEquals("0replacement456789", textArea.getText());
+    }
+
+    @Test
+    void testLinkClicked_replace_selectsReplacement() {
+        textArea.setText("the cta sat");
+
+        String desc = "REPLACE://4,3,cat,cta";
+        parser.linkClicked(textArea, new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc));
+
+        assertEquals("the cat sat", textArea.getText());
+        assertEquals("cat", textArea.getSelectedText());
+    }
+
+    @Test
+    void testLinkClicked_replace_wordNoLongerAtOffset_notReplaced() {
+        // The link was made when "cta" was at offset 4, but the text has since changed
+        textArea.setText("a the cta sat");
+
+        String desc = "REPLACE://4,3,cat,cta";
+        parser.linkClicked(textArea, new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc));
+
+        assertEquals("a the cta sat", textArea.getText());
+    }
+
+    @Test
+    void testLinkClicked_replace_offsetPastEndOfDocument_notReplaced() {
+        textArea.setText("the c");
+
+        String desc = "REPLACE://4,3,cat,cta";
+        assertDoesNotThrow(() -> parser.linkClicked(textArea,
+            new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc)));
+
+        assertEquals("the c", textArea.getText());
+    }
+
+    /**
+     * Code review bug 1: after an edit, the notices keep their old offsets
+     * until the next reparse (1.25 seconds after the last edit by default).
+     * A tool tip shown in that window, here over "cat", which now sits where
+     * "sta" used to be, offered to replace "sta" at its old offset.
+     */
+    @Test
+    void testLinkClicked_replace_toolTipShownBeforeReparse_doesNotReplaceWrongText() throws Exception {
+        SpellDictionaryHashMap dictionary = new SpellDictionaryHashMap();
+        for (String word : new String[] { "a", "this", "cat", "sat" }) {
+            dictionary.addWord(word);
+        }
+        parser = new SpellingParser(dictionary);
+        textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+        textArea.setUseFocusableTips(false); // So getToolTipText() returns the tip's HTML
+        textArea.setSize(800, 200);
+        textArea.setText("this cat sta");
+        textArea.addParser(parser);
+        textArea.forceReparsing(parser); // "sta" is misspelled, at 9-12
+
+        textArea.insert("a ", 0); // Before the next reparse: "a this cat sta"
+
+        // Hover over offset 9, where "sta" was and the "t" of "cat" now is
+        Rectangle r = textArea.modelToView2D(9).getBounds();
+        MouseEvent hover = new MouseEvent(textArea, MouseEvent.MOUSE_MOVED, 0, 0,
+            r.x + 1, r.y + r.height / 2, 0, false);
+        String tip = textArea.getToolTipText(hover);
+        assertNotNull(tip);
+        Matcher m = Pattern.compile("REPLACE://[^\"]+").matcher(tip);
+        assertTrue(m.find(), tip);
+
+        parser.linkClicked(textArea, new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, m.group()));
+
+        assertEquals("a this cat sta", textArea.getText());
     }
 
     @Test
