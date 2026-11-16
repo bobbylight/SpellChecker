@@ -59,28 +59,15 @@ public class DoubleMeta implements Transformator {
 
 
   private static final String[] MY_LIST = {"GN", "KN", "PN", "WR", "PS", ""};
-  private static final String[] LIST_1 = {"ACH", ""};
   private static final String[] LIST_2 = {"BACHER", "MACHER", ""};
-  private static final String[] LIST_3 = {"CAESAR", ""};
-  private static final String[] LIST_4 = {"CHIA", ""};
-  private static final String[] LIST_5 = {"CH", ""};
-  private static final String[] LIST_6 = {"CHAE", ""};
   private static final String[] LIST_7 = {"HARAC", "HARIS", ""};
   private static final String[] LIST_8 = {"HOR", "HYM", "HIA", "HEM", ""};
-  private static final String[] LIST_9 = {"CHORE", ""};
   private static final String[] LIST_10 = {"VAN ", "VON ", ""};
-  private static final String[] LIST_11 = {"SCH", ""};
   private static final String[] LIST_12 = {"ORCHES", "ARCHIT", "ORCHID", ""};
   private static final String[] LIST_13 = {"T", "S", ""};
   private static final String[] LIST_14 = {"A", "O", "U", "E", ""};
   private static final String[] LIST_15 = {"L", "R", "N", "M", "B", "H", "F", "V", "W", " ", ""};
-  private static final String[] LIST_16 = {"MC", ""};
-  private static final String[] LIST_17 = {"CZ", ""};
-  private static final String[] LIST_18 = {"WICZ", ""};
-  private static final String[] LIST_19 = {"CIA", ""};
-  private static final String[] LIST_20 = {"CC", ""};
   private static final String[] LIST_21 = {"I", "E", "H", ""};
-  private static final String[] LIST_22 = {"HU", ""};
   private static final String[] LIST_23 = {"UCCEE", "UCCES", ""};
   private static final String[] LIST_24 = {"CK", "CG", "CQ", ""};
   private static final String[] LIST_25 = {"CI", "CE", "CY", ""};
@@ -88,68 +75,41 @@ public class DoubleMeta implements Transformator {
   private static final String[] LIST_27 = {" C", " Q", " G", ""};
   private static final String[] LIST_28 = {"C", "K", "Q", ""};
   private static final String[] LIST_29 = {"CE", "CI", ""};
-  private static final String[] LIST_30 = {"DG", ""};
   private static final String[] LIST_31 = {"I", "E", "Y", ""};
   private static final String[] LIST_32 = {"DT", "DD", ""};
   private static final String[] LIST_33 = {"B", "H", "D", ""};
   private static final String[] LIST_34 = {"B", "H", "D", ""};
   private static final String[] LIST_35 = {"B", "H", ""};
   private static final String[] LIST_36 = {"C", "G", "L", "R", "T", ""};
-  private static final String[] LIST_37 = {"EY", ""};
-  private static final String[] LIST_38 = {"LI", ""};
   private static final String[] LIST_39 = {"ES", "EP", "EB", "EL", "EY", "IB", "IL", "IN", "IE", "EI", "ER", ""};
-  private static final String[] LIST_40 = {"ER", ""};
   private static final String[] LIST_41 = {"DANGER", "RANGER", "MANGER", ""};
   private static final String[] LIST_42 = {"E", "I", ""};
   private static final String[] LIST_43 = {"RGY", "OGY", ""};
   private static final String[] LIST_44 = {"E", "I", "Y", ""};
   private static final String[] LIST_45 = {"AGGI", "OGGI", ""};
   private static final String[] LIST_46 = {"VAN ", "VON ", ""};
-  private static final String[] LIST_47 = {"SCH", ""};
-  private static final String[] LIST_48 = {"ET", ""};
   // LIST_49 was removed at some point in Jazzy's history
-  private static final String[] LIST_50 = {"JOSE", ""};
-  private static final String[] LIST_51 = {"SAN ", ""};
-  private static final String[] LIST_52 = {"SAN ", ""};
-  private static final String[] LIST_53 = {"JOSE", ""};
   private static final String[] LIST_54 = {"L", "T", "K", "S", "N", "M", "B", "Z", ""};
   private static final String[] LIST_55 = {"S", "K", "L", ""};
   private static final String[] LIST_56 = {"ILLO", "ILLA", "ALLE", ""};
   private static final String[] LIST_57 = {"AS", "OS", ""};
   private static final String[] LIST_58 = {"A", "O", ""};
-  private static final String[] LIST_59 = {"ALLE", ""};
-  private static final String[] LIST_60 = {"UMB", ""};
-  private static final String[] LIST_61 = {"ER", ""};
   private static final String[] LIST_62 = {"P", "B", ""};
-  private static final String[] LIST_63 = {"IE", ""};
   private static final String[] LIST_64 = {"ME", "MA", ""};
   private static final String[] LIST_65 = {"ISL", "YSL", ""};
-  private static final String[] LIST_66 = {"SUGAR", ""};
-  private static final String[] LIST_67 = {"SH", ""};
   private static final String[] LIST_68 = {"HEIM", "HOEK", "HOLM", "HOLZ", ""};
   private static final String[] LIST_69 = {"SIO", "SIA", ""};
-  private static final String[] LIST_70 = {"SIAN", ""};
   private static final String[] LIST_71 = {"M", "N", "L", "W", ""};
-  private static final String[] LIST_72 = {"Z", ""};
-  private static final String[] LIST_73 = {"Z", ""};
-  private static final String[] LIST_74 = {"SC", ""};
   private static final String[] LIST_75 = {"OO", "ER", "EN", "UY", "ED", "EM", ""};
   private static final String[] LIST_76 = {"ER", "EN", ""};
   private static final String[] LIST_77 = {"I", "E", "Y", ""};
   private static final String[] LIST_78 = {"AI", "OI", ""};
   private static final String[] LIST_79 = {"S", "Z", ""};
-  private static final String[] LIST_80 = {"TION", ""};
   private static final String[] LIST_81 = {"TIA", "TCH", ""};
-  private static final String[] LIST_82 = {"TH", ""};
-  private static final String[] LIST_83 = {"TTH", ""};
   private static final String[] LIST_84 = {"OM", "AM", ""};
   private static final String[] LIST_85 = {"VAN ", "VON ", ""};
-  private static final String[] LIST_86 = {"SCH", ""};
   private static final String[] LIST_87 = {"T", "D", ""};
-  private static final String[] LIST_88 = {"WR", ""};
-  private static final String[] LIST_89 = {"WH", ""};
   private static final String[] LIST_90 = {"EWSKI", "EWSKY", "OWSKI", "OWSKY", ""};
-  private static final String[] LIST_91 = {"SCH", ""};
   private static final String[] LIST_92 = {"WICZ", "WITZ", ""};
   private static final String[] LIST_93 = {"IAU", "EAU", ""};
   private static final String[] LIST_94 = {"AU", "OU", ""};
@@ -238,36 +198,36 @@ public final String transform(String word) {
           current += 1;
           break;
         case 'C':
-          if ((current > 1) && !isVowel(in, current - 2, length) && stringAt(in, (current - 1), 3, LIST_1) &&
+          if ((current > 1) && !isVowel(in, current - 2, length) && in.startsWith("ACH", (current - 1)) &&
                   (in.charAt(current + 2) != 'I') && (in.charAt(current + 2) != 'E') ||
                   stringAt(in, (current - 2), 6, LIST_2)) {
             metaphAdd(primary, 'K');
             current += 2;
             break;
           }
-          if ((current == 0) && stringAt(in, current, 6, LIST_3)) {
+          if ((current == 0) && in.startsWith("CAESAR", current)) {
             metaphAdd(primary, 'S');
             current += 2;
             break;
           }
-          if (stringAt(in, current, 4, LIST_4)) {
+          if (in.startsWith("CHIA", current)) {
             metaphAdd(primary, 'K');
             current += 2;
             break;
           }
-          if (stringAt(in, current, 2, LIST_5)) {
-            if ((current > 0) && stringAt(in, current, 4, LIST_6)) {
+          if (in.startsWith("CH", current)) {
+            if ((current > 0) && in.startsWith("CHAE", current)) {
               metaphAdd(primary, 'K');
               current += 2;
               break;
             }
             if ((current == 0) && stringAt(in, (current + 1), 5, LIST_7) ||
-                    stringAt(in, current + 1, 3, LIST_8) && !stringAt(in, 0, 5, LIST_9)) {
+                    stringAt(in, current + 1, 3, LIST_8) && !in.startsWith("CHORE", 0)) {
               metaphAdd(primary, 'K');
               current += 2;
               break;
             }
-            if (stringAt(in, 0, 4, LIST_10) || stringAt(in, 0, 3, LIST_11) ||
+            if (stringAt(in, 0, 4, LIST_10) || in.startsWith("SCH", 0) ||
                     stringAt(in, current - 2, 6, LIST_12) ||
                     stringAt(in, current + 2, 1, LIST_13) ||
                     (stringAt(in, current - 1, 1, LIST_14) || (current == 0)) &&
@@ -275,7 +235,7 @@ public final String transform(String word) {
               metaphAdd(primary, 'K');
             } else {
               if (current > 0) {
-                if (stringAt(in, 0, 2, LIST_16))
+                if (in.startsWith("MC", 0))
                   metaphAdd(primary, 'K');
                 else
                   metaphAdd(primary, 'X');
@@ -286,18 +246,18 @@ public final String transform(String word) {
             current += 2;
             break;
           }
-          if (stringAt(in, current, 2, LIST_17) && !stringAt(in, current, 4, LIST_18)) {
+          if (in.startsWith("CZ", current) && !in.startsWith("WICZ", current)) {
             metaphAdd(primary, 'S');
             current += 2;
             break;
           }
-          if (stringAt(in, current, 3, LIST_19)) {
+          if (in.startsWith("CIA", current)) {
             metaphAdd(primary, 'X');
             current += 2;
             break;
           }
-          if (stringAt(in, current, 2, LIST_20) && !((current == 1) && in.charAt(0) == 'M')) {
-            if (stringAt(in, current + 2, 1, LIST_21) && !stringAt(in, current + 2, 2, LIST_22)) {
+          if (in.startsWith("CC", current) && !((current == 1) && in.charAt(0) == 'M')) {
+            if (stringAt(in, current + 2, 1, LIST_21) && !in.startsWith("HU", current + 2)) {
               if (((current == 1) && (in.charAt(current - 1) == 'A')) || stringAt(in, (current - 1), 5, LIST_23))
                 metaphAdd(primary, "KS");
               else
@@ -329,7 +289,7 @@ public final String transform(String word) {
             current += 1;
           break;
         case 'D':
-          if (stringAt(in, current, 2, LIST_30)) {
+          if (in.startsWith("DG", current)) {
             if (stringAt(in, current + 2, 1, LIST_31)) {
               metaphAdd(primary, 'J');
               current += 3;
@@ -391,7 +351,7 @@ public final String transform(String word) {
             if ((current == 1) && isVowel(in, 0, length) && !isSlavoGermaic) {
               metaphAdd(primary, "KN");
             } else {
-              if (!stringAt(in, current + 2, 2, LIST_37) && (in.charAt(current + 1) != 'Y') && !isSlavoGermaic) {
+              if (!in.startsWith("EY", current + 2) && (in.charAt(current + 1) != 'Y') && !isSlavoGermaic) {
                 metaphAdd(primary, "N");
               } else {
                 metaphAdd(primary, "KN");
@@ -400,7 +360,7 @@ public final String transform(String word) {
             current += 2;
             break;
           }
-          if (stringAt(in, current + 1, 2, LIST_38) && !isSlavoGermaic) {
+          if (in.startsWith("LI", current + 1) && !isSlavoGermaic) {
             metaphAdd(primary, "KL");
             current += 2;
             break;
@@ -410,7 +370,7 @@ public final String transform(String word) {
             current += 2;
             break;
           }
-          if ((stringAt(in, current + 1, 2, LIST_40) || (in.charAt(current + 1) == 'Y')) &&
+          if ((in.startsWith("ER", current + 1) || (in.charAt(current + 1) == 'Y')) &&
                   !stringAt(in, 0, 6, LIST_41) && !stringAt(in, current - 1, 1, LIST_42) &&
                   !stringAt(in, current - 1, 3, LIST_43)) {
             metaphAdd(primary, 'K');
@@ -418,7 +378,7 @@ public final String transform(String word) {
             break;
           }
           if (stringAt(in, current + 1, 1, LIST_44) || stringAt(in, current - 1, 4, LIST_45)) {
-            if (stringAt(in, 0, 4, LIST_46) || stringAt(in, 0, 3, LIST_47) || stringAt(in, current + 1, 2, LIST_48)) {
+            if (stringAt(in, 0, 4, LIST_46) || in.startsWith("SCH", 0) || in.startsWith("ET", current + 1)) {
               metaphAdd(primary, 'K');
             } else {
               metaphAdd(primary, 'J');
@@ -441,8 +401,8 @@ public final String transform(String word) {
           }
           break;
         case 'J':
-          if (stringAt(in, current, 4, LIST_50) || stringAt(in, 0, 4, LIST_51)) {
-            if ((current == 0) && (in.charAt(current + 4) == ' ') || stringAt(in, 0, 4, LIST_52)) {
+          if (in.startsWith("JOSE", current) || in.startsWith("SAN ", 0)) {
+            if ((current == 0) && (in.charAt(current + 4) == ' ') || in.startsWith("SAN ", 0)) {
               metaphAdd(primary, 'H');
             } else {
               metaphAdd(primary, 'J');
@@ -450,7 +410,7 @@ public final String transform(String word) {
             current += 1;
             break;
           }
-          if ((current == 0) && !stringAt(in, current, 4, LIST_53)) {
+          if ((current == 0) && !in.startsWith("JOSE", current)) {
             metaphAdd(primary, 'J');
           } else {
             if (isVowel(in, current - 1, length) && !isSlavoGermaic && ((in.charAt(current + 1) == 'A') ||
@@ -482,7 +442,7 @@ public final String transform(String word) {
           if (in.charAt(current + 1) == 'L') {
             if (((current == (length - 3)) && stringAt(in, current - 1, 4, LIST_56)) ||
                     ((stringAt(in, last - 1, 2, LIST_57) || stringAt(in, last, 1, LIST_58)) &&
-                            stringAt(in, current - 1, 4, LIST_59))) {
+                            in.startsWith("ALLE", current - 1))) {
               metaphAdd(primary, 'L');
               current += 2;
               break;
@@ -493,8 +453,8 @@ public final String transform(String word) {
           metaphAdd(primary, 'L');
           break;
         case 'M':
-          if ((stringAt(in, current - 1, 3, LIST_60) && (((current + 1) == last) ||
-                  stringAt(in, current + 2, 2, LIST_61))) || (in.charAt(current + 1) == 'M'))
+          if ((in.startsWith("UMB", current - 1) && (((current + 1) == last) ||
+                  in.startsWith("ER", current + 2))) || (in.charAt(current + 1) == 'M'))
             current += 2;
           else
             current += 1;
@@ -531,9 +491,9 @@ public final String transform(String word) {
           metaphAdd(primary, 'K');
           break;
         case 'R':
-          if ((current == last) && !isSlavoGermaic && stringAt(in, current - 2, 2, LIST_63) &&
+          if ((current == last) && !isSlavoGermaic && in.startsWith("IE", current - 2) &&
                   !stringAt(in, current - 4, 2, LIST_64)) {
-            // MetaphAdd(primary, "");
+            // Silent final French "R", as in "Rogier": add nothing
           } else
             metaphAdd(primary, 'R');
           if (in.charAt(current + 1) == 'R')
@@ -546,12 +506,12 @@ public final String transform(String word) {
             current += 1;
             break;
           }
-          if ((current == 0) && stringAt(in, current, 5, LIST_66)) {
+          if ((current == 0) && in.startsWith("SUGAR", current)) {
             metaphAdd(primary, 'X');
             current += 1;
             break;
           }
-          if (stringAt(in, current, 2, LIST_67)) {
+          if (in.startsWith("SH", current)) {
             if (stringAt(in, current + 1, 4, LIST_68))
               metaphAdd(primary, 'S');
             else
@@ -559,20 +519,20 @@ public final String transform(String word) {
             current += 2;
             break;
           }
-          if (stringAt(in, current, 3, LIST_69) || stringAt(in, current, 4, LIST_70)) {
+          if (stringAt(in, current, 3, LIST_69) || in.startsWith("SIAN", current)) {
             metaphAdd(primary, 'S');
             current += 3;
             break;
           }
-          if (((current == 0) && stringAt(in, current + 1, 1, LIST_71)) || stringAt(in, current + 1, 1, LIST_72)) {
+          if (((current == 0) && stringAt(in, current + 1, 1, LIST_71)) || in.startsWith("Z", current + 1)) {
             metaphAdd(primary, 'S');
-            if (stringAt(in, current + 1, 1, LIST_73))
+            if (in.startsWith("Z", current + 1))
               current += 2;
             else
               current += 1;
             break;
           }
-          if (stringAt(in, current, 2, LIST_74)) {
+          if (in.startsWith("SC", current)) {
             if (in.charAt(current + 2) == 'H')
               if (stringAt(in, current + 3, 2, LIST_75)) {
                 if (stringAt(in, current + 3, 2, LIST_76)) {
@@ -597,7 +557,7 @@ public final String transform(String word) {
             break;
           }
           if ((current == last) && stringAt(in, current - 2, 2, LIST_78)) {
-            //MetaphAdd(primary, "");
+            // Silent final French "S", as in "Artois": add nothing
           } else {
               metaphAdd(primary, 'S');
           }
@@ -607,7 +567,7 @@ public final String transform(String word) {
             current += 1;
           break;
         case 'T':
-          if (stringAt(in, current, 4, LIST_80)) {
+          if (in.startsWith("TION", current)) {
             metaphAdd(primary, 'X');
             current += 3;
             break;
@@ -617,8 +577,8 @@ public final String transform(String word) {
             current += 3;
             break;
           }
-          if (stringAt(in, current, 2, LIST_82) || stringAt(in, current, 3, LIST_83)) {
-            if (stringAt(in, (current + 2), 2, LIST_84) || stringAt(in, 0, 4, LIST_85) || stringAt(in, 0, 3, LIST_86)) {
+          if (in.startsWith("TH", current) || in.startsWith("TTH", current)) {
+            if (stringAt(in, (current + 2), 2, LIST_84) || stringAt(in, 0, 4, LIST_85) || in.startsWith("SCH", 0)) {
               metaphAdd(primary, 'T');
             } else {
               metaphAdd(primary, '0');
@@ -640,16 +600,16 @@ public final String transform(String word) {
           metaphAdd(primary, 'F');
           break;
         case 'W':
-          if (stringAt(in, current, 2, LIST_88)) {
+          if (in.startsWith("WR", current)) {
             metaphAdd(primary, 'R');
             current += 2;
             break;
           }
-          if ((current == 0) && (isVowel(in, current + 1, length) || stringAt(in, current, 2, LIST_89))) {
+          if ((current == 0) && (isVowel(in, current + 1, length) || in.startsWith("WH", current))) {
             metaphAdd(primary, 'A');
           }
           if (((current == last) && isVowel(in, current - 1, length)) || stringAt(in, current - 1,
-                  5, LIST_90) || stringAt(in, 0, 3, LIST_91)) {
+                  5, LIST_90) || in.startsWith("SCH", 0)) {
             metaphAdd(primary, 'F');
             current += 1;
             break;

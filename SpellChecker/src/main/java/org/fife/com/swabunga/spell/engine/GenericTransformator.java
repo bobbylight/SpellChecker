@@ -107,7 +107,7 @@ public class GenericTransformator implements Transformator {
    */
   public static final String REPLACEVOID = "_";
 
-  private Object[] ruleArray;
+  private TransformationRule[] ruleArray;
   private char[] alphabetString = DEFAULT_ENGLISH_ALPHABET;
 
   /**
@@ -218,9 +218,7 @@ public String transform(String word) {
         continue;
       }
 
-        for (Object o : ruleArray) {
-            //System.out.println("Testing rule#:"+i);
-            TransformationRule rule = (TransformationRule)o;
+        for (TransformationRule rule : ruleArray) {
             if (rule.startsWithExp() && startPos > 0)
                 continue;
             if (startPos + rule.lengthOfMatch() > strLength) {
@@ -233,14 +231,11 @@ public String transform(String word) {
                 str.replace(startPos, startPos + rule.getTakeOut(), replaceExp);
                 strLength -= rule.getTakeOut();
                 strLength += add;
-                //System.out.println("Replacing with rule#:"+i+" add="+add);
                 break;
             }
         }
       startPos += add;
     }
-    //System.out.println(word);
-    //System.out.println(str.toString());
     return str.toString();
   }
 
@@ -315,10 +310,8 @@ public String transform(String word) {
     }
     if (replaceExp.toString().equals(REPLACEVOID)) {
       replaceExp = new StringBuilder();
-      //System.out.println("Changing _ to \"\" for "+matchExp.toString());
     }
     rule = new TransformationRule(matchExp.toString(), replaceExp.toString(), takeOutPart, matchLength, start, end);
-    //System.out.println(rule.toString());
     ruleList.add(rule);
   }
 
