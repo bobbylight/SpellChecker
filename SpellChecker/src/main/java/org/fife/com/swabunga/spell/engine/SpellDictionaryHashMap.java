@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * The SpellDictionaryHashMap holds the dictionary
@@ -88,7 +89,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap(Reader wordList) throws IOException {
-    createDictionary(new BufferedReader(wordList));
+    this(wordList, null);
   }
 
   /**
@@ -99,22 +100,19 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap(File wordList) throws IOException {
-    dictFile = wordList;
-    createDictionary(wordList);
+    this(wordList, null, StandardCharsets.UTF_8.name());
   }
 
   /**
    * Dictionary constructor that uses an aspell phonetic file to
-   * build the transformation table.
+   * build the transformation table. Both files are read as UTF-8.
    *
    * @param wordList The file containing the words list for the dictionary
    * @param phonetic The file to use for phonetic transformation of the wordlist.
    * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap(File wordList, File phonetic) throws IOException {
-    super(phonetic);
-    dictFile = wordList;
-    createDictionary(wordList);
+    this(wordList, phonetic, StandardCharsets.UTF_8.name());
   }
 
   /**
@@ -147,8 +145,7 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
    */
   public SpellDictionaryHashMap(Reader wordList, Reader phonetic) throws IOException {
     super(phonetic);
-    dictFile = null;
-    createDictionary(new BufferedReader(wordList));
+    readWords(new BufferedReader(wordList), this::putWord);
   }
 
   /**
@@ -195,49 +192,35 @@ public boolean addWord(String word) {
    */
   private void createDictionary(File wordList) throws IOException {
     try (BufferedReader in = new BufferedReader(new FileReader(wordList, StandardCharsets.UTF_8))) {
-      createDictionary(in);
+      readWords(in, this::putWord);
     }
   }
 
   /**
-   * Constructs the dictionary from a word list. The reader is not closed.
+   * Adds to the existing dictionary from a word list. If a word already
+   * exists in the dictionary, ignoring case, a new entry is not added.
    * <p>
    * Each word in the reader should be on a separate line.
    * <p>
-   * This is a very slow function. On my machine it takes quite a while to
-   * load the data in. I suspect that we could speed this up quite allot.
-   */
-  private void createDictionary(BufferedReader in) throws IOException {
-    // robert: Optimized ever-so-slightly
-    String line;
-    while ((line=in.readLine())!=null) {
-      if (!line.isEmpty()) {
-        putWord(line);
-      }
-    }
-  }
-
-  /**
-   * Adds to the existing dictionary from a word list file. If the word
-   * already exists in the dictionary, a new entry is not added.
-   * <p>
-   * Each word in the reader should be on a separate line.
-   * <p>
-   * Note: for whatever reason that I haven't yet looked into, the phonetic codes
-   * for a particular word map to a vector of words rather than a hash table.
-   * This is a drag since in order to check for duplicates you have to iterate
-   * through all the words that use the phonetic code.
-   * If the vector-based implementation is important, it may be better
-   * to subclass for the cases where duplicates are bad.
+   * Checking for duplicates means comparing against every word with the
+   * same phonetic code, so this is slower than loading a word list in a
+   * constructor.
    */
   protected void addDictionaryHelper(BufferedReader in) throws IOException {
-	    // robert: Optimized ever-so-slightly
-	    String line;
-	    while ((line=in.readLine())!=null) {
-	      if (!line.isEmpty()) {
-	        putWordUnique(line);
-	      }
-	    }
+    readWords(in, this::putWordUnique);
+  }
+
+  /**
+   * Passes each non-empty line of a word list to a method that adds it to
+   * the dictionary. The reader is not closed.
+   */
+  private static void readWords(BufferedReader in, Consumer<String> putWord) throws IOException {
+    String line;
+    while ((line = in.readLine()) != null) {
+      if (!line.isEmpty()) {
+        putWord.accept(line);
+      }
+    }
   }
 
   /**
