@@ -249,25 +249,18 @@ public class SpellChecker {
    * @param word       The word to analyze for mixed cases characters
    * @return true if this word contains mixed case characters
    */
-  private static boolean isMixedCaseWord(CharSequence word) {
+  static boolean isMixedCaseWord(CharSequence word) {
     int strLen = word.length();
     boolean isUpper = Character.isUpperCase(word.charAt(0));
     //Ignore the first character if it was upper-cased, since a capitalized
     //word (sentence start, proper noun, title) is normal
     if (isUpper && (strLen > 1))
       isUpper = Character.isUpperCase(word.charAt(1));
-    if (isUpper) {
-      for (int i = word.length() - 1; i > 0; i--) {
-        if (Character.isLowerCase(word.charAt(i))) {
-          return true;
-        }
-      }
-    }
-    else {
-      for (int i = word.length() - 1; i > 0; i--) {
-        if (Character.isUpperCase(word.charAt(i))) {
-          return true;
-        }
+    // Mixed case means a later character has the other case
+    for (int i = strLen - 1; i > 0; i--) {
+      char ch = word.charAt(i);
+      if (isUpper ? Character.isLowerCase(ch) : Character.isUpperCase(ch)) {
+        return true;
       }
     }
     return false;
@@ -524,20 +517,8 @@ public class SpellChecker {
           offs += part.length();
         }
       }
-      else if ((isMixedCaseWord && state.get(CheckState.IGNORE_MIXED_CASE)) ||
-          (state.get(CheckState.IGNORE_UPPER_CASE) && isUpperCaseWord(word)) ||
-          (word.length() == 1 && state.get(CheckState.IGNORE_SINGLE_LETTERS)) ||
-          (state.get(CheckState.IGNORE_DIGIT_WORDS) && isDigitWord(word)) ||
-          (state.get(CheckState.IGNORE_INTERNET_ADDRESSES) && isINETWord(word))) {
-        //Null event. Since we are ignoring this word due
-        //to one of the above cases.
-      }
-      else {
-        //We can't ignore this misspelled word
-        //For this invalid word are we ignoring the misspelling?
-        if (!isIgnored(word)) {
-          reportError(word, wordStart, state);
-        }
+      else if (!isSkippedBySettings(word, isMixedCaseWord, state) && !isIgnored(word)) {
+        reportError(word, wordStart, state);
       }
     }
     else {
@@ -548,6 +529,24 @@ public class SpellChecker {
         reportError(word, wordStart, state);
       }
     }
+  }
+
+  /**
+   * Returns whether a misspelled word shouldn't be reported because of the
+   * spell check settings, for example because it's in upper case or
+   * contains digits.
+   *
+   * @param word The misspelled word.
+   * @param isMixedCaseWord Whether the word is in mixed case.
+   * @param state The settings for this spell check.
+   * @return Whether to skip the word.
+   */
+  private boolean isSkippedBySettings(String word, boolean isMixedCaseWord, CheckState state) {
+    return (isMixedCaseWord && state.get(CheckState.IGNORE_MIXED_CASE)) ||
+        (state.get(CheckState.IGNORE_UPPER_CASE) && isUpperCaseWord(word)) ||
+        (word.length() == 1 && state.get(CheckState.IGNORE_SINGLE_LETTERS)) ||
+        (state.get(CheckState.IGNORE_DIGIT_WORDS) && isDigitWord(word)) ||
+        (state.get(CheckState.IGNORE_INTERNET_ADDRESSES) && isINETWord(word));
   }
 
   /**

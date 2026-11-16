@@ -106,6 +106,79 @@ class SpellDictionaryHashMapTest {
         Assertions.assertEquals(0, lines.size());
     }
 
+    /**
+     * Creates an empty phonetic file. With no rules, a word's phonetic code
+     * is just the word in upper case, unlike the default {@code DoubleMeta}
+     * transformation (which encodes "apple" as "APL").
+     */
+    private static File createEmptyPhoneticFile() throws IOException {
+        File phonetic = File.createTempFile("scUnitTest", ".dat");
+        phonetic.deleteOnExit();
+        return phonetic;
+    }
+
+    private static File createWordFile(String content) throws IOException {
+        File wordFile = File.createTempFile("scUnitTest", ".dic");
+        wordFile.deleteOnExit();
+        Files.writeString(wordFile.toPath(), content);
+        return wordFile;
+    }
+
+    @Test
+    void testConstructor_defaultTransformation() throws IOException {
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\n"));
+        Assertions.assertEquals("APL", dic.getCode("apple"));
+        Assertions.assertEquals(List.of("apple"), dic.getWords("APL"));
+    }
+
+    @Test
+    void testConstructor_twoArg_twoFiles_usesPhoneticFile() throws IOException {
+        File wordFile = createWordFile("apple\n");
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile, createEmptyPhoneticFile());
+        Assertions.assertEquals("APPLE", dic.getCode("apple"));
+        Assertions.assertEquals(List.of("apple"), dic.getWords("APPLE"));
+        Assertions.assertTrue(dic.addWord("banana")); // Persists to the word file
+        Assertions.assertEquals(List.of("apple", "banana"), Files.readAllLines(wordFile.toPath()));
+    }
+
+    @Test
+    void testConstructor_threeArg_usesPhoneticFile() throws IOException {
+        File wordFile = createWordFile("apple\n");
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile, createEmptyPhoneticFile(), "UTF-8");
+        Assertions.assertEquals("APPLE", dic.getCode("apple"));
+        Assertions.assertEquals(List.of("apple"), dic.getWords("APPLE"));
+        Assertions.assertTrue(dic.addWord("banana"));
+        Assertions.assertEquals(List.of("apple", "banana"), Files.readAllLines(wordFile.toPath()));
+    }
+
+    @Test
+    void testConstructor_twoArg_twoReaders_usesPhoneticFile() throws IOException {
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\n"), new StringReader(""));
+        Assertions.assertEquals("APPLE", dic.getCode("apple"));
+        Assertions.assertEquals(List.of("apple"), dic.getWords("APPLE"));
+        Assertions.assertFalse(dic.addWord("banana")); // No word file to persist to
+        Assertions.assertTrue(dic.isCorrect("banana"));
+    }
+
+    @Test
+    void testConstructor_file_noPhoneticFile_readsWordsAndPersists() throws IOException {
+        File wordFile = createWordFile("apple\n");
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile);
+        Assertions.assertEquals("APL", dic.getCode("apple"));
+        Assertions.assertTrue(dic.isCorrect("apple"));
+        Assertions.assertTrue(dic.addWord("banana"));
+        Assertions.assertEquals(List.of("apple", "banana"), Files.readAllLines(wordFile.toPath()));
+    }
+
+    @Test
+    void testAddDictionary_skipsDuplicatesAndBlankLines() throws IOException {
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\n\n"));
+        dic.addDictionary(new StringReader("Apple\napple\n\nbanana\n"));
+        Assertions.assertEquals(List.of("apple"), dic.getWords(dic.getCode("apple")));
+        Assertions.assertTrue(dic.isCorrect("banana"));
+        Assertions.assertFalse(dic.isCorrect(""));
+    }
+
     @Test
     void testAddDictionary() throws IOException {
         SpellDictionaryHashMap dic = createDictionary_zeroArg();

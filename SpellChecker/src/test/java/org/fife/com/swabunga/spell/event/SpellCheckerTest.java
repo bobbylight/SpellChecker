@@ -7,6 +7,8 @@ import org.fife.com.swabunga.spell.engine.Word;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.ParameterizedTest;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -768,6 +770,17 @@ class SpellCheckerTest {
     @Test
     void testSetUserDictionary_throwsIfNull() {
         assertThrows(NullPointerException.class, () -> checker.setUserDictionary(null));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "a, false", "A, false",
+        "hello, false", "Hello, false", "HELLO, false", "Hello123, false",
+        "hELLO, true", "camelCase, true", "iPhone, true",
+        "HTMLValidator, true", "McDonald, true", "ABc, true", "HeLLo, true"
+    })
+    void testIsMixedCaseWord(String word, boolean expected) {
+        assertEquals(expected, SpellChecker.isMixedCaseWord(word), word);
     }
 
     @Test
