@@ -35,6 +35,35 @@ class DoubleMetaTest {
     }
 
     @Test
+    void testTransform_endsWith_frenchR_silent() {
+        Assertions.assertEquals("FR", doubleMeta.transform("Fourier"));
+    }
+
+    @Test
+    void testTransform_endsWith_frenchS_silent() {
+        Assertions.assertEquals("ALN", doubleMeta.transform("Illinois"));
+    }
+
+    @Test
+    void testTransform_endsWith_vowelThenW_silent() {
+        // Only the C++'s alternate encoding has an "F" here
+        Assertions.assertEquals("AL", doubleMeta.transform("allow"));
+        Assertions.assertEquals("ARN", doubleMeta.transform("Arnow"));
+    }
+
+    @Test
+    void testTransform_contains_ph() {
+        Assertions.assertEquals("FN", doubleMeta.transform("phone"));
+        Assertions.assertEquals("AFRTT", doubleMeta.transform("Aphrodite"));
+    }
+
+    @Test
+    void testTransform_contains_ccia() {
+        Assertions.assertEquals("FKX", doubleMeta.transform("focaccia"));
+        Assertions.assertEquals("AKS", doubleMeta.transform("acacia"));
+    }
+
+    @Test
     void testTransform_simpleWord() {
         Assertions.assertEquals("TST", doubleMeta.transform("test"));
     }
@@ -64,7 +93,7 @@ class DoubleMetaTest {
 
     @Test
     void testTransform_endsWith_eaux() {
-        Assertions.assertEquals("PRKS", doubleMeta.transform("breaux"));
+        Assertions.assertEquals("PR", doubleMeta.transform("breaux")); // Final French "X" is silent
     }
 
     @Test
@@ -99,7 +128,7 @@ class DoubleMetaTest {
 
     @Test
     void testTransform_phoneticMatch() {
-        Assertions.assertEquals("P", doubleMeta.transform("ph"));
+        Assertions.assertEquals("F", doubleMeta.transform("ph"));
     }
 
     @Test
@@ -219,7 +248,7 @@ class DoubleMetaTest {
 
     @Test
     void testTransform_startsWith_jose_2() {
-        Assertions.assertEquals("JSP", doubleMeta.transform("joseph"));
+        Assertions.assertEquals("JSF", doubleMeta.transform("joseph")); // "PH" is "F"
     }
 
     @Test
@@ -364,7 +393,7 @@ class DoubleMetaTest {
 
     @Test
     void testTransform_contains_aux() {
-        Assertions.assertEquals("AKS", doubleMeta.transform("aux"));
+        Assertions.assertEquals("A", doubleMeta.transform("aux")); // Final French "X" is silent
     }
 
     @Test
@@ -414,17 +443,17 @@ class DoubleMetaTest {
 
     @Test
     void testTransform_contains_cia() {
-        Assertions.assertEquals("ALPX", doubleMeta.transform("alopecia"));
+        Assertions.assertEquals("ALPS", doubleMeta.transform("alopecia"));
     }
 
     @Test
     void testTransform_contains_cia_2() {
-        Assertions.assertEquals("PNFXL", doubleMeta.transform("beneficial"));
+        Assertions.assertEquals("PNFSL", doubleMeta.transform("beneficial")); // "CIA" is "S" (only "CCIA" is "X")
     }
 
     @Test
     void testTransform_contains_cia_3() {
-        Assertions.assertEquals("X", doubleMeta.transform("ciao"));
+        Assertions.assertEquals("S", doubleMeta.transform("ciao"));
     }
 
     @Test
@@ -534,7 +563,7 @@ class DoubleMetaTest {
 
     @Test
     void testTransform_contains_pn() {
-        Assertions.assertEquals("AF", doubleMeta.transform("apnea"));
+        Assertions.assertEquals("APN", doubleMeta.transform("apnea")); // Only "PH" is "F"
     }
 
     @Test
