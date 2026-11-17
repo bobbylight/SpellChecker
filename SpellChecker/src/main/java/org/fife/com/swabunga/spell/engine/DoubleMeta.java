@@ -58,102 +58,102 @@ public class DoubleMeta implements Transformator {
   private static char[] replaceList = {'A', 'B', 'X', 'S', 'K', 'J', 'T', 'F', 'H', 'L', 'M', 'N', 'P', 'R', '0'};
 
 
-  private static final String[] MY_LIST = {"GN", "KN", "PN", "WR", "PS", ""};
-  private static final String[] LIST_1 = {"ACH", ""};
-  private static final String[] LIST_2 = {"BACHER", "MACHER", ""};
-  private static final String[] LIST_3 = {"CAESAR", ""};
-  private static final String[] LIST_4 = {"CHIA", ""};
-  private static final String[] LIST_5 = {"CH", ""};
-  private static final String[] LIST_6 = {"CHAE", ""};
-  private static final String[] LIST_7 = {"HARAC", "HARIS", ""};
-  private static final String[] LIST_8 = {"HOR", "HYM", "HIA", "HEM", ""};
-  private static final String[] LIST_9 = {"CHORE", ""};
-  private static final String[] LIST_10 = {"VAN ", "VON ", ""};
-  private static final String[] LIST_11 = {"SCH", ""};
-  private static final String[] LIST_12 = {"ORCHES", "ARCHIT", "ORCHID", ""};
-  private static final String[] LIST_13 = {"T", "S", ""};
-  private static final String[] LIST_14 = {"A", "O", "U", "E", ""};
-  private static final String[] LIST_15 = {"L", "R", "N", "M", "B", "H", "F", "V", "W", " ", ""};
-  private static final String[] LIST_16 = {"MC", ""};
-  private static final String[] LIST_17 = {"CZ", ""};
-  private static final String[] LIST_18 = {"WICZ", ""};
-  private static final String[] LIST_19 = {"CIA", ""};
-  private static final String[] LIST_20 = {"CC", ""};
-  private static final String[] LIST_21 = {"I", "E", "H", ""};
-  private static final String[] LIST_22 = {"HU", ""};
-  private static final String[] LIST_23 = {"UCCEE", "UCCES", ""};
-  private static final String[] LIST_24 = {"CK", "CG", "CQ", ""};
-  private static final String[] LIST_25 = {"CI", "CE", "CY", ""};
+  private static final String[] MY_LIST = {"GN", "KN", "PN", "WR", "PS"};
+  private static final String[] LIST_1 = {"ACH"};
+  private static final String[] LIST_2 = {"BACHER", "MACHER"};
+  private static final String[] LIST_3 = {"CAESAR"};
+  private static final String[] LIST_4 = {"CHIA"};
+  private static final String[] LIST_5 = {"CH"};
+  private static final String[] LIST_6 = {"CHAE"};
+  private static final String[] LIST_7 = {"HARAC", "HARIS"};
+  private static final String[] LIST_8 = {"HOR", "HYM", "HIA", "HEM"};
+  private static final String[] LIST_9 = {"CHORE"};
+  private static final String[] LIST_10 = {"VAN ", "VON "};
+  private static final String[] LIST_11 = {"SCH"};
+  private static final String[] LIST_12 = {"ORCHES", "ARCHIT", "ORCHID"};
+  private static final String[] LIST_13 = {"T", "S"};
+  private static final String[] LIST_14 = {"A", "O", "U", "E"};
+  private static final String[] LIST_15 = {"L", "R", "N", "M", "B", "H", "F", "V", "W", " "};
+  private static final String[] LIST_16 = {"MC"};
+  private static final String[] LIST_17 = {"CZ"};
+  private static final String[] LIST_18 = {"WICZ"};
+  private static final String[] LIST_19 = {"CIA"};
+  private static final String[] LIST_20 = {"CC"};
+  private static final String[] LIST_21 = {"I", "E", "H"};
+  private static final String[] LIST_22 = {"HU"};
+  private static final String[] LIST_23 = {"UCCEE", "UCCES"};
+  private static final String[] LIST_24 = {"CK", "CG", "CQ"};
+  private static final String[] LIST_25 = {"CI", "CE", "CY"};
   // LIST_26 was removed at some point in Jazzy's history
-  private static final String[] LIST_27 = {" C", " Q", " G", ""};
-  private static final String[] LIST_28 = {"C", "K", "Q", ""};
-  private static final String[] LIST_29 = {"CE", "CI", ""};
-  private static final String[] LIST_30 = {"DG", ""};
-  private static final String[] LIST_31 = {"I", "E", "Y", ""};
-  private static final String[] LIST_32 = {"DT", "DD", ""};
-  private static final String[] LIST_33 = {"B", "H", "D", ""};
-  private static final String[] LIST_34 = {"B", "H", "D", ""};
-  private static final String[] LIST_35 = {"B", "H", ""};
-  private static final String[] LIST_36 = {"C", "G", "L", "R", "T", ""};
-  private static final String[] LIST_37 = {"EY", ""};
-  private static final String[] LIST_38 = {"LI", ""};
-  private static final String[] LIST_39 = {"ES", "EP", "EB", "EL", "EY", "IB", "IL", "IN", "IE", "EI", "ER", ""};
-  private static final String[] LIST_40 = {"ER", ""};
-  private static final String[] LIST_41 = {"DANGER", "RANGER", "MANGER", ""};
-  private static final String[] LIST_42 = {"E", "I", ""};
-  private static final String[] LIST_43 = {"RGY", "OGY", ""};
-  private static final String[] LIST_44 = {"E", "I", "Y", ""};
-  private static final String[] LIST_45 = {"AGGI", "OGGI", ""};
-  private static final String[] LIST_46 = {"VAN ", "VON ", ""};
-  private static final String[] LIST_47 = {"SCH", ""};
-  private static final String[] LIST_48 = {"ET", ""};
+  private static final String[] LIST_27 = {" C", " Q", " G"};
+  private static final String[] LIST_28 = {"C", "K", "Q"};
+  private static final String[] LIST_29 = {"CE", "CI"};
+  private static final String[] LIST_30 = {"DG"};
+  private static final String[] LIST_31 = {"I", "E", "Y"};
+  private static final String[] LIST_32 = {"DT", "DD"};
+  private static final String[] LIST_33 = {"B", "H", "D"};
+  private static final String[] LIST_34 = {"B", "H", "D"};
+  private static final String[] LIST_35 = {"B", "H"};
+  private static final String[] LIST_36 = {"C", "G", "L", "R", "T"};
+  private static final String[] LIST_37 = {"EY"};
+  private static final String[] LIST_38 = {"LI"};
+  private static final String[] LIST_39 = {"ES", "EP", "EB", "EL", "EY", "IB", "IL", "IN", "IE", "EI", "ER"};
+  private static final String[] LIST_40 = {"ER"};
+  private static final String[] LIST_41 = {"DANGER", "RANGER", "MANGER"};
+  private static final String[] LIST_42 = {"E", "I"};
+  private static final String[] LIST_43 = {"RGY", "OGY"};
+  private static final String[] LIST_44 = {"E", "I", "Y"};
+  private static final String[] LIST_45 = {"AGGI", "OGGI"};
+  private static final String[] LIST_46 = {"VAN ", "VON "};
+  private static final String[] LIST_47 = {"SCH"};
+  private static final String[] LIST_48 = {"ET"};
   // LIST_49 was removed at some point in Jazzy's history
-  private static final String[] LIST_50 = {"JOSE", ""};
-  private static final String[] LIST_51 = {"SAN ", ""};
-  private static final String[] LIST_52 = {"SAN ", ""};
-  private static final String[] LIST_53 = {"JOSE", ""};
-  private static final String[] LIST_54 = {"L", "T", "K", "S", "N", "M", "B", "Z", ""};
-  private static final String[] LIST_55 = {"S", "K", "L", ""};
-  private static final String[] LIST_56 = {"ILLO", "ILLA", "ALLE", ""};
-  private static final String[] LIST_57 = {"AS", "OS", ""};
-  private static final String[] LIST_58 = {"A", "O", ""};
-  private static final String[] LIST_59 = {"ALLE", ""};
-  private static final String[] LIST_60 = {"UMB", ""};
-  private static final String[] LIST_61 = {"ER", ""};
-  private static final String[] LIST_62 = {"P", "B", ""};
-  private static final String[] LIST_63 = {"IE", ""};
-  private static final String[] LIST_64 = {"ME", "MA", ""};
-  private static final String[] LIST_65 = {"ISL", "YSL", ""};
-  private static final String[] LIST_66 = {"SUGAR", ""};
-  private static final String[] LIST_67 = {"SH", ""};
-  private static final String[] LIST_68 = {"HEIM", "HOEK", "HOLM", "HOLZ", ""};
-  private static final String[] LIST_69 = {"SIO", "SIA", ""};
-  private static final String[] LIST_70 = {"SIAN", ""};
-  private static final String[] LIST_71 = {"M", "N", "L", "W", ""};
-  private static final String[] LIST_72 = {"Z", ""};
-  private static final String[] LIST_73 = {"Z", ""};
-  private static final String[] LIST_74 = {"SC", ""};
-  private static final String[] LIST_75 = {"OO", "ER", "EN", "UY", "ED", "EM", ""};
-  private static final String[] LIST_76 = {"ER", "EN", ""};
-  private static final String[] LIST_77 = {"I", "E", "Y", ""};
-  private static final String[] LIST_78 = {"AI", "OI", ""};
-  private static final String[] LIST_79 = {"S", "Z", ""};
-  private static final String[] LIST_80 = {"TION", ""};
-  private static final String[] LIST_81 = {"TIA", "TCH", ""};
-  private static final String[] LIST_82 = {"TH", ""};
-  private static final String[] LIST_83 = {"TTH", ""};
-  private static final String[] LIST_84 = {"OM", "AM", ""};
-  private static final String[] LIST_85 = {"VAN ", "VON ", ""};
-  private static final String[] LIST_86 = {"SCH", ""};
-  private static final String[] LIST_87 = {"T", "D", ""};
-  private static final String[] LIST_88 = {"WR", ""};
-  private static final String[] LIST_89 = {"WH", ""};
-  private static final String[] LIST_90 = {"EWSKI", "EWSKY", "OWSKI", "OWSKY", ""};
-  private static final String[] LIST_91 = {"SCH", ""};
-  private static final String[] LIST_92 = {"WICZ", "WITZ", ""};
-  private static final String[] LIST_93 = {"IAU", "EAU", ""};
-  private static final String[] LIST_94 = {"AU", "OU", ""};
-  private static final String[] LIST_95 = {"C", "X", ""};
+  private static final String[] LIST_50 = {"JOSE"};
+  private static final String[] LIST_51 = {"SAN "};
+  private static final String[] LIST_52 = {"SAN "};
+  private static final String[] LIST_53 = {"JOSE"};
+  private static final String[] LIST_54 = {"L", "T", "K", "S", "N", "M", "B", "Z"};
+  private static final String[] LIST_55 = {"S", "K", "L"};
+  private static final String[] LIST_56 = {"ILLO", "ILLA", "ALLE"};
+  private static final String[] LIST_57 = {"AS", "OS"};
+  private static final String[] LIST_58 = {"A", "O"};
+  private static final String[] LIST_59 = {"ALLE"};
+  private static final String[] LIST_60 = {"UMB"};
+  private static final String[] LIST_61 = {"ER"};
+  private static final String[] LIST_62 = {"P", "B"};
+  private static final String[] LIST_63 = {"IE"};
+  private static final String[] LIST_64 = {"ME", "MA"};
+  private static final String[] LIST_65 = {"ISL", "YSL"};
+  private static final String[] LIST_66 = {"SUGAR"};
+  private static final String[] LIST_67 = {"SH"};
+  private static final String[] LIST_68 = {"HEIM", "HOEK", "HOLM", "HOLZ"};
+  private static final String[] LIST_69 = {"SIO", "SIA"};
+  private static final String[] LIST_70 = {"SIAN"};
+  private static final String[] LIST_71 = {"M", "N", "L", "W"};
+  private static final String[] LIST_72 = {"Z"};
+  private static final String[] LIST_73 = {"Z"};
+  private static final String[] LIST_74 = {"SC"};
+  private static final String[] LIST_75 = {"OO", "ER", "EN", "UY", "ED", "EM"};
+  private static final String[] LIST_76 = {"ER", "EN"};
+  private static final String[] LIST_77 = {"I", "E", "Y"};
+  private static final String[] LIST_78 = {"AI", "OI"};
+  private static final String[] LIST_79 = {"S", "Z"};
+  private static final String[] LIST_80 = {"TION"};
+  private static final String[] LIST_81 = {"TIA", "TCH"};
+  private static final String[] LIST_82 = {"TH"};
+  private static final String[] LIST_83 = {"TTH"};
+  private static final String[] LIST_84 = {"OM", "AM"};
+  private static final String[] LIST_85 = {"VAN ", "VON "};
+  private static final String[] LIST_86 = {"SCH"};
+  private static final String[] LIST_87 = {"T", "D"};
+  private static final String[] LIST_88 = {"WR"};
+  private static final String[] LIST_89 = {"WH"};
+  private static final String[] LIST_90 = {"EWSKI", "EWSKY", "OWSKI", "OWSKY"};
+  private static final String[] LIST_91 = {"SCH"};
+  private static final String[] LIST_92 = {"WICZ", "WITZ"};
+  private static final String[] LIST_93 = {"IAU", "EAU"};
+  private static final String[] LIST_94 = {"AU", "OU"};
+  private static final String[] LIST_95 = {"C", "X"};
 
   private static boolean slavoGermanic(String in) {
     return in.contains("W") || in.contains("K") || in.contains("CZ") || in.contains("WITZ");
@@ -203,9 +203,10 @@ public final String transform(String word) {
       return "";
     }
 	StringBuilder primary = new StringBuilder(word.length() + 5);
-    String in = word.toUpperCase(Locale.ROOT) + "     ";
+    String upper = word.toUpperCase(Locale.ROOT);
+    String in = upper + "     "; // Padded so the rules can look past the end of the word
     int current = 0;
-    int length = in.length();
+    int length = upper.length(); // Of the word itself, not the padding, as in the C++
     int last = length - 1;
     boolean isSlavoGermaic = slavoGermanic(in);
     if (stringAt(in, 0, 2, MY_LIST))
@@ -291,9 +292,9 @@ public final String transform(String word) {
             current += 2;
             break;
           }
-          if (stringAt(in, current, 3, LIST_19)) {
+          if (stringAt(in, current + 1, 3, LIST_19)) { // e.g. "focaccia"
             metaphAdd(primary, 'X');
-            current += 2;
+            current += 3;
             break;
           }
           if (stringAt(in, current, 2, LIST_20) && !((current == 1) && in.charAt(0) == 'M')) {
@@ -512,7 +513,7 @@ public final String transform(String word) {
           metaphAdd(primary, 'N');
           break;
         case 'P':
-          if (in.charAt(current + 1) == 'N') {
+          if (in.charAt(current + 1) == 'H') {
             metaphAdd(primary, 'F');
             current += 2;
             break;
@@ -650,8 +651,7 @@ public final String transform(String word) {
           }
           if (((current == last) && isVowel(in, current - 1, length)) || stringAt(in, current - 1,
                   5, LIST_90) || stringAt(in, 0, 3, LIST_91)) {
-            metaphAdd(primary, 'F');
-            current += 1;
+            current += 1; // Silent, as in "Arnow" (the C++ adds "F" only to the alternate code)
             break;
           }
           if (stringAt(in, current, 4, LIST_92)) {
