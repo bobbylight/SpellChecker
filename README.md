@@ -10,8 +10,10 @@ in the color of your choosing, and hovering the mouse over a misspelled word dis
 (if any).  You can configure the library to also use a "user dictionary" file, allowing the user to add extra words to
 the spell check white list.
 
-This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Indeed, 99% of the code is just
-Jazzy, with changes made for performance, bug fixes, and modern Java syntax.
+This add-on is based on [Jazzy](http://jazzy.sourceforge.net), a Java spell checker.  Most of the code is still
+Jazzy, trimmed down to what `RSyntaxTextArea` needs, with changes made for performance, bug fixes, and modern Java
+syntax.  Phonetic matching for suggestions uses the Double Metaphone implementation in
+[Apache Commons Codec](https://commons.apache.org/proper/commons-codec/).
 
 ## Building and Requirements
 Building SpellChecker requires JDK 25 or later:
@@ -24,6 +26,9 @@ The built library runs on Java 11 and later.  The table below lists the requirem
 |---------|-------------------------|-----------------------|
 | 4.x     | 25                      | 11                    |
 | 3.4.x   | 17                      | 8                     |
+
+SpellChecker depends on `RSyntaxTextArea` and, as of 4.0, Apache Commons Codec.  Maven and Gradle pull in both
+automatically.
 
 ## Getting a dictionary file
 While the `SpellingParser` class can take any implementation of the `SpellDictionary` interface,
@@ -50,7 +55,8 @@ textArea.addParser(parser);
 See the `SpellCheckerDemo` submodule for a working example.  
 
 Just like Jazzy itself, this add-on is licensed under the LGPL; see the included
-[LICENSE.md](https://github.com/bobbylight/SpellChecker/blob/master/LICENSE.md) file.
+[LICENSE.md](https://github.com/bobbylight/SpellChecker/blob/master/LICENSE.md) file.  Apache Commons Codec is
+licensed under the Apache License 2.0.
 
 ## Sister Projects
 
