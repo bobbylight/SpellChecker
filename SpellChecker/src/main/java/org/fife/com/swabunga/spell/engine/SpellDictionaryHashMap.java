@@ -17,11 +17,6 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
-/*
- * put your module comment here
- * formatted with JxBeauty (c) johann.langhofer@nextra.at
- */
-
 package org.fife.com.swabunga.spell.engine;
 
 import java.io.BufferedReader;
@@ -36,31 +31,32 @@ import java.util.*;
 import java.util.function.Consumer;
 
 /**
- * The SpellDictionaryHashMap holds the dictionary
- * <p/>
- * There are many open source dictionary files. For just a few see:
- * <a href="http://wordlist.sourceforge.net/">http://wordlist.sourceforge.net/</a>
- * <p/>
- * This dictionary class reads words one per line. Make sure that your word list
- * is formatted in this way (most are).
- * <p/>
- * Note that you must create the dictionary with a word list for the added
- * words to persist.
+ * A dictionary held in memory, read from word lists with one word per line.
+ * There are many open source word lists; for a few, see
+ * <a href="http://wordlist.sourceforge.net/">http://wordlist.sourceforge.net/</a>.
+ * <p>
+ * To suggest corrections, words are grouped by their Double Metaphone codes.
+ * A word is in the group for its primary code, and also in the group for its
+ * alternate code if that's different, so words are suggested for misspellings
+ * that match either pronunciation.
+ * <p>
+ * Words added with {@link #addWord(String)} are only saved if the dictionary
+ * was created from a word list file.
  */
-// robert: Converted use of Vectors to ArrayLists; we're single-threaded
-public class SpellDictionaryHashMap extends SpellDictionaryASpell {
+public class SpellDictionaryHashMap implements SpellDictionary {
+
   /**
-   * A field indicating the initial hash map capacity (16KB) for the main
-   * dictionary hash map. Interested to see what the performance of a
-   * smaller initial capacity is like.
+   * The initial capacity of the maps holding the words.
    */
   private static final int INITIAL_CAPACITY = 16 * 1024;
 
+  private final DoubleMeta doubleMeta = new DoubleMeta();
+
   /**
-   * The hashmap that contains the word dictionary. The map is hashed on the doublemeta
-   * code. The map entry contains a LinkedList of words that have the same double meta code.
+   * Words, grouped by phonetic code. Each word is in the group for each of
+   * its (one or two) codes.
    */
-  private Map<String, List<String>> mainDictionary = new HashMap<>(INITIAL_CAPACITY);
+  private final Map<String, List<String>> mainDictionary = new HashMap<>(INITIAL_CAPACITY);
 
   /**
    * Every word in {@link #mainDictionary}, for exact lookups in
@@ -80,134 +76,66 @@ public class SpellDictionaryHashMap extends SpellDictionaryASpell {
   }
 
   /**
-   * Constructor.<p>
+   * Creates a dictionary from a word list.<p>
    * Note that since there's no actual file for the word list, words added
    * via {@link #addWord(String)} will not persist beyond the application's
    * lifecycle.
    *
-   * @param wordList The file containing the words list for the dictionary
+   * @param wordList The word list, one word per line. This is not closed.
    * @throws IOException If an IO error occurs.
    */
   public SpellDictionaryHashMap(Reader wordList) throws IOException {
-    this(wordList, null);
-  }
-
-  /**
-   * Dictionary convenience Constructor. The word list is read, and words
-   * added via {@link #addWord(String)} are appended to it, as UTF-8.
-   *
-   * @param wordList The file containing the words list for the dictionary
-   * @throws IOException If an IO error occurs.
-   */
-  public SpellDictionaryHashMap(File wordList) throws IOException {
-    this(wordList, null, StandardCharsets.UTF_8.name());
-  }
-
-  /**
-   * Dictionary constructor that uses an aspell phonetic file to
-   * build the transformation table. Both files are read as UTF-8.
-   *
-   * @param wordList The file containing the words list for the dictionary
-   * @param phonetic The file to use for phonetic transformation of the wordlist.
-   * @throws IOException If an IO error occurs.
-   */
-  public SpellDictionaryHashMap(File wordList, File phonetic) throws IOException {
-    this(wordList, phonetic, StandardCharsets.UTF_8.name());
-  }
-
-  /**
-   * Dictionary constructor that uses an aspell phonetic file to
-   * build the transformation table. Encoding is used for phonetic file only;
-   * the word list is read as UTF-8.
-   *
-   * @param wordList The file containing the words list for the dictionary
-   * @param phonetic The file to use for phonetic transformation of the wordlist.
-   * @param phoneticEncoding Uses the character set encoding specified
-   * @throws IOException If an IO error occurs.
-   */
-  public SpellDictionaryHashMap(File wordList, File phonetic, String phoneticEncoding) throws IOException {
-    super(phonetic, phoneticEncoding);
-    dictFile = wordList;
-    createDictionary(wordList);
-  }
-
-  /**
-   * Dictionary constructor that uses an aspell phonetic file to
-   * build the transformation table.<p>
-   * Note that since there's no actual file for the word list, words added
-   * via {@link #addWord(String)} will not persist beyond the application's
-   * lifecycle.
-   *
-   * @param wordList The file containing the words list for the dictionary
-   * @param phonetic The reader to use for phonetic transformation of the
-   *        wordlist.
-   * @throws IOException If an IO error occurs.
-   */
-  public SpellDictionaryHashMap(Reader wordList, Reader phonetic) throws IOException {
-    super(phonetic);
     readWords(new BufferedReader(wordList), this::putWord);
   }
 
   /**
-   * Add words from a Reader to existing dictionary hashmap.
-   * This function can be called as many times as needed to
-   * build the internal word list. Duplicates are not added.
-   * <p>
-   * Note that adding a dictionary does not affect the target
-   * dictionary file for the addWord method. That is, addWord() continues
-   * to make additions to the dictionary file specified in createDictionary()
+   * Creates a dictionary from a word list file. The word list is read, and
+   * words added via {@link #addWord(String)} are appended to it, as UTF-8.
    *
-   * @param wordList a Reader object that contains the words, on word per line.
+   * @param wordList The word list file, one word per line.
    * @throws IOException If an IO error occurs.
    */
-  public void addDictionary(Reader wordList) throws IOException {
-    addDictionaryHelper(new BufferedReader(wordList));
-  }
-
-  /**
-   * Add a word permanently to the dictionary (and the dictionary file).
-   * <p>This needs to be made thread safe (synchronized)</p>
-   */
-  @Override
-public boolean addWord(String word) {
-    putWord(word);
-    if (dictFile!=null) {
-	    try {
-	    	// Append new word to user's word file
-	    	try (BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, StandardCharsets.UTF_8, true))) {
-	    		w.write(word);
-	    		w.write("\n");
-	    	}
-	    	return true;
-	    } catch (IOException ex) {
-	      ex.printStackTrace();
-	    }
-    }
-    // Only return true if added to dictionary file.
-    return false;
-  }
-
-  /**
-   * Constructs the dictionary from a word list file, closing it when done.
-   */
-  private void createDictionary(File wordList) throws IOException {
+  public SpellDictionaryHashMap(File wordList) throws IOException {
+    dictFile = wordList;
     try (BufferedReader in = new BufferedReader(new FileReader(wordList, StandardCharsets.UTF_8))) {
       readWords(in, this::putWord);
     }
   }
 
   /**
-   * Adds to the existing dictionary from a word list. If a word already
-   * exists in the dictionary, ignoring case, a new entry is not added.
+   * Adds the words in a word list to this dictionary. This can be called as
+   * many times as needed. Words already in the dictionary, ignoring case,
+   * aren't added again.
    * <p>
-   * Each word in the reader should be on a separate line.
-   * <p>
-   * Checking for duplicates means comparing against every word with the
-   * same phonetic code, so this is slower than loading a word list in a
-   * constructor.
+   * The words aren't added to this dictionary's file, if it has one.
+   *
+   * @param wordList The word list, one word per line. This is not closed.
+   * @throws IOException If an IO error occurs.
    */
-  protected void addDictionaryHelper(BufferedReader in) throws IOException {
-    readWords(in, this::putWordUnique);
+  public void addDictionary(Reader wordList) throws IOException {
+    readWords(new BufferedReader(wordList), this::putWordUnique);
+  }
+
+  /**
+   * Adds a word to this dictionary, and to its file if it has one.
+   *
+   * @param word The word to add.
+   * @return Whether the word was added to the dictionary's file. This is
+   *         {@code false} if it doesn't have one, or an IO error occurred.
+   */
+  @Override
+  public boolean addWord(String word) {
+    putWord(word);
+    if (dictFile != null) {
+      try (BufferedWriter w = new BufferedWriter(new FileWriter(dictFile, StandardCharsets.UTF_8, true))) {
+        w.write(word);
+        w.write("\n");
+        return true;
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      }
+    }
+    return false;
   }
 
   /**
@@ -224,40 +152,39 @@ public boolean addWord(String word) {
   }
 
   /**
-   * Allocates a word in the dictionary. Assumes the word isn't already in this dictionary,
-   * as it can create duplicates (which should be harmless, but not performant).
+   * Adds a word to the dictionary. Assumes the word isn't already in this
+   * dictionary, as it can create duplicates (which should be harmless, but
+   * not performant).
    *
    * @param word The word to add.
    * @see #putWordUnique(String)
    */
-  protected void putWord(String word) {
-    String code = getCode(word);
-    List<String> list = mainDictionary.computeIfAbsent(code, k -> new ArrayList<>());
-    list.add(word);
+  void putWord(String word) {
+    for (String code : doubleMeta.getCodes(word)) {
+      mainDictionary.computeIfAbsent(code, k -> new ArrayList<>()).add(word);
+    }
     words.add(word);
   }
 
   /**
-   * Allocates a word, if it is not already present in the dictionary. A word
+   * Adds a word, if it is not already present in the dictionary. A word
    * with a different case is considered the same.
    *
    * @param word The word to add.
    * @see #putWord(String)
    */
-  protected void putWordUnique(String word) {
-
-    List<String> list = mainDictionary.computeIfAbsent(getCode(word), k -> new ArrayList<>());
-    if (list.stream().noneMatch(word::equalsIgnoreCase)) {
-      list.add(word);
-      words.add(word);
+  void putWordUnique(String word) {
+    // A word is in the group for its primary code (and for its alternate
+    // code too, if any), so checking that group is enough
+    List<String> codes = doubleMeta.getCodes(word);
+    List<String> primaryGroup = mainDictionary.get(codes.get(0));
+    if (primaryGroup == null || primaryGroup.stream().noneMatch(word::equalsIgnoreCase)) {
+      putWord(word);
     }
   }
 
   /**
    * Returns true if the word, or its lower-case form, is in this dictionary.
-   * This gives the same answer as the superclass, which looks the word up
-   * by its phonetic code, but without computing that code. Every word is
-   * stored under its own code, and the phonetic transformations ignore case.
    */
   @Override
   public boolean isCorrect(String word) {
@@ -265,14 +192,207 @@ public boolean addWord(String word) {
   }
 
   /**
-   * Returns a list of strings (words) for the code.
+   * Returns a list of Word objects that are the suggestions to an
+   * incorrect word.
+   *
+   * @param word Suggestions for given misspelled word
+   * @param config The configuration providing the score threshold and edit costs
+   * @return a List of suggestions
    */
   @Override
-  public List<String> getWords(String code) {
-    //Check the main dictionary.
-    List<String> mainDictResult = mainDictionary.get(code);
-    if (mainDictResult == null)
-      return Collections.emptyList();
-    return Collections.unmodifiableList(mainDictResult);
+  public List<Word> getSuggestions(String word, Configuration config) {
+
+    int threshold = config.getInteger(Configuration.SPELL_THRESHOLD);
+    EditDistance editDistance = new EditDistance(config);
+
+    // A word can be in two groups, so track which have been suggested
+    Set<String> suggested = new HashSet<>();
+
+    // add all words that sound the same, by either of the word's codes
+    List<String> codes = doubleMeta.getCodes(word);
+    List<Word> phoneticList = getWordsFromCodes(word, codes, editDistance, threshold, suggested);
+
+    // do some transformations to pick up more results. These use primary
+    // codes only, since there are hundreds of them per word.
+    Set<String> nearMissCodes = new HashSet<>();
+    char[] replaceList = DoubleMeta.CODE_CHARS;
+    addSwapCodes(word, nearMissCodes);
+    addReplacementCodes(word, replaceList, nearMissCodes);
+    addInsertionCodes(word, replaceList, nearMissCodes);
+    addDeletionCodes(word, nearMissCodes);
+
+    codes.forEach(nearMissCodes::remove); //already accounted for in phoneticList
+
+    List<Word> wordlist = getWordsFromCodes(word, nearMissCodes, editDistance, threshold, suggested);
+
+    if (wordlist.isEmpty() && phoneticList.isEmpty())
+      addBestGuess(word, codes, phoneticList, editDistance);
+
+
+    // We sort a List at the end instead of maintaining a
+    // continuously sorted TreeSet because every time you add a collection
+    // to a tree set it has to be resorted. It's better to do this operation
+    // once at the end.
+
+    phoneticList.sort(Word.COST_COMPARATOR); //always sort phonetic matches along the top
+    wordlist.sort(Word.COST_COMPARATOR); //the non-phonetic matches can be listed below
+
+    phoneticList.addAll(wordlist);
+    return phoneticList;
+  }
+
+  /**
+   * Adds the phonetic codes of every variant of {@code word} with two
+   * adjacent characters swapped.
+   */
+  private void addSwapCodes(String word, Set<String> codes) {
+    char[] chars = word.toCharArray();
+    for (int i = 0; i < chars.length - 1; i++) {
+      swap(chars, i, i + 1);
+      codes.add(getCode(new String(chars)));
+      swap(chars, i, i + 1);
+    }
+  }
+
+  /**
+   * Adds the phonetic codes of every variant of {@code word} with one
+   * character replaced by a character from {@code replaceList}.
+   */
+  private void addReplacementCodes(String word, char[] replaceList, Set<String> codes) {
+    char[] chars = word.toCharArray();
+    for (int i = 0; i < chars.length; i++) {
+      char original = chars[i];
+      for (char c : replaceList) {
+        chars[i] = c;
+        codes.add(getCode(new String(chars)));
+      }
+      chars[i] = original;
+    }
+  }
+
+  /**
+   * Adds the phonetic codes of every variant of {@code word} with a character
+   * from {@code replaceList} inserted at any position, working from the end
+   * of the word to the start.
+   */
+  private void addInsertionCodes(String word, char[] replaceList, Set<String> codes) {
+    char[] chars = (word + ' ').toCharArray();
+    for (int i = chars.length - 1; ; i--) {
+      for (char c : replaceList) {
+        chars[i] = c;
+        codes.add(getCode(new String(chars)));
+      }
+      if (i == 0) {
+        break;
+      }
+      chars[i] = chars[i - 1]; // shift the insertion point one to the left
+    }
+  }
+
+  /**
+   * Adds the phonetic codes of every variant of {@code word} with one
+   * character deleted, working from the end of the word to the start.
+   */
+  private void addDeletionCodes(String word, Set<String> codes) {
+    char[] chars = word.toCharArray();
+    char[] deleted = new char[chars.length - 1];
+    System.arraycopy(chars, 0, deleted, 0, deleted.length);
+
+    char a = chars[chars.length - 1];
+    int i = deleted.length;
+    while (true) {
+      codes.add(getCode(new String(deleted)));
+      if (i == 0) {
+        break;
+      }
+      char b = a;
+      a = deleted[i - 1];
+      deleted[i - 1] = b;
+      --i;
+    }
+  }
+
+  private static void swap(char[] chars, int i, int j) {
+    char temp = chars[i];
+    chars[i] = chars[j];
+    chars[j] = temp;
+  }
+
+  private void addBestGuess(String word, List<String> codes, List<Word> wordList, EditDistance editDistance) {
+    if (!wordList.isEmpty())
+      throw new IllegalArgumentException("the wordList must be empty");
+
+    int bestScore = Integer.MAX_VALUE;
+
+    // Guess from words matching either code. Words that only match by an
+    // alternate code matter here: "speshal" is too far from "special" by
+    // edit distance to be suggested otherwise.
+    Set<String> simwords = new LinkedHashSet<>();
+    for (String code : codes) {
+      simwords.addAll(getWords(code)); // A word can be in the groups for both codes
+    }
+
+    List<Word> candidates = new ArrayList<>();
+
+    for (String similar : simwords) {
+      int distance = editDistance.getDistance(word, similar);
+      if (distance <= bestScore) {
+        bestScore = distance;
+        candidates.add(new Word(similar, distance));
+      }
+    }
+
+    //now, only pull out the guesses that had the best score
+    for (Word candidate : candidates) {
+      if (candidate.getCost() == bestScore)
+        wordList.add(candidate);
+    }
+
+  }
+
+  /**
+   * Returns the words in the groups for some codes that are within the
+   * threshold edit distance of a word, skipping any already suggested.
+   *
+   * @param suggested The words already suggested. Words returned are added
+   *        to it.
+   */
+  private List<Word> getWordsFromCodes(String word, Collection<String> codes,
+                                       EditDistance editDistance, int threshold, Set<String> suggested) {
+    List<Word> result = new ArrayList<>();
+
+    for (String code : codes) {
+      for (String similar : getWords(code)) {
+        if (!suggested.contains(similar)) {
+          int distance = editDistance.getDistance(word, similar);
+          if (distance < threshold) {
+            result.add(new Word(similar, distance));
+            suggested.add(similar);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Returns a word's primary phonetic code.
+   *
+   * @param word The word.
+   * @return The primary code.
+   */
+  String getCode(String word) {
+    return doubleMeta.getPrimaryCode(word);
+  }
+
+  /**
+   * Returns the words in the group for a phonetic code.
+   *
+   * @param code The code.
+   * @return The words. This may be empty, but is never {@code null}.
+   */
+  List<String> getWords(String code) {
+    List<String> result = mainDictionary.get(code);
+    return result == null ? Collections.emptyList() : Collections.unmodifiableList(result);
   }
 }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -19,624 +20,643 @@ class DoubleMetaTest {
     }
 
     @Test
-    void testGetReplaceList() {
-        char[] expectedReplaceList = {'A', 'B', 'X', 'S', 'K', 'J', 'T', 'F', 'H', 'L', 'M', 'N', 'P', 'R', '0'};
-        Assertions.assertArrayEquals(expectedReplaceList, doubleMeta.getReplaceList());
+    void testGetCodes_onlyPrimaryWhenSame() {
+        Assertions.assertEquals(List.of("TST"), doubleMeta.getCodes("test"));
     }
 
     @Test
-    void testTransform_null() {
-        Assertions.assertEquals("", doubleMeta.transform(null));
+    void testGetCodes_primaryThenAlternate() {
+        // "CIA": Italian-style "S" first, English "sh" second
+        Assertions.assertEquals(List.of("SPSL", "SPXL"), doubleMeta.getCodes("special"));
+        // A silent final French "R" is pronounced in the alternate code
+        Assertions.assertEquals(List.of("FR", "FRR"), doubleMeta.getCodes("Fourier"));
     }
 
     @Test
-    void testTransform_emptyString() {
-        Assertions.assertEquals("", doubleMeta.transform(""));
+    void testGetCodes_nullOrBlank() {
+        Assertions.assertEquals(List.of(""), doubleMeta.getCodes(null));
+        Assertions.assertEquals(List.of(""), doubleMeta.getCodes("  "));
     }
 
     @Test
-    void testTransform_blankString() {
-        Assertions.assertEquals("", doubleMeta.transform("   "));
+    void testCodeChars() {
+        char[] expected = {'A', 'B', 'X', 'S', 'K', 'J', 'T', 'F', 'H', 'L', 'M', 'N', 'P', 'R', '0'};
+        Assertions.assertArrayEquals(expected, DoubleMeta.CODE_CHARS);
     }
 
     @Test
-    void testTransform_codeLongerThanFourCharacters() {
+    void testGetPrimaryCode_null() {
+        Assertions.assertEquals("", doubleMeta.getPrimaryCode(null));
+    }
+
+    @Test
+    void testGetPrimaryCode_emptyString() {
+        Assertions.assertEquals("", doubleMeta.getPrimaryCode(""));
+    }
+
+    @Test
+    void testGetPrimaryCode_blankString() {
+        Assertions.assertEquals("", doubleMeta.getPrimaryCode("   "));
+    }
+
+    @Test
+    void testGetPrimaryCode_codeLongerThanFourCharacters() {
         // Commons Codec limits codes to 4 characters by default
-        Assertions.assertEquals("ARTFRK", doubleMeta.transform("aardvark"));
-        Assertions.assertEquals("ANFRNMNT", doubleMeta.transform("environment"));
+        Assertions.assertEquals("ARTFRK", doubleMeta.getPrimaryCode("aardvark"));
+        Assertions.assertEquals("ANFRNMNT", doubleMeta.getPrimaryCode("environment"));
     }
 
     @Test
-    void testTransform_endsWith_frenchR_silent() {
-        Assertions.assertEquals("FR", doubleMeta.transform("Fourier"));
+    void testGetPrimaryCode_endsWith_frenchR_silent() {
+        Assertions.assertEquals("FR", doubleMeta.getPrimaryCode("Fourier"));
     }
 
     @Test
-    void testTransform_endsWith_frenchS_silent() {
-        Assertions.assertEquals("ALN", doubleMeta.transform("Illinois"));
+    void testGetPrimaryCode_endsWith_frenchS_silent() {
+        Assertions.assertEquals("ALN", doubleMeta.getPrimaryCode("Illinois"));
     }
 
     @Test
-    void testTransform_endsWith_vowelThenW_silent() {
+    void testGetPrimaryCode_endsWith_vowelThenW_silent() {
         // Only the alternate encoding has an "F" here
-        Assertions.assertEquals("AL", doubleMeta.transform("allow"));
+        Assertions.assertEquals("AL", doubleMeta.getPrimaryCode("allow"));
     }
 
     @Test
-    void testTransform_simpleWord() {
-        Assertions.assertEquals("TST", doubleMeta.transform("test"));
+    void testGetPrimaryCode_simpleWord() {
+        Assertions.assertEquals("TST", doubleMeta.getPrimaryCode("test"));
     }
 
     @Test
-    void testTransform_caseInsensitive() {
-        Assertions.assertEquals("TST", doubleMeta.transform("Test"));
+    void testGetPrimaryCode_caseInsensitive() {
+        Assertions.assertEquals("TST", doubleMeta.getPrimaryCode("Test"));
     }
 
     @Test
-    void testTransform_independentOfDefaultLocale() {
-        String expected = doubleMeta.transform("item");
+    void testGetPrimaryCode_independentOfDefaultLocale() {
+        String expected = doubleMeta.getPrimaryCode("item");
         Locale orig = Locale.getDefault();
         try {
             // Turkish uppercases 'i' to a dotted capital I, which isn't a vowel to DoubleMeta
             Locale.setDefault(Locale.of("tr", "TR"));
-            Assertions.assertEquals(expected, doubleMeta.transform("item"));
+            Assertions.assertEquals(expected, doubleMeta.getPrimaryCode("item"));
         } finally {
             Locale.setDefault(orig);
         }
     }
 
     @Test
-    void testTransform_endsWith_alle() {
-        Assertions.assertEquals("FRFL", doubleMeta.transform("farfalle"));
+    void testGetPrimaryCode_endsWith_alle() {
+        Assertions.assertEquals("FRFL", doubleMeta.getPrimaryCode("farfalle"));
     }
 
     @Test
-    void testTransform_endsWith_eaux() {
-        Assertions.assertEquals("PR", doubleMeta.transform("breaux")); // Final French "X" is silent
+    void testGetPrimaryCode_endsWith_eaux() {
+        Assertions.assertEquals("PR", doubleMeta.getPrimaryCode("breaux")); // Final French "X" is silent
     }
 
     @Test
-    void testTransform_endsWith_gh() {
-        Assertions.assertEquals("P", doubleMeta.transform("bough"));
+    void testGetPrimaryCode_endsWith_gh() {
+        Assertions.assertEquals("P", doubleMeta.getPrimaryCode("bough"));
     }
 
     @Test
-    void testTransform_endsWith_j_1() {
-        Assertions.assertEquals("TJ", doubleMeta.transform("dj"));
+    void testGetPrimaryCode_endsWith_j_1() {
+        Assertions.assertEquals("TJ", doubleMeta.getPrimaryCode("dj"));
     }
 
     @Test
-    void testTransform_endsWith_j_2() {
-        Assertions.assertEquals("HJ", doubleMeta.transform("haj"));
+    void testGetPrimaryCode_endsWith_j_2() {
+        Assertions.assertEquals("HJ", doubleMeta.getPrimaryCode("haj"));
     }
 
     @Test
-    void testTransform_endsWith_ough_1() {
-        Assertions.assertEquals("TF", doubleMeta.transform("tough"));
+    void testGetPrimaryCode_endsWith_ough_1() {
+        Assertions.assertEquals("TF", doubleMeta.getPrimaryCode("tough"));
     }
 
     @Test
-    void testTransform_endsWith_vowel_then_w() {
-        Assertions.assertEquals("M", doubleMeta.transform("maw"));
+    void testGetPrimaryCode_endsWith_vowel_then_w() {
+        Assertions.assertEquals("M", doubleMeta.getPrimaryCode("maw"));
     }
 
     @Test
-    void testTransform_endsWith_w() {
-        Assertions.assertEquals("ANH", doubleMeta.transform("anyhow"));
+    void testGetPrimaryCode_endsWith_w() {
+        Assertions.assertEquals("ANH", doubleMeta.getPrimaryCode("anyhow"));
     }
 
     @Test
-    void testTransform_phoneticMatch() {
-        Assertions.assertEquals("F", doubleMeta.transform("ph"));
+    void testGetPrimaryCode_phoneticMatch() {
+        Assertions.assertEquals("F", doubleMeta.getPrimaryCode("ph"));
     }
 
     @Test
-    void testTransform_startsWith_a() {
-        Assertions.assertEquals("AT", doubleMeta.transform("at"));
+    void testGetPrimaryCode_startsWith_a() {
+        Assertions.assertEquals("AT", doubleMeta.getPrimaryCode("at"));
     }
 
     @Test
-    void testTransform_startsWith_agn() {
-        Assertions.assertEquals("AKNL", doubleMeta.transform("agnel"));
+    void testGetPrimaryCode_startsWith_agn() {
+        Assertions.assertEquals("AKNL", doubleMeta.getPrimaryCode("agnel"));
     }
 
     @Test
-    void testTransform_startsWith_b() {
-        Assertions.assertEquals("PT", doubleMeta.transform("bat"));
+    void testGetPrimaryCode_startsWith_b() {
+        Assertions.assertEquals("PT", doubleMeta.getPrimaryCode("bat"));
     }
 
     @Test
-    void testTransform_startsWith_u00c7() {
-        Assertions.assertEquals("ST", doubleMeta.transform("\u00c7at"));
+    void testGetPrimaryCode_startsWith_u00c7() {
+        Assertions.assertEquals("ST", doubleMeta.getPrimaryCode("\u00c7at"));
     }
 
     @Test
-    void testTransform_startsWith_c() {
-        Assertions.assertEquals("KT", doubleMeta.transform("cat"));
+    void testGetPrimaryCode_startsWith_c() {
+        Assertions.assertEquals("KT", doubleMeta.getPrimaryCode("cat"));
     }
 
     @Test
-    void testTransform_startsWith_c_chae() {
-        Assertions.assertEquals("X", doubleMeta.transform("chae"));
+    void testGetPrimaryCode_startsWith_c_chae() {
+        Assertions.assertEquals("X", doubleMeta.getPrimaryCode("chae"));
     }
 
     @Test
-    void testTransform_startsWith_c_equals_casear() {
-        Assertions.assertEquals("SSR", doubleMeta.transform("caesar"));
+    void testGetPrimaryCode_startsWith_c_equals_casear() {
+        Assertions.assertEquals("SSR", doubleMeta.getPrimaryCode("caesar"));
     }
 
     @Test
-    void testTransform_startsWith_charism() {
-        Assertions.assertEquals("KRSM", doubleMeta.transform("charisma"));
+    void testGetPrimaryCode_startsWith_charism() {
+        Assertions.assertEquals("KRSM", doubleMeta.getPrimaryCode("charisma"));
     }
 
     @Test
-    void testTransform_startsWith_cr_1() {
-        Assertions.assertEquals("KRSP", doubleMeta.transform("crisp"));
+    void testGetPrimaryCode_startsWith_cr_1() {
+        Assertions.assertEquals("KRSP", doubleMeta.getPrimaryCode("crisp"));
     }
 
     @Test
-    void testTransform_startsWith_cr_2() {
-        Assertions.assertEquals("KR", doubleMeta.transform("cry"));
+    void testGetPrimaryCode_startsWith_cr_2() {
+        Assertions.assertEquals("KR", doubleMeta.getPrimaryCode("cry"));
     }
 
     @Test
-    void testTransform_startsWith_d() {
-        Assertions.assertEquals("TRT", doubleMeta.transform("dart"));
+    void testGetPrimaryCode_startsWith_d() {
+        Assertions.assertEquals("TRT", doubleMeta.getPrimaryCode("dart"));
     }
 
     @Test
-    void testTransform_startsWith_f() {
-        Assertions.assertEquals("FT", doubleMeta.transform("fat"));
+    void testGetPrimaryCode_startsWith_f() {
+        Assertions.assertEquals("FT", doubleMeta.getPrimaryCode("fat"));
     }
 
     @Test
-    void testTransform_startsWith_g() {
-        Assertions.assertEquals("KRTN", doubleMeta.transform("garden"));
+    void testGetPrimaryCode_startsWith_g() {
+        Assertions.assertEquals("KRTN", doubleMeta.getPrimaryCode("garden"));
     }
 
     @Test
-    void testTransform_startsWith_ger() {
-        Assertions.assertEquals("KRM", doubleMeta.transform("germ"));
+    void testGetPrimaryCode_startsWith_ger() {
+        Assertions.assertEquals("KRM", doubleMeta.getPrimaryCode("germ"));
     }
 
     @Test
-    void testTransform_startsWith_ghi() {
-        Assertions.assertEquals("JK", doubleMeta.transform("ghig"));
+    void testGetPrimaryCode_startsWith_ghi() {
+        Assertions.assertEquals("JK", doubleMeta.getPrimaryCode("ghig"));
     }
 
     @Test
-    void testTransform_startsWith_ghi_2() {
-        Assertions.assertEquals("J", doubleMeta.transform("ghi"));
+    void testGetPrimaryCode_startsWith_ghi_2() {
+        Assertions.assertEquals("J", doubleMeta.getPrimaryCode("ghi"));
     }
 
     @Test
-    void testTransform_startsWith_gho() {
-        Assertions.assertEquals("KST", doubleMeta.transform("ghost"));
+    void testGetPrimaryCode_startsWith_gho() {
+        Assertions.assertEquals("KST", doubleMeta.getPrimaryCode("ghost"));
     }
 
     @Test
-    void testTransform_startsWith_gli() {
-        Assertions.assertEquals("KLP", doubleMeta.transform("glib"));
+    void testGetPrimaryCode_startsWith_gli() {
+        Assertions.assertEquals("KLP", doubleMeta.getPrimaryCode("glib"));
     }
 
     @Test
-    void testTransform_startsWith_gy() {
-        Assertions.assertEquals("KM", doubleMeta.transform("gym"));
+    void testGetPrimaryCode_startsWith_gy() {
+        Assertions.assertEquals("KM", doubleMeta.getPrimaryCode("gym"));
     }
 
     @Test
-    void testTransform_startsWith_h() {
-        Assertions.assertEquals("HT", doubleMeta.transform("hat"));
+    void testGetPrimaryCode_startsWith_h() {
+        Assertions.assertEquals("HT", doubleMeta.getPrimaryCode("hat"));
     }
 
     @Test
-    void testTransform_startsWith_j_1() {
-        Assertions.assertEquals("JK", doubleMeta.transform("joke"));
+    void testGetPrimaryCode_startsWith_j_1() {
+        Assertions.assertEquals("JK", doubleMeta.getPrimaryCode("joke"));
     }
 
     @Test
-    void testTransform_startsWith_j_2() {
-        Assertions.assertEquals("J", doubleMeta.transform("jaw"));
+    void testGetPrimaryCode_startsWith_j_2() {
+        Assertions.assertEquals("J", doubleMeta.getPrimaryCode("jaw"));
     }
 
     @Test
-    void testTransform_startsWith_jose_1() {
-        Assertions.assertEquals("HS", doubleMeta.transform("jose"));
+    void testGetPrimaryCode_startsWith_jose_1() {
+        Assertions.assertEquals("HS", doubleMeta.getPrimaryCode("jose"));
     }
 
     @Test
-    void testTransform_startsWith_jose_2() {
-        Assertions.assertEquals("JSF", doubleMeta.transform("joseph")); // "PH" is "F"
+    void testGetPrimaryCode_startsWith_jose_2() {
+        Assertions.assertEquals("JSF", doubleMeta.getPrimaryCode("joseph")); // "PH" is "F"
     }
 
     @Test
-    void testTransform_startsWith_k() {
-        Assertions.assertEquals("KT", doubleMeta.transform("kite"));
+    void testGetPrimaryCode_startsWith_k() {
+        Assertions.assertEquals("KT", doubleMeta.getPrimaryCode("kite"));
     }
 
     @Test
-    void testTransform_startsWith_lamb() {
-        Assertions.assertEquals("LMP", doubleMeta.transform("lamb"));
+    void testGetPrimaryCode_startsWith_lamb() {
+        Assertions.assertEquals("LMP", doubleMeta.getPrimaryCode("lamb"));
     }
 
     @Test
-    void testTransform_startsWith_m() {
-        Assertions.assertEquals("MT", doubleMeta.transform("mat"));
+    void testGetPrimaryCode_startsWith_m() {
+        Assertions.assertEquals("MT", doubleMeta.getPrimaryCode("mat"));
     }
 
     @Test
-    void testTransform_startsWith_n() {
-        Assertions.assertEquals("NP", doubleMeta.transform("nap"));
+    void testGetPrimaryCode_startsWith_n() {
+        Assertions.assertEquals("NP", doubleMeta.getPrimaryCode("nap"));
     }
 
     @Test
-    void testTransform_startsWith_u00D1() {
-        Assertions.assertEquals("NP", doubleMeta.transform("\u00d1ap"));
+    void testGetPrimaryCode_startsWith_u00D1() {
+        Assertions.assertEquals("NP", doubleMeta.getPrimaryCode("\u00d1ap"));
     }
 
     @Test
-    void testTransform_startsWith_p() {
-        Assertions.assertEquals("PT", doubleMeta.transform("pat"));
+    void testGetPrimaryCode_startsWith_p() {
+        Assertions.assertEquals("PT", doubleMeta.getPrimaryCode("pat"));
     }
 
     @Test
-    void testTransform_startsWith_q() {
-        Assertions.assertEquals("KK", doubleMeta.transform("quick"));
+    void testGetPrimaryCode_startsWith_q() {
+        Assertions.assertEquals("KK", doubleMeta.getPrimaryCode("quick"));
     }
 
     @Test
-    void testTransform_startsWith_r() {
-        Assertions.assertEquals("RT", doubleMeta.transform("rat"));
+    void testGetPrimaryCode_startsWith_r() {
+        Assertions.assertEquals("RT", doubleMeta.getPrimaryCode("rat"));
     }
 
     @Test
-    void testTransform_startsWith_s() {
-        Assertions.assertEquals("ST", doubleMeta.transform("sat"));
+    void testGetPrimaryCode_startsWith_s() {
+        Assertions.assertEquals("ST", doubleMeta.getPrimaryCode("sat"));
     }
 
     @Test
-    void testTransform_startsWith_sce() {
-        Assertions.assertEquals("SN", doubleMeta.transform("scene"));
+    void testGetPrimaryCode_startsWith_sce() {
+        Assertions.assertEquals("SN", doubleMeta.getPrimaryCode("scene"));
     }
 
     @Test
-    void testTransform_startsWith_sch() {
-        Assertions.assertEquals("SKL", doubleMeta.transform("school"));
+    void testGetPrimaryCode_startsWith_sch() {
+        Assertions.assertEquals("SKL", doubleMeta.getPrimaryCode("school"));
     }
 
     @Test
-    void testTransform_startsWith_schen() {
-        Assertions.assertEquals("XNK", doubleMeta.transform("schenk"));
+    void testGetPrimaryCode_startsWith_schen() {
+        Assertions.assertEquals("XNK", doubleMeta.getPrimaryCode("schenk"));
     }
 
     @Test
-    void testTransform_startsWith_schoo() {
-        Assertions.assertEquals("SKL", doubleMeta.transform("school"));
+    void testGetPrimaryCode_startsWith_schoo() {
+        Assertions.assertEquals("SKL", doubleMeta.getPrimaryCode("school"));
     }
 
     @Test
-    void testTransform_startsWith_sia() {
-        Assertions.assertEquals("SLT", doubleMeta.transform("sialoid"));
+    void testGetPrimaryCode_startsWith_sia() {
+        Assertions.assertEquals("SLT", doubleMeta.getPrimaryCode("sialoid"));
     }
 
     @Test
-    void testTransform_startsWith_sm() {
-        Assertions.assertEquals("SML", doubleMeta.transform("smell"));
+    void testGetPrimaryCode_startsWith_sm() {
+        Assertions.assertEquals("SML", doubleMeta.getPrimaryCode("smell"));
     }
 
     @Test
-    void testTransform_startsWith_sugar() {
-        Assertions.assertEquals("XKR", doubleMeta.transform("sugar"));
+    void testGetPrimaryCode_startsWith_sugar() {
+        Assertions.assertEquals("XKR", doubleMeta.getPrimaryCode("sugar"));
     }
 
     @Test
-    void testTransform_startsWith_sz() {
-        Assertions.assertEquals("SXN", doubleMeta.transform("szechuan"));
+    void testGetPrimaryCode_startsWith_sz() {
+        Assertions.assertEquals("SXN", doubleMeta.getPrimaryCode("szechuan"));
     }
 
     @Test
-    void testTransform_startsWith_t() {
-        Assertions.assertEquals("TNT", doubleMeta.transform("taint"));
+    void testGetPrimaryCode_startsWith_t() {
+        Assertions.assertEquals("TNT", doubleMeta.getPrimaryCode("taint"));
     }
 
     @Test
-    void testTransform_startsWith_v() {
-        Assertions.assertEquals("FT", doubleMeta.transform("vat"));
+    void testGetPrimaryCode_startsWith_v() {
+        Assertions.assertEquals("FT", doubleMeta.getPrimaryCode("vat"));
     }
 
     @Test
-    void testTransform_startsWith_w() {
-        Assertions.assertEquals("AT", doubleMeta.transform("what"));
+    void testGetPrimaryCode_startsWith_w() {
+        Assertions.assertEquals("AT", doubleMeta.getPrimaryCode("what"));
     }
 
     @Test
-    void testTransform_startsWith_x() {
-        Assertions.assertEquals("SR", doubleMeta.transform("xray"));
+    void testGetPrimaryCode_startsWith_x() {
+        Assertions.assertEquals("SR", doubleMeta.getPrimaryCode("xray"));
     }
 
     @Test
-    void testTransform_startsWith_z() {
-        Assertions.assertEquals("ST", doubleMeta.transform("zit"));
+    void testGetPrimaryCode_startsWith_z() {
+        Assertions.assertEquals("ST", doubleMeta.getPrimaryCode("zit"));
     }
 
     @Test
     void textTransform_startsWith_chi() {
-        Assertions.assertEquals("XSLM", doubleMeta.transform("chisholm"));
+        Assertions.assertEquals("XSLM", doubleMeta.getPrimaryCode("chisholm"));
     }
 
     @Test
     void textTransform_startsWith_w_then_vowel() {
-        Assertions.assertEquals("ART", doubleMeta.transform("ward"));
+        Assertions.assertEquals("ART", doubleMeta.getPrimaryCode("ward"));
     }
 
     @Test
     void textTransform_startsWith_wh() {
-        Assertions.assertEquals("AL", doubleMeta.transform("while"));
+        Assertions.assertEquals("AL", doubleMeta.getPrimaryCode("while"));
     }
 
     @Test
-    void testTransform_contains_cr() {
-        Assertions.assertEquals("AKR", doubleMeta.transform("acre"));
+    void testGetPrimaryCode_contains_cr() {
+        Assertions.assertEquals("AKR", doubleMeta.getPrimaryCode("acre"));
     }
 
     @Test
-    void testTransform_contains_agn() {
-        Assertions.assertEquals("MNT", doubleMeta.transform("magnet"));
+    void testGetPrimaryCode_contains_agn() {
+        Assertions.assertEquals("MNT", doubleMeta.getPrimaryCode("magnet"));
     }
 
     @Test
-    void testTransform_contains_alle() {
-        Assertions.assertEquals("KLR", doubleMeta.transform("caller"));
+    void testGetPrimaryCode_contains_alle() {
+        Assertions.assertEquals("KLR", doubleMeta.getPrimaryCode("caller"));
     }
 
     @Test
-    void testTransform_contains_aux() {
-        Assertions.assertEquals("A", doubleMeta.transform("aux")); // Final French "X" is silent
+    void testGetPrimaryCode_contains_aux() {
+        Assertions.assertEquals("A", doubleMeta.getPrimaryCode("aux")); // Final French "X" is silent
     }
 
     @Test
-    void testTransform_contains_bb() {
-        Assertions.assertEquals("TPL", doubleMeta.transform("dabble"));
+    void testGetPrimaryCode_contains_bb() {
+        Assertions.assertEquals("TPL", doubleMeta.getPrimaryCode("dabble"));
     }
 
     @Test
-    void testTransform_contains_cc() {
-        Assertions.assertEquals("AKSNT", doubleMeta.transform("accent"));
+    void testGetPrimaryCode_contains_cc() {
+        Assertions.assertEquals("AKSNT", doubleMeta.getPrimaryCode("accent"));
     }
 
     @Test
-    void testTransform_contains_cc_2() {
-        Assertions.assertEquals("AXNTRK", doubleMeta.transform("eccentric"));
+    void testGetPrimaryCode_contains_cc_2() {
+        Assertions.assertEquals("AXNTRK", doubleMeta.getPrimaryCode("eccentric"));
     }
 
     @Test
-    void testTransform_contains_cc_3() {
-        Assertions.assertEquals("AKMPN", doubleMeta.transform("accompany"));
+    void testGetPrimaryCode_contains_cc_3() {
+        Assertions.assertEquals("AKMPN", doubleMeta.getPrimaryCode("accompany"));
     }
 
     @Test
-    void testTransform_contains_cc_4() {
-        Assertions.assertEquals("AKLT", doubleMeta.transform("occult"));
+    void testGetPrimaryCode_contains_cc_4() {
+        Assertions.assertEquals("AKLT", doubleMeta.getPrimaryCode("occult"));
     }
 
     @Test
-    void testTransform_contains_chae() {
-        Assertions.assertEquals("RKL", doubleMeta.transform("rachael"));
+    void testGetPrimaryCode_contains_chae() {
+        Assertions.assertEquals("RKL", doubleMeta.getPrimaryCode("rachael"));
     }
 
     @Test
-    void testTransform_contains_chae_2() {
-        Assertions.assertEquals("AXM", doubleMeta.transform("ischaemia"));
+    void testGetPrimaryCode_contains_chae_2() {
+        Assertions.assertEquals("AXM", doubleMeta.getPrimaryCode("ischaemia"));
     }
 
     @Test
-    void testTransform_contains_chae_3() {
-        Assertions.assertEquals("ARKNS", doubleMeta.transform("archaeans"));
+    void testGetPrimaryCode_contains_chae_3() {
+        Assertions.assertEquals("ARKNS", doubleMeta.getPrimaryCode("archaeans"));
     }
 
     @Test
-    void testTransform_contains_chia() {
-        Assertions.assertEquals("K", doubleMeta.transform("chiao"));
+    void testGetPrimaryCode_contains_chia() {
+        Assertions.assertEquals("K", doubleMeta.getPrimaryCode("chiao"));
     }
 
     @Test
-    void testTransform_contains_cia() {
-        Assertions.assertEquals("ALPS", doubleMeta.transform("alopecia"));
+    void testGetPrimaryCode_contains_cia() {
+        Assertions.assertEquals("ALPS", doubleMeta.getPrimaryCode("alopecia"));
     }
 
     @Test
-    void testTransform_contains_cia_2() {
-        Assertions.assertEquals("PNFSL", doubleMeta.transform("beneficial")); // "CIA" is "S" (only "CCIA" is "X")
+    void testGetPrimaryCode_contains_cia_2() {
+        Assertions.assertEquals("PNFSL", doubleMeta.getPrimaryCode("beneficial")); // "CIA" is "S" (only "CCIA" is "X")
     }
 
     @Test
-    void testTransform_contains_cia_3() {
-        Assertions.assertEquals("S", doubleMeta.transform("ciao"));
+    void testGetPrimaryCode_contains_cia_3() {
+        Assertions.assertEquals("S", doubleMeta.getPrimaryCode("ciao"));
     }
 
     @Test
-    void testTransform_contains_ck() {
-        Assertions.assertEquals("PK", doubleMeta.transform("back"));
+    void testGetPrimaryCode_contains_ck() {
+        Assertions.assertEquals("PK", doubleMeta.getPrimaryCode("back"));
     }
 
     @Test
-    void testTransform_contains_ck_2() {
-        Assertions.assertEquals("LKS", doubleMeta.transform("licks"));
+    void testGetPrimaryCode_contains_ck_2() {
+        Assertions.assertEquals("LKS", doubleMeta.getPrimaryCode("licks"));
     }
 
     @Test
-    void testTransform_contains_cz() {
-        Assertions.assertEquals("SR", doubleMeta.transform("czar"));
+    void testGetPrimaryCode_contains_cz() {
+        Assertions.assertEquals("SR", doubleMeta.getPrimaryCode("czar"));
     }
 
     @Test
-    void testTransform_contains_dd() {
-        Assertions.assertEquals("RTR", doubleMeta.transform("rudder"));
+    void testGetPrimaryCode_contains_dd() {
+        Assertions.assertEquals("RTR", doubleMeta.getPrimaryCode("rudder"));
     }
 
     @Test
-    void testTransform_contains_dg() {
-        Assertions.assertEquals("AJ", doubleMeta.transform("edge"));
+    void testGetPrimaryCode_contains_dg() {
+        Assertions.assertEquals("AJ", doubleMeta.getPrimaryCode("edge"));
     }
 
     @Test
-    void testTransform_contains_de() {
-        Assertions.assertEquals("PRJ", doubleMeta.transform("bridge"));
+    void testGetPrimaryCode_contains_de() {
+        Assertions.assertEquals("PRJ", doubleMeta.getPrimaryCode("bridge"));
     }
 
     @Test
-    void testTransform_contains_dga() {
-        Assertions.assertEquals("NLTKPL", doubleMeta.transform("knowledgable"));
+    void testGetPrimaryCode_contains_dga() {
+        Assertions.assertEquals("NLTKPL", doubleMeta.getPrimaryCode("knowledgable"));
     }
 
     @Test
-    void testTransform_contains_ff() {
-        Assertions.assertEquals("RFL", doubleMeta.transform("ruffle"));
+    void testGetPrimaryCode_contains_ff() {
+        Assertions.assertEquals("RFL", doubleMeta.getPrimaryCode("ruffle"));
     }
 
     @Test
-    void testTransform_contains_ft() {
-        Assertions.assertEquals("RFT", doubleMeta.transform("raft"));
+    void testGetPrimaryCode_contains_ft() {
+        Assertions.assertEquals("RFT", doubleMeta.getPrimaryCode("raft"));
     }
 
     @Test
-    void testTransform_contains_ger() {
-        Assertions.assertEquals("TKR", doubleMeta.transform("dagger"));
+    void testGetPrimaryCode_contains_ger() {
+        Assertions.assertEquals("TKR", doubleMeta.getPrimaryCode("dagger"));
     }
 
     @Test
-    void testTransform_contains_get() {
-        Assertions.assertEquals("PNKR", doubleMeta.transform("banger"));
+    void testGetPrimaryCode_contains_get() {
+        Assertions.assertEquals("PNKR", doubleMeta.getPrimaryCode("banger"));
     }
 
     @Test
-    void testTransform_contains_gg() {
-        Assertions.assertEquals("PKR", doubleMeta.transform("bagger"));
+    void testGetPrimaryCode_contains_gg() {
+        Assertions.assertEquals("PKR", doubleMeta.getPrimaryCode("bagger"));
     }
 
     @Test
-    void testTransform_contains_isl() {
-        Assertions.assertEquals("ALNT", doubleMeta.transform("island"));
+    void testGetPrimaryCode_contains_isl() {
+        Assertions.assertEquals("ALNT", doubleMeta.getPrimaryCode("island"));
     }
 
     @Test
-    void testTransform_contains_jj() {
-        Assertions.assertEquals("HJ", doubleMeta.transform("hajji"));
+    void testGetPrimaryCode_contains_jj() {
+        Assertions.assertEquals("HJ", doubleMeta.getPrimaryCode("hajji"));
     }
 
     @Test
-    void testTransform_contains_jo() {
-        Assertions.assertEquals("JP", doubleMeta.transform("job"));
+    void testGetPrimaryCode_contains_jo() {
+        Assertions.assertEquals("JP", doubleMeta.getPrimaryCode("job"));
     }
 
     @Test
-    void testTransform_contains_jo_2() {
-        Assertions.assertEquals("KJL", doubleMeta.transform("cajole"));
+    void testGetPrimaryCode_contains_jo_2() {
+        Assertions.assertEquals("KJL", doubleMeta.getPrimaryCode("cajole"));
     }
 
     @Test
-    void testTransform_contains_jo_3() {
-        Assertions.assertEquals("AJR", doubleMeta.transform("ajar"));
+    void testGetPrimaryCode_contains_jo_3() {
+        Assertions.assertEquals("AJR", doubleMeta.getPrimaryCode("ajar"));
     }
 
     @Test
-    void testTransform_contains_ll() {
-        Assertions.assertEquals("KLR", doubleMeta.transform("caller"));
+    void testGetPrimaryCode_contains_ll() {
+        Assertions.assertEquals("KLR", doubleMeta.getPrimaryCode("caller"));
     }
 
     @Test
-    void testTransform_contains_ll_2() {
-        Assertions.assertEquals("FRFL", doubleMeta.transform("farfalle"));
+    void testGetPrimaryCode_contains_ll_2() {
+        Assertions.assertEquals("FRFL", doubleMeta.getPrimaryCode("farfalle"));
     }
 
     @Test
-    void testTransform_contains_macher() {
-        Assertions.assertEquals("MKR", doubleMeta.transform("macher"));
+    void testGetPrimaryCode_contains_macher() {
+        Assertions.assertEquals("MKR", doubleMeta.getPrimaryCode("macher"));
     }
 
     @Test
-    void testTransform_contains_orches() {
-        Assertions.assertEquals("TRKS", doubleMeta.transform("torches"));
+    void testGetPrimaryCode_contains_orches() {
+        Assertions.assertEquals("TRKS", doubleMeta.getPrimaryCode("torches"));
     }
 
     @Test
-    void testTransform_contains_pn() {
-        Assertions.assertEquals("APN", doubleMeta.transform("apnea")); // Only "PH" is "F"
+    void testGetPrimaryCode_contains_pn() {
+        Assertions.assertEquals("APN", doubleMeta.getPrimaryCode("apnea")); // Only "PH" is "F"
     }
 
     @Test
-    void testTransform_contains_pp() {
-        Assertions.assertEquals("HP", doubleMeta.transform("happy"));
+    void testGetPrimaryCode_contains_pp() {
+        Assertions.assertEquals("HP", doubleMeta.getPrimaryCode("happy"));
     }
 
     @Test
-    void testTransform_contains_rgh_notPrecededByVowel() {
-        Assertions.assertEquals("ARK", doubleMeta.transform("argh"));
+    void testGetPrimaryCode_contains_rgh_notPrecededByVowel() {
+        Assertions.assertEquals("ARK", doubleMeta.getPrimaryCode("argh"));
     }
 
     @Test
-    void testTransform_contains_rr() {
-        Assertions.assertEquals("KRNT", doubleMeta.transform("current"));
+    void testGetPrimaryCode_contains_rr() {
+        Assertions.assertEquals("KRNT", doubleMeta.getPrimaryCode("current"));
     }
 
     @Test
-    void testTransform_contains_ss() {
-        Assertions.assertEquals("MSL", doubleMeta.transform("missile"));
+    void testGetPrimaryCode_contains_ss() {
+        Assertions.assertEquals("MSL", doubleMeta.getPrimaryCode("missile"));
     }
 
     @Test
-    void testTransform_contains_tch() {
-        Assertions.assertEquals("MX", doubleMeta.transform("match"));
+    void testGetPrimaryCode_contains_tch() {
+        Assertions.assertEquals("MX", doubleMeta.getPrimaryCode("match"));
     }
 
     @Test
-    void testTransform_contains_th() {
-        Assertions.assertEquals("M0", doubleMeta.transform("math"));
+    void testGetPrimaryCode_contains_th() {
+        Assertions.assertEquals("M0", doubleMeta.getPrimaryCode("math"));
     }
 
     @Test
-    void testTransform_contains_thom() {
-        Assertions.assertEquals("FTM", doubleMeta.transform("fathom"));
+    void testGetPrimaryCode_contains_thom() {
+        Assertions.assertEquals("FTM", doubleMeta.getPrimaryCode("fathom"));
     }
 
     @Test
-    void testTransform_contains_tion() {
-        Assertions.assertEquals("RXN", doubleMeta.transform("ration"));
+    void testGetPrimaryCode_contains_tion() {
+        Assertions.assertEquals("RXN", doubleMeta.getPrimaryCode("ration"));
     }
 
     @Test
-    void testTransform_contains_tt() {
-        Assertions.assertEquals("MTR", doubleMeta.transform("matter"));
+    void testGetPrimaryCode_contains_tt() {
+        Assertions.assertEquals("MTR", doubleMeta.getPrimaryCode("matter"));
     }
 
     @Test
-    void testTransform_contains_witz() {
-        Assertions.assertEquals("HRTS", doubleMeta.transform("horowitz"));
+    void testGetPrimaryCode_contains_witz() {
+        Assertions.assertEquals("HRTS", doubleMeta.getPrimaryCode("horowitz"));
     }
 
     @Test
-    void testTransform_contains_wr_1() {
-        Assertions.assertEquals("R0", doubleMeta.transform("wrath"));
+    void testGetPrimaryCode_contains_wr_1() {
+        Assertions.assertEquals("R0", doubleMeta.getPrimaryCode("wrath"));
     }
 
     @Test
-    void testTransform_contains_wr_2() {
-        Assertions.assertEquals("RRT", doubleMeta.transform("rewrite"));
+    void testGetPrimaryCode_contains_wr_2() {
+        Assertions.assertEquals("RRT", doubleMeta.getPrimaryCode("rewrite"));
     }
 
     @Test
-    void testTransform_contains_xx() {
-        Assertions.assertEquals("FKST", doubleMeta.transform("vaxxed"));
+    void testGetPrimaryCode_contains_xx() {
+        Assertions.assertEquals("FKST", doubleMeta.getPrimaryCode("vaxxed"));
     }
 
     @Test
-    void testTransform_contains_zh() {
-        Assertions.assertEquals("AJR0", doubleMeta.transform("azharoth"));
+    void testGetPrimaryCode_contains_zh() {
+        Assertions.assertEquals("AJR0", doubleMeta.getPrimaryCode("azharoth"));
     }
 
     @Test
-    void testTransform_contains_zz() {
-        Assertions.assertEquals("JS", doubleMeta.transform("jazz"));
+    void testGetPrimaryCode_contains_zz() {
+        Assertions.assertEquals("JS", doubleMeta.getPrimaryCode("jazz"));
     }
 }
