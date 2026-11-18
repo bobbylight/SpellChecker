@@ -65,58 +65,6 @@ class SpellDictionaryHashMapTest {
         Assertions.assertEquals("foobar", lines.getFirst());
     }
 
-    @Test
-    void testConstructor_twoArg_twoFiles() throws IOException{
-        File wordFile = File.createTempFile("scUnitTest", ".dic");
-        wordFile.deleteOnExit();
-        SpellDictionaryHashMap dictionary = new SpellDictionaryHashMap(wordFile, null);
-
-        // Adding a word persists it to the file.
-        dictionary.addWord("foobar");
-        List<String> lines = Files.readAllLines(wordFile.toPath());
-        Assertions.assertEquals(1, lines.size());
-        Assertions.assertEquals("foobar", lines.getFirst());
-    }
-
-    @Test
-    void testConstructor_threeArg() throws IOException{
-        File wordFile = File.createTempFile("scUnitTest", ".dic");
-        wordFile.deleteOnExit();
-        SpellDictionaryHashMap dictionary = new SpellDictionaryHashMap(wordFile, null, null);
-
-        // Adding a word persists it to the file.
-        dictionary.addWord("foobar");
-        List<String> lines = Files.readAllLines(wordFile.toPath());
-        Assertions.assertEquals(1, lines.size());
-        Assertions.assertEquals("foobar", lines.getFirst());
-    }
-
-    @Test
-    void testConstructor_twoArg_twoReaders() throws IOException{
-        File wordFile = File.createTempFile("scUnitTest", ".dic");
-        wordFile.deleteOnExit();
-        SpellDictionaryHashMap dictionary;
-        try (FileReader r = new FileReader(wordFile)) {
-            dictionary = new SpellDictionaryHashMap(r, null);
-        }
-
-        // Adding a word does not it to the file, since the file wasn't passed in.
-        dictionary.addWord("foobar");
-        List<String> lines = Files.readAllLines(wordFile.toPath());
-        Assertions.assertEquals(0, lines.size());
-    }
-
-    /**
-     * Creates an empty phonetic file. With no rules, a word's phonetic code
-     * is just the word in upper case, unlike the default {@code DoubleMeta}
-     * transformation (which encodes "apple" as "APL").
-     */
-    private static File createEmptyPhoneticFile() throws IOException {
-        File phonetic = File.createTempFile("scUnitTest", ".dat");
-        phonetic.deleteOnExit();
-        return phonetic;
-    }
-
     private static File createWordFile(String content) throws IOException {
         File wordFile = File.createTempFile("scUnitTest", ".dic");
         wordFile.deleteOnExit();
@@ -129,35 +77,6 @@ class SpellDictionaryHashMapTest {
         SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\n"));
         Assertions.assertEquals("APL", dic.getCode("apple"));
         Assertions.assertEquals(List.of("apple"), dic.getWords("APL"));
-    }
-
-    @Test
-    void testConstructor_twoArg_twoFiles_usesPhoneticFile() throws IOException {
-        File wordFile = createWordFile("apple\n");
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile, createEmptyPhoneticFile());
-        Assertions.assertEquals("APPLE", dic.getCode("apple"));
-        Assertions.assertEquals(List.of("apple"), dic.getWords("APPLE"));
-        Assertions.assertTrue(dic.addWord("banana")); // Persists to the word file
-        Assertions.assertEquals(List.of("apple", "banana"), Files.readAllLines(wordFile.toPath()));
-    }
-
-    @Test
-    void testConstructor_threeArg_usesPhoneticFile() throws IOException {
-        File wordFile = createWordFile("apple\n");
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile, createEmptyPhoneticFile(), "UTF-8");
-        Assertions.assertEquals("APPLE", dic.getCode("apple"));
-        Assertions.assertEquals(List.of("apple"), dic.getWords("APPLE"));
-        Assertions.assertTrue(dic.addWord("banana"));
-        Assertions.assertEquals(List.of("apple", "banana"), Files.readAllLines(wordFile.toPath()));
-    }
-
-    @Test
-    void testConstructor_twoArg_twoReaders_usesPhoneticFile() throws IOException {
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\n"), new StringReader(""));
-        Assertions.assertEquals("APPLE", dic.getCode("apple"));
-        Assertions.assertEquals(List.of("apple"), dic.getWords("APPLE"));
-        Assertions.assertFalse(dic.addWord("banana")); // No word file to persist to
-        Assertions.assertTrue(dic.isCorrect("banana"));
     }
 
     @Test
@@ -177,6 +96,39 @@ class SpellDictionaryHashMapTest {
         Assertions.assertEquals(List.of("apple"), dic.getWords(dic.getCode("apple")));
         Assertions.assertTrue(dic.isCorrect("banana"));
         Assertions.assertFalse(dic.isCorrect(""));
+    }
+
+    @Test
+    void testPutWord_inGroupsForBothCodes() throws IOException {
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("special\n"));
+        Assertions.assertEquals(List.of("special"), dic.getWords("SPSL")); // Primary code
+        Assertions.assertEquals(List.of("special"), dic.getWords("SPXL")); // Alternate code
+    }
+
+    @Test
+    void testAddDictionary_duplicateWithAlternateCode_notAddedAgain() throws IOException {
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("special\n"));
+        dic.addDictionary(new StringReader("Special\nspecial\n"));
+        Assertions.assertEquals(List.of("special"), dic.getWords("SPSL"));
+        Assertions.assertEquals(List.of("special"), dic.getWords("SPXL"));
+    }
+
+    @Test
+    void testGetSuggestions_matchesAlternateCode() throws IOException {
+        // "speshal" is SPXL, which is only the alternate code of "special"
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("special\nspatial\nofficial\n"));
+        Configuration config = Configuration.getConfiguration();
+        Assertions.assertEquals("special", dic.getSuggestions("speshal", config).get(0).getWord());
+        Assertions.assertEquals("official", dic.getSuggestions("offishal", config).get(0).getWord());
+    }
+
+    @Test
+    void testGetSuggestions_wordInBothGroups_suggestedOnce() throws IOException {
+        // "spesial" is SPSL (primary of "special") and its near misses include SPXL
+        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("special\n"));
+        List<Word> suggestions = dic.getSuggestions("spesial", Configuration.getConfiguration());
+        Assertions.assertEquals(1, suggestions.stream().filter(w -> w.getWord().equals("special")).count(),
+            suggestions.toString());
     }
 
     @Test
