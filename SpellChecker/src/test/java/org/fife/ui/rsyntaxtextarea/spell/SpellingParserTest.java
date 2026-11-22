@@ -24,6 +24,9 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -247,6 +250,21 @@ class SpellingParserTest {
     @Test
     void testGetImageBase() {
         assertNotNull(parser.getImageBase());
+    }
+
+    /**
+     * The tooltip HTML refers to its images relative to the image base. The
+     * test classpath has compiled classes and resources in separate folders,
+     * as an IDE does, so the base must be the folder with the images, not just
+     * the first folder for the package.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = { "add.png", "cross.png", "lightbulb.png", "spellcheck.png" })
+    void testGetImageBase_resolvesTooltipImages(String image) throws IOException {
+        URL url = URI.create(parser.getImageBase().toExternalForm() + image).toURL();
+        try (InputStream in = url.openStream()) {
+            assertTrue(in.read() != -1);
+        }
     }
 
     @Test

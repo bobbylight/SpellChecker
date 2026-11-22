@@ -13,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
@@ -100,6 +102,11 @@ public class SpellingParser extends AbstractParser
      * The default maximum number of spelling errors to report for a document.
      */
     private static final int DEFAULT_MAX_ERROR_COUNT = 100;
+
+    /**
+     * The folder holding the images used in tooltips.
+     */
+    private static final URL IMAGE_BASE = findImageBase();
 
 
     /**
@@ -282,7 +289,30 @@ public class SpellingParser extends AbstractParser
      */
     @Override
     public URL getImageBase() {
-        return getClass().getResource("/org/fife/ui/rsyntaxtextarea/spell/");
+        return IMAGE_BASE;
+    }
+
+
+    /**
+     * Returns the folder holding the tooltip images. This is found from one
+     * of the images rather than by looking up the package folder, because
+     * when compiled classes and resources are in separate folders (as when
+     * running from an IDE), the package folder is found in the classes
+     * folder first, which has no images.
+     *
+     * @return The folder, or {@code null} if the images aren't found.
+     */
+    private static URL findImageBase() {
+        URL image = SpellingParser.class.getResource("lightbulb.png");
+        if (image == null) {
+            return null;
+        }
+        String url = image.toExternalForm();
+        try {
+            return URI.create(url.substring(0, url.lastIndexOf('/') + 1)).toURL();
+        } catch (MalformedURLException e) {
+            return null;
+        }
     }
 
 
