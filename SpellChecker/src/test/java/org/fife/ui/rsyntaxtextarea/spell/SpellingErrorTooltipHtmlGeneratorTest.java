@@ -43,7 +43,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         dictionary.addWord("dispelled");
         var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
 
-        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+        String html = SpellingErrorTooltipHtmlGenerator.get(sc, notice);
 
         Assertions.assertTrue(html.contains("Incorrectly spelled word:"));
         Assertions.assertTrue(html.contains("mispelled"));
@@ -65,7 +65,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         dictionary.addWord("misspelled");
         var notice = new SpellingParserNotice(parser, "msg", 0, 4, "Mispelled", sc);
 
-        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+        String html = SpellingErrorTooltipHtmlGenerator.get(sc, notice);
 
         // Both the replacement in the link and the displayed text are capitalized
         Assertions.assertTrue(html.contains("<a href=\"REPLACE://4,9,Misspelled,Mispelled\">Misspelled</a>"));
@@ -76,7 +76,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     void testGet_noSuggestions() {
         var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
 
-        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+        String html = SpellingErrorTooltipHtmlGenerator.get(sc, notice);
 
         Assertions.assertTrue(html.contains("Incorrectly spelled word:"));
         Assertions.assertTrue(html.contains("mispelled"));
@@ -91,7 +91,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         dictionary.addWord("misspelled");
         var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
 
-        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+        String html = SpellingErrorTooltipHtmlGenerator.get(sc, notice);
 
         Assertions.assertTrue(html.contains("Incorrectly spelled word:"));
         Assertions.assertTrue(html.contains("mispelled"));
@@ -114,7 +114,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
         parser.setAllowAdd(false);
 
-        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+        String html = SpellingErrorTooltipHtmlGenerator.get(sc, notice);
 
         Assertions.assertFalse(html.contains("Add to dictionary"));
     }
@@ -124,7 +124,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
         parser.setUserDictionary(null);
 
-        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+        String html = SpellingErrorTooltipHtmlGenerator.get(sc, notice);
 
         // Adding a word can't work without a user dictionary
         Assertions.assertFalse(html.contains("Add to dictionary"));
@@ -137,7 +137,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
         parser.setAllowIgnore(false);
 
-        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+        String html = SpellingErrorTooltipHtmlGenerator.get(sc, notice);
 
         Assertions.assertFalse(html.contains("Ignore 'mispelled' for this session"));
     }
@@ -146,7 +146,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     void testGet_wordWithApostrophe_addLinkContainsWholeWord() {
         var notice = new SpellingParserNotice(parser, "msg", 0, 8, "would'nt", sc);
 
-        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+        String html = SpellingErrorTooltipHtmlGenerator.get(sc, notice);
 
         Assertions.assertEquals("ADD://would'nt", getHref(html, "ADD://"));
     }
@@ -155,7 +155,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     void testGet_wordWithApostrophe_ignoreLinkContainsWholeWord() {
         var notice = new SpellingParserNotice(parser, "msg", 0, 8, "would'nt", sc);
 
-        String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+        String html = SpellingErrorTooltipHtmlGenerator.get(sc, notice);
 
         Assertions.assertEquals("IGNORE://would'nt", getHref(html, "IGNORE://"));
     }
@@ -211,7 +211,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         try {
             Locale.setDefault(locale);
             var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
-            return new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
+            return SpellingErrorTooltipHtmlGenerator.get(sc, notice);
         } finally {
             Locale.setDefault(origDefault);
         }

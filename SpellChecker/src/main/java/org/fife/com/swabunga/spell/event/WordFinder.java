@@ -87,6 +87,4 @@ public interface WordFinder {
    * @throws WordNotFoundException current word has not yet been set.
    */
   boolean startsSentence();
-
-  // void setText();
 }

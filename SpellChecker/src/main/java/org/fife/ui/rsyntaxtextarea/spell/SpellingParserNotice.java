@@ -33,7 +33,7 @@ class SpellingParserNotice extends DefaultParserNotice {
 
     @Override
     public String getToolTipText() {
-        return new SpellingErrorTooltipHtmlGenerator().get(sc, this);
+        return SpellingErrorTooltipHtmlGenerator.get(sc, this);
     }
 
     /**

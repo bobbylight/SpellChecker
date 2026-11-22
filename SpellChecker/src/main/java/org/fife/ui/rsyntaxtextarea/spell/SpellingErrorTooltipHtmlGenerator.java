@@ -16,7 +16,7 @@ import org.fife.com.swabunga.spell.event.SpellChecker;
 /**
  * Generates the HTML for a tooltip that displays a spelling error and its possible corrections.
  */
-class SpellingErrorTooltipHtmlGenerator {
+final class SpellingErrorTooltipHtmlGenerator {
 
     // Use double quotes for attribute values; this is a MessageFormat pattern,
     // so single quotes would be treated as escapes and dropped (along with
@@ -29,7 +29,11 @@ class SpellingErrorTooltipHtmlGenerator {
     private static final ResourceBundle MSG = ResourceBundle.getBundle(
             "org.fife.ui.rsyntaxtextarea.spell.SpellingParser");
 
-    public String get(SpellChecker sc, SpellingParserNotice notice) {
+    private SpellingErrorTooltipHtmlGenerator() {
+        // Not instantiable; get() is static
+    }
+
+    static String get(SpellChecker sc, SpellingParserNotice notice) {
         var sb = new StringBuilder();
         String spacing = "&nbsp;".repeat(8);
         String word = notice.getWord();
