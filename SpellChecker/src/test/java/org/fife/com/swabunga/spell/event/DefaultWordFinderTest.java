@@ -69,6 +69,16 @@ class DefaultWordFinderTest {
     }
 
     @Test
+    void testIsWordChar_atSignPeriodAndUnderscoreBetweenLetters() {
+        for (String text : new String[] { "a@b", "a.b", "a_b" }) {
+            wordFinder = new DefaultWordFinder(text);
+            assertTrue(wordFinder.isWordChar(0), text);
+            assertFalse(wordFinder.isWordChar(1), text);
+            assertTrue(wordFinder.isWordChar(2), text);
+        }
+    }
+
+    @Test
     void testIsWordChar_nonWordChar() {
         wordFinder = new DefaultWordFinder("#");
         assertFalse(wordFinder.isWordChar(0));

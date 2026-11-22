@@ -156,7 +156,6 @@ public class DocumentWordTokenizer implements WordTokenizer {
         break;
       }
     }
-    //System.out.println("CurPos:"+currentWordPos);
     if (currentWordPos == 0)
       first = true;
     moreTokens = true;
@@ -214,7 +213,6 @@ public class DocumentWordTokenizer implements WordTokenizer {
       // robert: bug fix - Segment's begin offset may be != 0
       int offs = currentWordPos - text.offset;
       word = document.getText(offs, currentWordEnd - currentWordPos);
-      //word = document.getText(currentWordPos, currentWordEnd - currentWordPos);
     } catch (BadLocationException ex) {
       ex.printStackTrace();
       moreTokens = false;

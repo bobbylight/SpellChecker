@@ -47,11 +47,6 @@ public abstract class AbstractWordFinder implements WordFinder {
   protected String text;
 
   /**
-   * Passed to {@link #ignore(int, char, int)} when skipping should stop at the
-   * first non-letter or digit character rather than at a specific character.
-   */
-  private static final int NO_END_IGNORE = -1;
-  /**
    * An iterator to work through the sentence.
    */
   protected BreakIterator sentenceIterator;
@@ -174,106 +169,26 @@ public abstract class AbstractWordFinder implements WordFinder {
 
   /**
    * Indicates if the character at the specified position is acceptable as
-   * part of a word. To be acceptable, the character need to be a letter
-   * or a digit. It is also acceptable if the character is one of ''', '@',
-   * '.' or '_' and is preceded and followed by letter or digit.
+   * part of a word. To be acceptable, the character needs to be a letter
+   * or a digit, or an apostrophe preceded and followed by a letter or digit.
    *
    * @param posn The character position to analyze.
-   * @return true if the character is a letter or digit
+   * @return Whether the character is part of a word.
    */
-  //Added more intelligent character recognition (11 Feb '03)
   protected boolean isWordChar(int posn) {
-    boolean out;
-
     char curr = text.charAt(posn);
 
     if ((posn == 0) || (posn == text.length() - 1)) {
       return Character.isLetterOrDigit(curr);
     }
 
-    switch (curr) {
-      case '\'':
-        // robert: Not sure why these are 'word characters'; they definitely mess
-        // things up for spell-checking code
-        //case '@':
-        //case '.':
-        //case '_':
-        char prev = text.charAt(posn - 1);
-        char next = text.charAt(posn + 1);
-        out = (Character.isLetterOrDigit(prev) && Character.isLetterOrDigit(next));
-        break;
-      default:
-        out = Character.isLetterOrDigit(curr);
+    // An apostrophe between letters or digits is part of a word, as in "can't"
+    if (curr == '\'') {
+      return Character.isLetterOrDigit(text.charAt(posn - 1)) &&
+          Character.isLetterOrDigit(text.charAt(posn + 1));
     }
 
-    return out;
-  }
-
-  /**
-   * Ignores or skip over text starting from the index position specified
-   * if it contains the {@code startIgnore}, and until the
-   * first non letter or digit character is encountered or end of text is
-   * detected.
-   *
-   * @param index     The start position in text.
-   * @param startIgnore The character that should be at {@code index}
-   *        position to start skipping through.
-   * @return The index position pointing after the skipped characters or the
-   *         original index if the ignore condition could not be met.
-   */
-  protected int ignore(int index, char startIgnore) {
-    return ignore(index, startIgnore, NO_END_IGNORE);
-  }
-
-  /**
-   * Ignores or skip over text starting from the index position specified
-   * if it contains the {@code startIgnore}, and until the
-   * {@code endIgnore} character is encountered or end of text is
-   * detected.
-   *
-   * @param index     The start position in text.
-   * @param startIgnore The character that should be at {@code index}
-   *        position to start skipping through.
-   * @param endIgnore   The character which mark the end of skipping through. If
-   *        the value of endIgnore is {@code null}, skipping characters stop
-   *        at first non letter or digit character.
-   * @return The index position pointing after the skipped characters or the
-   *         original index if the ignore condition could not be met.
-   */
-  protected int ignore(int index, char startIgnore, char endIgnore) {
-    return ignore(index, startIgnore, (int)endIgnore);
-  }
-
-  /**
-   * Implementation of the {@code ignore()} methods.
-   *
-   * @param endIgnore The character which marks the end of skipping through,
-   *        or {@link #NO_END_IGNORE} to stop at the first non-letter or digit
-   *        character.
-   */
-  private int ignore(int index, char startIgnore, int endIgnore) {
-    int newIndex = index;
-
-    if (newIndex < text.length()) {
-      char curChar = text.charAt(newIndex);
-
-      if (curChar == startIgnore) {
-        newIndex++;
-        while (newIndex < text.length()) {
-          curChar = text.charAt(newIndex);
-          if (curChar == endIgnore) {
-            newIndex++;
-            break;
-          }
-          else if (endIgnore == NO_END_IGNORE && !Character.isLetterOrDigit(curChar)) {
-            break;
-          }
-          newIndex++;
-        }
-      }
-    }
-
-    return newIndex;
+    return Character.isLetterOrDigit(curr);
   }
 
   /**
