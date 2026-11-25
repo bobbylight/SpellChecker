@@ -11,6 +11,9 @@ import org.fife.com.swabunga.spell.event.SpellChecker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link SpellingParserNotice}.
@@ -42,6 +45,15 @@ class SpellingParserNoticeTest {
     void testGetToolTipText() {
         SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "word", sc);
         assertNotNull(notice.getToolTipText());
+    }
+
+    @Test
+    void testGetToolTipText_computedOnce() {
+        SpellChecker spySc = spy(sc);
+        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "wrod", spySc);
+        String first = notice.getToolTipText();
+        assertSame(first, notice.getToolTipText());
+        verify(spySc, times(1)).getSuggestions("wrod");
     }
 
     @Test
