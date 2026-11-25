@@ -211,12 +211,12 @@ public abstract class AbstractWordFinder implements WordFinder {
 
   /**
    * Ignores or skip over text starting from the index position specified
-   * if it contains the <code>startIgnore</code>, and until the
+   * if it contains the {@code startIgnore}, and until the
    * first non letter or digit character is encountered or end of text is
    * detected.
    *
    * @param index     The start position in text.
-   * @param startIgnore The character that should be at <code>index</code>
+   * @param startIgnore The character that should be at {@code index}
    *        position to start skipping through.
    * @return The index position pointing after the skipped characters or the
    *         original index if the ignore condition could not be met.
@@ -227,15 +227,15 @@ public abstract class AbstractWordFinder implements WordFinder {
 
   /**
    * Ignores or skip over text starting from the index position specified
-   * if it contains the <code>startIgnore</code>, and until the
-   * <code>endIgnore</code> character is encountered or end of text is
+   * if it contains the {@code startIgnore}, and until the
+   * {@code endIgnore} character is encountered or end of text is
    * detected.
    *
    * @param index     The start position in text.
-   * @param startIgnore The character that should be at <code>index</code>
+   * @param startIgnore The character that should be at {@code index}
    *        position to start skipping through.
    * @param endIgnore   The character which mark the end of skipping through. If
-   *        the value of endIgnore is <code>null</code>, skipping characters stop
+   *        the value of endIgnore is {@code null}, skipping characters stop
    *        at first non letter or digit character.
    * @return The index position pointing after the skipped characters or the
    *         original index if the ignore condition could not be met.

@@ -49,10 +49,10 @@ public class SpellingParserEvent extends EventObject {
 	 *
 	 * @param source The source parser.
 	 * @param textArea The text area that was parsed.
-	 * @param type The type of event.  This cannot be <code>null</code>.
+	 * @param type The type of event.  This cannot be {@code null}.
 	 * @param word The word being added or ignored.
-	 * @throws NullPointerException If <code>type</code> is
-	 *         <code>null</code>.
+	 * @throws NullPointerException If {@code type} is
+	 *         {@code null}.
 	 */
 	public SpellingParserEvent(SpellingParser source, RSyntaxTextArea textArea,
 								Type type, String word) {
@@ -65,7 +65,7 @@ public class SpellingParserEvent extends EventObject {
 
 	/**
 	 * Returns the parser that fired this event.  This is a wrapper for
-	 * <code>(SpellingParser)getSource()</code>.
+	 * {@code (SpellingParser)getSource()}.
 	 *
 	 * @return The parser.
 	 */

@@ -129,7 +129,7 @@
         <module name="JavadocTagContinuationIndentation"/>
         <module name="JavadocThrowsOrder"/>
         <module name="NonEmptyAtclauseDescription"/>
-        <!--<module name="PreferCodeOrSnippetJavadocInlineTag"/> TODO -->
+        <module name="PreferCodeOrSnippetJavadocInlineTag"/>
         <module name="RequireEmptyLineBeforeBlockTagGroup"/>
         <module name="SummaryJavadoc"/> <!-- Replaces JavadocStyle, removed in Checkstyle 14 -->
         <module name="MissingJavadocMethod">

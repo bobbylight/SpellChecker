@@ -44,9 +44,9 @@ public class DefaultSpellCheckableTokenIdentifier
 
 
 	/**
-	 * Returns <code>true</code> if the token is a comment.
+	 * Returns {@code true} if the token is a comment.
 	 *
-	 * @return <code>true</code> only if the token is a comment.
+	 * @return {@code true} only if the token is a comment.
 	 */
 	@Override
 	public boolean isSpellCheckable(Token t) {

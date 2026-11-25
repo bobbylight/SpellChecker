@@ -79,7 +79,7 @@ public Word next() {
    * Returns the position in the string <em>after</em> the end of the next word.
    * Note that this return value should not be used as an index into the string
    * without checking first that it is in range, since it is possible for the
-   * value <code>text.length()</code> to be returned by this method.
+   * value {@code text.length()} to be returned by this method.
    */
   private int getNextWordEnd(String text, int startPos) {
     // If we're dealing with a possible 'internet word' we need to provide

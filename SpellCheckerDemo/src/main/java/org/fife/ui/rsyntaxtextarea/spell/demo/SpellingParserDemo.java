@@ -12,7 +12,7 @@ import javax.swing.*;
 
 
 /**
- * Demo application for the <code>SpellingParser</code> add-on to RSTA.
+ * Demo application for the {@code SpellingParser} add-on to RSTA.
  *
  * @author Robert Futrell
  * @version 1.0
