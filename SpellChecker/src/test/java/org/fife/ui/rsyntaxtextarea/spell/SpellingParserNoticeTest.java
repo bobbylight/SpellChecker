@@ -4,13 +4,12 @@
  */
 package org.fife.ui.rsyntaxtextarea.spell;
 
+import java.io.IOException;
+
 import org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap;
 import org.fife.com.swabunga.spell.event.SpellChecker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

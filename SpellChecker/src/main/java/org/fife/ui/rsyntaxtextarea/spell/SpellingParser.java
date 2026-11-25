@@ -21,7 +21,6 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import javax.swing.UIManager;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.HyperlinkEvent;

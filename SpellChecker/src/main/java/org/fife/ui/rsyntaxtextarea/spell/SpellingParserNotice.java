@@ -4,10 +4,10 @@
  */
 package org.fife.ui.rsyntaxtextarea.spell;
 
+import java.awt.*;
+
 import org.fife.com.swabunga.spell.event.SpellChecker;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
-
-import java.awt.*;
 
 /**
  * A parser notice for spelling errors.

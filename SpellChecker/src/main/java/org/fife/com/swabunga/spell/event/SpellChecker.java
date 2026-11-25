@@ -165,8 +165,8 @@ public class SpellChecker {
 
 
   /**
-   * Returns whether the text at an offset starts like an Internet address,
-   * that is, with one of these prefixes (case-insensitively):
+   * Returns whether the text at an offset starts like an Internet address.
+   * That is, whether it starts with one of these prefixes (case-insensitively):
    * <ul>
    * <li>http://</li>
    * <li>ftp://</li>
