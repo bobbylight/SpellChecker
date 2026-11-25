@@ -27,7 +27,7 @@ import java.util.Properties;
 
 /**
  * Implementation class to read the properties controlling the spell engine.
- * The properties are read form the <code>configuration.properties</code> file.
+ * The properties are read form the {@code configuration.properties} file.
  *
  * @author aim4min
  */

@@ -144,7 +144,7 @@ public class SpellChecker {
 
   /**
    * This method clears the words that are currently being remembered as
-   * <code>Ignore All</code> words and <code>Replace All</code> words.
+   * {@code Ignore All} words and {@code Replace All} words.
    */
   public void reset() {
     ignoredWords.clear();
@@ -214,10 +214,10 @@ public class SpellChecker {
    * <li>anything@anythingelse</li>
    * </ul>
    * <p>
-   * It is assumed that <code>word</code> is just the word to scan, without
+   * It is assumed that {@code word} is just the word to scan, without
    * any trailing characters.  This is different from the standard Jazzy
    * distribution's implementation (which has been renamed to
-   * <code>beginsAsINETWord(String, int)</code>).
+   * {@code beginsAsINETWord(String, int)}).
    *
    * @param word The word to analyze for an Internet address.
    * @return true if this word looks like an Internet address.

@@ -56,16 +56,16 @@ import org.fife.ui.rsyntaxtextarea.spell.event.SpellingParserListener;
  * For source code only comments are spell checked.  For plain text files,
  * the entire content is spell checked.<p>
  * <p>
- * This parser can be shared among multiple <code>RSyntaxTextArea</code>
+ * This parser can be shared among multiple {@code RSyntaxTextArea}
  * instances.<p>
  * <p>
  * Usage:
- * <pre>
+ * {@snippet :
  * RSyntaxTextArea textArea = new RSyntaxTextArea(40, 25);
  * File englishZip = new File("english_dic.zip");
  * SpellingParser parser = SpellingParser.createEnglishSpellingParser(englishZip, true);
  * textArea.addParser(parser);
- * </pre>
+ * }
  *
  * @author Robert Futrell
  * @version 0.5
@@ -87,7 +87,7 @@ public class SpellingParser extends AbstractParser
 
 
     /**
-     * The "user dictionary."  If this is non-<code>null</code>, then the
+     * The "user dictionary."  If this is non-{@code null}, then the
      * user will be able to select "Add word to dictionary" for spelling
      * errors.  When this option is selected, the word is added to this
      * file.
@@ -145,7 +145,7 @@ public class SpellingParser extends AbstractParser
      * A utility method to easily create a parser for American or British
      * English.
      *
-     * @param zip The location of the <code>english_dic.zip</code> file
+     * @param zip The location of the {@code english_dic.zip} file
      *        distributed with the spell checker add-on.
      * @param american Whether the parser should be for American (as opposed
      *        to British) English.
@@ -165,7 +165,7 @@ public class SpellingParser extends AbstractParser
      * A utility method to easily create a parser for American or British
      * English.
      *
-     * @param zip The location of the <code>english_dic.zip</code> file
+     * @param zip The location of the {@code english_dic.zip} file
      *        distributed with the spell checker add-on.
      * @param american Whether the parser should be for American (as opposed
      *        to British) English.
@@ -357,7 +357,7 @@ public class SpellingParser extends AbstractParser
     /**
      * Returns the user's dictionary file.
      *
-     * @return The user's dictionary file, or <code>null</code> if none has been set.
+     * @return The user's dictionary file, or {@code null} if none has been set.
      * @see #setUserDictionary(File)
      */
     public File getUserDictionary() {
@@ -564,7 +564,7 @@ public class SpellingParser extends AbstractParser
     /**
      * Sets the strategy to use to identify tokens to spell check.
      *
-     * @param scti The new strategy to use.  This cannot be <code>null</code>.
+     * @param scti The new strategy to use.  This cannot be {@code null}.
      * @see #getSpellCheckableTokenIdentifier()
      */
     public void setSpellCheckableTokenIdentifier(
@@ -589,14 +589,14 @@ public class SpellingParser extends AbstractParser
      * Sets the "user dictionary," that is, the dictionary that words can be
      * added to at runtime.<p>
      * <p>
-     * If this is non-<code>null</code>, then on the focusable tool tip for
+     * If this is non-{@code null}, then on the focusable tool tip for
      * spelling errors, there will be an option available: "Add word to
      * dictionary."  If this is clicked then the "error" word is added to the
      * user's dictionary and the document is reparsed.<p>
      *
      * The file is read and written as UTF-8.
      *
-     * @param dictionaryFile The dictionary file.  If this is <code>null</code>
+     * @param dictionaryFile The dictionary file.  If this is {@code null}
      *        then the user will not be able to add words.
      * @throws IOException If an IO error occurs.
      * @see #getUserDictionary()
