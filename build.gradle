@@ -1,5 +1,5 @@
 plugins {
-//    id 'com.github.spotbugs' version '6.4.8'
+//    id 'com.github.spotbugs' version '6.5.13'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
@@ -22,7 +22,7 @@ allprojects {
     }
 
     wrapper {
-        gradleVersion = '9.8.2'
+        gradleVersion = '9.9.2'
     }
 
     tasks.withType(Javadoc) {
@@ -41,7 +41,7 @@ subprojects {
     }
 
     checkstyle {
-        toolVersion = '12.3.0'
+        toolVersion = '14.4.0'
         configDirectory = file("$rootProject.projectDir/config/checkstyle")
     }
 
