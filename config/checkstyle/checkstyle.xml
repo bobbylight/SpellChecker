@@ -298,7 +298,7 @@
         <module name="CommentsIndentation"/>
         <!--<module name="FinalParameters"/>-->
         <module name="IllegalSymbol"/>
-        <!--<module name="MultilineCommentLeadingAsteriskPresence"/> TODO: Jazzy license headers lack asterisks -->
+        <module name="MultilineCommentLeadingAsteriskPresence"/>
         <module name="ModuleDirectiveOrder"/>
         <module name="NumericalPrefixesInfixesSuffixesCharacterCase"/>
         <!-- <module name="TodoComment"/> -->
