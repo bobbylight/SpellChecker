@@ -64,7 +64,7 @@ class EditDistanceTest {
         // "word" is the original; the distance is the cost of turning it into "similar"
         config.setInteger(Configuration.COST_REMOVE_CHAR, 10);
         config.setInteger(Configuration.COST_INSERT_CHAR, 100);
-        EditDistance distance = new EditDistance(config);
+        var distance = new EditDistance(config);
 
         Assertions.assertEquals(10, distance.getDistance("tests", "test")); // remove 's'
         Assertions.assertEquals(100, distance.getDistance("test", "tests")); // insert 's'

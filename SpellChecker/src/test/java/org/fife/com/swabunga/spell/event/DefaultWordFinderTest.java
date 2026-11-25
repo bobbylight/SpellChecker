@@ -114,13 +114,13 @@ class DefaultWordFinderTest {
 
     @Test
     void testNextWord_emptyString() {
-        DefaultWordFinder emptyFinder = new DefaultWordFinder("");
+        var emptyFinder = new DefaultWordFinder("");
         assertThrows(WordNotFoundException.class, emptyFinder::next);
     }
 
     @Test
     void testNextWord_url_carriageReturn() {
-        DefaultWordFinder finder = new DefaultWordFinder("https://google.com\r\nfoo");
+        var finder = new DefaultWordFinder("https://google.com\r\nfoo");
         Word word = finder.next();
         assertEquals("https://google.com", word.getText());
         assertEquals(0, word.getStart());
@@ -129,7 +129,7 @@ class DefaultWordFinderTest {
 
     @Test
     void testNextWord_url_endOfInput() {
-        DefaultWordFinder finder = new DefaultWordFinder("https://google.com");
+        var finder = new DefaultWordFinder("https://google.com");
         Word word = finder.next();
         assertEquals("https://google.com", word.getText());
         assertEquals(0, word.getStart());
@@ -138,7 +138,7 @@ class DefaultWordFinderTest {
 
     @Test
     void testNextWord_url_lineFeed() {
-        DefaultWordFinder finder = new DefaultWordFinder("https://google.com\nfoo");
+        var finder = new DefaultWordFinder("https://google.com\nfoo");
         Word word = finder.next();
         assertEquals("https://google.com", word.getText());
         assertEquals(0, word.getStart());
@@ -147,7 +147,7 @@ class DefaultWordFinderTest {
 
     @Test
     void testNextWord_url_whitespace() {
-        DefaultWordFinder finder = new DefaultWordFinder("https://google.com foo");
+        var finder = new DefaultWordFinder("https://google.com foo");
         Word word = finder.next();
         assertEquals("https://google.com", word.getText());
         assertEquals(0, word.getStart());
@@ -156,7 +156,7 @@ class DefaultWordFinderTest {
 
     @Test
     void testNextWord_url_commaAndWhitespace() {
-        DefaultWordFinder finder = new DefaultWordFinder("https://google.com, foo");
+        var finder = new DefaultWordFinder("https://google.com, foo");
         Word word = finder.next();
         assertEquals("https://google.com", word.getText());
         assertEquals(0, word.getStart());
@@ -165,7 +165,7 @@ class DefaultWordFinderTest {
 
     @Test
     void testNextWord_urlAfterOtherWords() {
-        DefaultWordFinder finder = new DefaultWordFinder("see HTTPS://google.com today");
+        var finder = new DefaultWordFinder("see HTTPS://google.com today");
         assertEquals("see", finder.next().getText());
         Word word = finder.next();
         assertEquals("HTTPS://google.com", word.getText());

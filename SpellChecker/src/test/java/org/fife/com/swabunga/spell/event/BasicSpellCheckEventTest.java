@@ -21,7 +21,7 @@ class BasicSpellCheckEventTest {
     @Test
     void testConstructor_wordTokenizer() {
         assertDoesNotThrow(() -> {
-            StringWordTokenizer tokenizer = new StringWordTokenizer("This");
+            var tokenizer = new StringWordTokenizer("This");
             tokenizer.nextWord();
             new BasicSpellCheckEvent(invalidWord, tokenizer);
         });

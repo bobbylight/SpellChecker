@@ -60,7 +60,7 @@ class SpellCheckerTest {
     @Test
     void testConstructor_twoArg() {
         Configuration config = Configuration.getConfiguration();
-        SpellChecker checker = new SpellChecker(new SpellDictionaryHashMap(), config);
+        var checker = new SpellChecker(new SpellDictionaryHashMap(), config);
         assertSame(config, checker.getConfiguration());
     }
 
@@ -80,7 +80,7 @@ class SpellCheckerTest {
     void testConstructor_twoArg_configIsUsed() {
         Configuration config = Configuration.getConfiguration();
         config.setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, true);
-        SpellChecker checker = new SpellChecker(new SpellDictionaryHashMap(), config);
+        var checker = new SpellChecker(new SpellDictionaryHashMap(), config);
 
         assertEquals(0, checker.checkSpelling(new StringWordTokenizer("abc123")).getErrorCount());
 
@@ -189,7 +189,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, false);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("thisIs");
+        var tokenizer = new StringWordTokenizer("thisIs");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, false);
     }
@@ -200,7 +200,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, true);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("thisIs");
+        var tokenizer = new StringWordTokenizer("thisIs");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -260,7 +260,7 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, true);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, false);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("thisISSSpelled");
+        var tokenizer = new StringWordTokenizer("thisISSSpelled");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, false);
     }
@@ -272,7 +272,7 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, true);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, false);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("thisISSpelled");
+        var tokenizer = new StringWordTokenizer("thisISSpelled");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -294,7 +294,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, false);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("seventy9");
+        var tokenizer = new StringWordTokenizer("seventy9");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, false);
     }
@@ -305,7 +305,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREDIGITWORDS, true);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("seventy9");
+        var tokenizer = new StringWordTokenizer("seventy9");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -316,7 +316,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREINTERNETADDRESSES, false);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("www.example.com");
+        var tokenizer = new StringWordTokenizer("www.example.com");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, false);
     }
@@ -327,7 +327,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREINTERNETADDRESSES, true);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("www.example.com");
+        var tokenizer = new StringWordTokenizer("www.example.com");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -340,7 +340,7 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, false);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREMIXEDCASE, false);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("fooBar sentence");
+        var tokenizer = new StringWordTokenizer("fooBar sentence");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, false);
     }
@@ -353,7 +353,7 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_ANALYZECAMELCASEWORDS, false);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREMIXEDCASE, true);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("fooBar sentence");
+        var tokenizer = new StringWordTokenizer("fooBar sentence");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -366,7 +366,7 @@ class SpellCheckerTest {
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREMIXEDCASE, true);
 
         // A capitalized misspelling mid-sentence is still reported
-        StringWordTokenizer tokenizer = new StringWordTokenizer("this is a Sentenc");
+        var tokenizer = new StringWordTokenizer("this is a Sentenc");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, false);
     }
@@ -378,7 +378,7 @@ class SpellCheckerTest {
         // The tooltip's "Ignore" link passes the word as it appears
         checker.ignoreAll("Sentenc");
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("this is a Sentenc");
+        var tokenizer = new StringWordTokenizer("this is a Sentenc");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -389,7 +389,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION, false);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("test");
+        var tokenizer = new StringWordTokenizer("test");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, false);
     }
@@ -400,7 +400,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESENTENCECAPITALIZATION, true);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("test");
+        var tokenizer = new StringWordTokenizer("test");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -411,7 +411,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESINGLELETTERS, false);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("g");
+        var tokenizer = new StringWordTokenizer("g");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, false);
     }
@@ -422,7 +422,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNORESINGLELETTERS, true);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("g");
+        var tokenizer = new StringWordTokenizer("g");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -433,7 +433,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, false);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("FOOBAR");
+        var tokenizer = new StringWordTokenizer("FOOBAR");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, false);
     }
@@ -444,7 +444,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
         checker.getConfiguration().setBoolean(Configuration.SPELL_IGNOREUPPERCASE, true);
 
-        StringWordTokenizer tokenizer = new StringWordTokenizer("FOOBAR");
+        var tokenizer = new StringWordTokenizer("FOOBAR");
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -476,7 +476,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
 
         String text = String.join(" ", words) + ".";
-        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        var tokenizer = new StringWordTokenizer(text);
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -487,7 +487,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
 
         String text = "This is a correctlySpelledSentence.";
-        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        var tokenizer = new StringWordTokenizer(text);
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }
@@ -498,7 +498,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
 
         String text = "Ths is a sentence with erors.";
-        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        var tokenizer = new StringWordTokenizer(text);
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 2, false);
 
@@ -520,7 +520,7 @@ class SpellCheckerTest {
         addWordsToDictionary(words);
 
         String text = "This is a correktlySpellledSentence.";
-        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        var tokenizer = new StringWordTokenizer(text);
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 2, false);
 
@@ -540,11 +540,11 @@ class SpellCheckerTest {
     void testCheckSpelling_terminatesWhenListenerSaysTo_camelCasedWord() {
         String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
         addWordsToDictionary(words);
-        TestSpellCheckListenerCancels listener = new TestSpellCheckListenerCancels();
+        var listener = new TestSpellCheckListenerCancels();
         checker.addSpellCheckListener(listener);
 
         String text = "This is a correktlySpellled sentence.";
-        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        var tokenizer = new StringWordTokenizer(text);
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, true);
 
@@ -561,11 +561,11 @@ class SpellCheckerTest {
     void testCheckSpelling_terminatesWhenListenerSaysTo_separateWords() {
         String[] words = { "this", "is", "a", "correctly", "spelled", "sentence" };
         addWordsToDictionary(words);
-        TestSpellCheckListenerCancels listener = new TestSpellCheckListenerCancels();
+        var listener = new TestSpellCheckListenerCancels();
         checker.addSpellCheckListener(listener);
 
         String text = "This is a correktly spellled sentence.";
-        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        var tokenizer = new StringWordTokenizer(text);
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 1, true);
 
@@ -579,7 +579,7 @@ class SpellCheckerTest {
     }
 
     private static DocumentWordTokenizer createDocumentTokenizer(String text) {
-        PlainDocument doc = new PlainDocument();
+        var doc = new PlainDocument();
         try {
             doc.insertString(0, text, null);
         } catch (BadLocationException ble) {
@@ -634,7 +634,7 @@ class SpellCheckerTest {
     void testCheckSpelling_hyphenatedWord_terminatesWhenListenerSaysTo() {
         String[] words = { "this", "is", "a", "fact" };
         addWordsToDictionary(words);
-        TestSpellCheckListenerCancels listener = new TestSpellCheckListenerCancels();
+        var listener = new TestSpellCheckListenerCancels();
         checker.addSpellCheckListener(listener);
 
         SpellCheckResult result = checker.checkSpelling(createDocumentTokenizer("This is a welll-knowwn fact."));
@@ -740,7 +740,7 @@ class SpellCheckerTest {
 
         // Checker skips the word as well
         String text = "This is a sentence with erors.";
-        StringWordTokenizer tokenizer = new StringWordTokenizer(text);
+        var tokenizer = new StringWordTokenizer(text);
         SpellCheckResult result = checker.checkSpelling(tokenizer);
         assertResult(result, 0, false);
     }

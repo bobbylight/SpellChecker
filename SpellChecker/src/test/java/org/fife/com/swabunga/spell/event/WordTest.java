@@ -10,7 +10,7 @@ class WordTest {
 
     @Test
     void testConstructor() {
-        Word word = new Word("test", 0);
+        var word = new Word("test", 0);
         assertEquals("test", word.getText());
         assertEquals(0, word.getStart());
         assertEquals(4, word.getEnd());
@@ -18,8 +18,8 @@ class WordTest {
 
     @Test
     void testCopyConstructor() {
-        Word original = new Word("test", 0);
-        Word copy = new Word(original);
+        var original = new Word("test", 0);
+        var copy = new Word(original);
         assertEquals("test", copy.getText());
         assertEquals(0, copy.getStart());
         assertEquals(4, copy.getEnd());
@@ -27,7 +27,7 @@ class WordTest {
 
     @Test
     void testSetText() {
-        Word word = new Word("test", 0);
+        var word = new Word("test", 0);
         word.setText("example");
         assertEquals("example", word.getText());
         assertEquals(0, word.getStart());
@@ -36,7 +36,7 @@ class WordTest {
 
     @Test
     void testSetStart() {
-        Word word = new Word("test", 0);
+        var word = new Word("test", 0);
         word.setStart(5);
         assertEquals(5, word.getStart());
         assertEquals(9, word.getEnd());
@@ -44,13 +44,13 @@ class WordTest {
 
     @Test
     void testLength() {
-        Word word = new Word("test", 0);
+        var word = new Word("test", 0);
         assertEquals(4, word.length());
     }
 
     @Test
     void testToString() {
-        Word word = new Word("test", 0);
+        var word = new Word("test", 0);
         assertEquals("test", word.toString());
     }
 }

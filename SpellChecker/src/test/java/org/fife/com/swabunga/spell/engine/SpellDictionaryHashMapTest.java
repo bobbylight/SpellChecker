@@ -21,7 +21,7 @@ class SpellDictionaryHashMapTest {
 
     private SpellDictionaryHashMap createDictionary_zeroArg() throws IOException {
         // Initialize the dictionary with some test data
-        SpellDictionaryHashMap dictionary = new SpellDictionaryHashMap();
+        var dictionary = new SpellDictionaryHashMap();
         for (String word: WORDS) {
             dictionary.addWord(word);
         }
@@ -56,7 +56,7 @@ class SpellDictionaryHashMapTest {
     void testConstructor_singleArg_file() throws IOException{
         File wordFile = File.createTempFile("scUnitTest", ".dic");
         wordFile.deleteOnExit();
-        SpellDictionaryHashMap dictionary = new SpellDictionaryHashMap(wordFile);
+        var dictionary = new SpellDictionaryHashMap(wordFile);
 
         // Adding a word persists it to the file.
         dictionary.addWord("foobar");
@@ -74,7 +74,7 @@ class SpellDictionaryHashMapTest {
 
     @Test
     void testConstructor_defaultTransformation() throws IOException {
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\n"));
+        var dic = new SpellDictionaryHashMap(new StringReader("apple\n"));
         Assertions.assertEquals("APL", dic.getCode("apple"));
         Assertions.assertEquals(List.of("apple"), dic.getWords("APL"));
     }
@@ -82,7 +82,7 @@ class SpellDictionaryHashMapTest {
     @Test
     void testConstructor_file_noPhoneticFile_readsWordsAndPersists() throws IOException {
         File wordFile = createWordFile("apple\n");
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile);
+        var dic = new SpellDictionaryHashMap(wordFile);
         Assertions.assertEquals("APL", dic.getCode("apple"));
         Assertions.assertTrue(dic.isCorrect("apple"));
         Assertions.assertTrue(dic.addWord("banana"));
@@ -91,7 +91,7 @@ class SpellDictionaryHashMapTest {
 
     @Test
     void testAddDictionary_skipsDuplicatesAndBlankLines() throws IOException {
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\n\n"));
+        var dic = new SpellDictionaryHashMap(new StringReader("apple\n\n"));
         dic.addDictionary(new StringReader("Apple\napple\n\nbanana\n"));
         Assertions.assertEquals(List.of("apple"), dic.getWords(dic.getCode("apple")));
         Assertions.assertTrue(dic.isCorrect("banana"));
@@ -100,14 +100,14 @@ class SpellDictionaryHashMapTest {
 
     @Test
     void testPutWord_inGroupsForBothCodes() throws IOException {
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("special\n"));
+        var dic = new SpellDictionaryHashMap(new StringReader("special\n"));
         Assertions.assertEquals(List.of("special"), dic.getWords("SPSL")); // Primary code
         Assertions.assertEquals(List.of("special"), dic.getWords("SPXL")); // Alternate code
     }
 
     @Test
     void testAddDictionary_duplicateWithAlternateCode_notAddedAgain() throws IOException {
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("special\n"));
+        var dic = new SpellDictionaryHashMap(new StringReader("special\n"));
         dic.addDictionary(new StringReader("Special\nspecial\n"));
         Assertions.assertEquals(List.of("special"), dic.getWords("SPSL"));
         Assertions.assertEquals(List.of("special"), dic.getWords("SPXL"));
@@ -116,7 +116,7 @@ class SpellDictionaryHashMapTest {
     @Test
     void testGetSuggestions_matchesAlternateCode() throws IOException {
         // "speshal" is SPXL, which is only the alternate code of "special"
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("special\nspatial\nofficial\n"));
+        var dic = new SpellDictionaryHashMap(new StringReader("special\nspatial\nofficial\n"));
         Configuration config = Configuration.getConfiguration();
         Assertions.assertEquals("special", dic.getSuggestions("speshal", config).get(0).getWord());
         Assertions.assertEquals("official", dic.getSuggestions("offishal", config).get(0).getWord());
@@ -125,7 +125,7 @@ class SpellDictionaryHashMapTest {
     @Test
     void testGetSuggestions_wordInBothGroups_suggestedOnce() throws IOException {
         // "spesial" is SPSL (primary of "special") and its near misses include SPXL
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("special\n"));
+        var dic = new SpellDictionaryHashMap(new StringReader("special\n"));
         List<Word> suggestions = dic.getSuggestions("spesial", Configuration.getConfiguration());
         Assertions.assertEquals(1, suggestions.stream().filter(w -> w.getWord().equals("special")).count(),
             suggestions.toString());
@@ -136,14 +136,14 @@ class SpellDictionaryHashMapTest {
         SpellDictionaryHashMap dic = createDictionary_zeroArg();
         Assertions.assertFalse(dic.isCorrect("added"));
 
-        StringReader r = new StringReader("added");
+        var r = new StringReader("added");
         dic.addDictionary(r);
         Assertions.assertTrue(dic.isCorrect("added"));
     }
 
     @Test
     void testAddWord_returnsFalseIfNoFile() throws IOException {
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap();
+        var dic = new SpellDictionaryHashMap();
         Assertions.assertFalse(dic.addWord("added"));
     }
 
@@ -151,7 +151,7 @@ class SpellDictionaryHashMapTest {
     void testAddWord_returnsTrueIfFile() throws IOException {
         File wordFile = File.createTempFile("scUnitTest", ".dic");
         wordFile.deleteOnExit();
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile);
+        var dic = new SpellDictionaryHashMap(wordFile);
         Assertions.assertTrue(dic.addWord("added"));
 
         // Verify the word was actually added to the file
@@ -166,7 +166,7 @@ class SpellDictionaryHashMapTest {
         try {
             // Turkish lowercases 'I' to a dotless i
             Locale.setDefault(Locale.of("tr", "TR"));
-            SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("item\nidle\n"));
+            var dic = new SpellDictionaryHashMap(new StringReader("item\nidle\n"));
             Assertions.assertTrue(dic.isCorrect("Item"));
             Assertions.assertTrue(dic.isCorrect("Idle"));
         } finally {
@@ -180,7 +180,7 @@ class SpellDictionaryHashMapTest {
         wordFile.deleteOnExit();
         Files.write(wordFile.toPath(), "caf\u00e9\n".getBytes(StandardCharsets.UTF_8));
 
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile);
+        var dic = new SpellDictionaryHashMap(wordFile);
         Assertions.assertTrue(dic.isCorrect("caf\u00e9"));
     }
 
@@ -189,7 +189,7 @@ class SpellDictionaryHashMapTest {
         File wordFile = File.createTempFile("scUnitTest", ".dic");
         wordFile.deleteOnExit();
 
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile);
+        var dic = new SpellDictionaryHashMap(wordFile);
         Assertions.assertTrue(dic.addWord("na\u00efve"));
 
         byte[] expected = "na\u00efve\n".getBytes(StandardCharsets.UTF_8);
@@ -206,7 +206,7 @@ class SpellDictionaryHashMapTest {
 
     @Test
     void testIsCorrect_wordsFromEverySource() throws IOException {
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\n"));
+        var dic = new SpellDictionaryHashMap(new StringReader("apple\n"));
         dic.addDictionary(new StringReader("banana\n"));
         dic.addWord("cherry");
 
@@ -218,7 +218,7 @@ class SpellDictionaryHashMapTest {
 
     @Test
     void testIsCorrect_capitalizedAndUpperCaseForms() throws IOException {
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("apple\nNASA\n"));
+        var dic = new SpellDictionaryHashMap(new StringReader("apple\nNASA\n"));
 
         Assertions.assertTrue(dic.isCorrect("Apple"));
         Assertions.assertTrue(dic.isCorrect("APPLE"));
@@ -230,7 +230,7 @@ class SpellDictionaryHashMapTest {
 
     @Test
     void testPutWordUnique_nullMainDictionary() throws IOException{
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap();
+        var dic = new SpellDictionaryHashMap();
         Assertions.assertFalse(dic.isCorrect("test"));
         dic.putWordUnique("test");
         Assertions.assertTrue(dic.isCorrect("test"));
@@ -243,7 +243,7 @@ class SpellDictionaryHashMapTest {
         Files.writeString(wordFile.toPath(), "aardvark\n");
         wordFile.deleteOnExit();
 
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(wordFile);
+        var dic = new SpellDictionaryHashMap(wordFile);
         Assertions.assertFalse(dic.isCorrect("test"));
         dic.putWordUnique("test");
         Assertions.assertTrue(dic.isCorrect("test"));
@@ -297,7 +297,7 @@ class SpellDictionaryHashMapTest {
 
     @Test
     void testGetSuggestions_extraLetterChangesPhoneticCode() throws IOException {
-        SpellDictionaryHashMap dic = new SpellDictionaryHashMap(new StringReader("school\nsatchel\n"));
+        var dic = new SpellDictionaryHashMap(new StringReader("school\nsatchel\n"));
 
         // The extra letter gives these a different phonetic code from the
         // intended word, so only deleting a letter finds it
