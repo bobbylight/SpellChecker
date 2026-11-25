@@ -1,20 +1,20 @@
 package org.fife.ui.rsyntaxtextarea.spell;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Locale;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+
 import org.fife.com.swabunga.spell.engine.SpellDictionary;
 import org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap;
 import org.fife.com.swabunga.spell.event.SpellChecker;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import javax.swing.text.BadLocationException;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Locale;
 
 /**
  * Unit tests for {@link SpellingErrorTooltipHtmlGenerator}.

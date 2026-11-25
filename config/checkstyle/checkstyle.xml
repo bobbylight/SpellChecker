@@ -67,6 +67,7 @@
         <property name="max" value="1000"/>
     </module>
 
+    <module name="LineEnding"/>
     <module name="LineLength">
         <property name="max" value="120"/>
     </module>
@@ -112,16 +113,25 @@
         </module>
         -->
         <module name="AtclauseOrder"/>
+        <module name="InappropriateJavadocBlockTagsOnField"/>
+        <module name="InappropriateJavadocBlockTagsOnPackage"/>
+        <module name="InappropriateJavadocBlockTagsOnType"/>
         <module name="InvalidJavadocPosition"/>
         <module name="JavadocBlockTagLocation"/>
+        <module name="JavadocEndCommentDelimiter"/>
+        <module name="JavadocLinkWellKnownApi"/>
         <module name="JavadocMethod">
             <property name="accessModifiers" value="public"/>
         </module>
         <module name="JavadocMissingLeadingAsterisk"/>
         <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+        <module name="JavadocParamOrder"/>
         <module name="JavadocTagContinuationIndentation"/>
+        <module name="JavadocThrowsOrder"/>
         <module name="NonEmptyAtclauseDescription"/>
+        <!--<module name="PreferCodeOrSnippetJavadocInlineTag"/> TODO -->
         <module name="RequireEmptyLineBeforeBlockTagGroup"/>
+        <module name="SummaryJavadoc"/> <!-- Replaces JavadocStyle, removed in Checkstyle 14 -->
         <module name="MissingJavadocMethod">
             <property name="allowMissingPropertyJavadoc" value="true"/>
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
@@ -134,6 +144,7 @@
         <!-- Checks for Naming Conventions.                                 -->
         <!-- See https://checkstyle.sourceforge.io/checks/naming/index.html -->
         <module name="ConstantName"/>
+        <module name="LambdaParameterName"/>
         <module name="LocalFinalVariableName"/>
         <module name="LocalVariableName"/>
         <module name="MemberName"/>
@@ -153,8 +164,15 @@
         <!-- Checks for imports                                              -->
         <!-- See https://checkstyle.sourceforge.io/checks/imports/index.html -->
         <!--<module name="AvoidStarImport"/>-->
+        <module name="AvoidModuleImport"/>
         <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
+        <module name="ImportOrder">
+            <property name="groups" value="/^javax?\./,*"/>
+            <property name="separated" value="true"/>
+        </module>
+        <module name="ModuleImportOrder"/>
         <module name="RedundantImport"/>
+        <module name="UnnecessaryFullyQualifiedType"/>
         <module name="UnusedImports"/>
 
 
@@ -171,6 +189,7 @@
 
         <!-- Checks for whitespace                                              -->
         <!-- See https://checkstyle.sourceforge.io/checks/whitespace/index.html -->
+        <module name="ArrayBracketNoWhitespace"/>
         <module name="EmptyForIteratorPad"/>
         <module name="GenericWhitespace"/>
         <module name="MethodParamPad"/>
@@ -225,6 +244,7 @@
         <module name="EqualsAvoidNull"/>
         <module name="EqualsHashCode"/>
         <module name="ExplicitInitialization"/>
+        <module name="ExpressionOverBlockLambda"/>
         <!-- Completely overridden since it's common in Java to do e.g. this.foo = foo;
         <module name="HiddenField">
             <property name="ignoreSetter" value="true" />
@@ -239,6 +259,9 @@
         <!--<module name="MagicNumber"/> Unfortunately, too much noise -->
         <!--<module name="MissingSwitchDefault"/>-->
         <module name="MultipleVariableDeclarations"/>
+        <module name="OverloadMethodsDeclarationOrder">
+            <property name="orderByIncreasingParameterCount" value="true"/>
+        </module>
         <module name="PatternVariableAssignment"/>
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
@@ -248,7 +271,11 @@
         <module name="UnnecessarySemicolonAfterTypeMemberDeclaration"/>
         <module name="UnnecessarySemicolonInEnumeration"/>
         <module name="UnnecessarySemicolonInTryWithResources"/>
+        <module name="UnnecessaryTypeArgumentsWithRecordPattern"/>
         <module name="UnusedLocalVariable"/>
+        <module name="UnusedPrivateField"/>
+        <module name="UnusedTryResourceShouldBeUnnamed"/>
+        <!--<module name="UseEnhancedSwitch"/> Switch rules need Java 14+; we target Java 11 -->
 
         <!-- Checks for class design                                        -->
         <!-- See https://checkstyle.sourceforge.io/checks/design/index.html -->
@@ -270,6 +297,10 @@
         </module>-->
         <module name="CommentsIndentation"/>
         <!--<module name="FinalParameters"/>-->
+        <module name="IllegalSymbol"/>
+        <!--<module name="MultilineCommentLeadingAsteriskPresence"/> TODO: Jazzy license headers lack asterisks -->
+        <module name="ModuleDirectiveOrder"/>
+        <module name="NumericalPrefixesInfixesSuffixesCharacterCase"/>
         <!-- <module name="TodoComment"/> -->
         <module name="UpperEll"/>
 

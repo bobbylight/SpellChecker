@@ -129,6 +129,8 @@ public abstract class AbstractWordFinder implements WordFinder {
   }
 
   /**
+   * Returns whether the current word starts a new sentence.
+   *
    * @return true if the current word starts a new sentence.
    * @throws WordNotFoundException current word has not yet been set.
    */

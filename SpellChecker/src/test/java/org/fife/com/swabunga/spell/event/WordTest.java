@@ -1,7 +1,6 @@
 package org.fife.com.swabunga.spell.event;
 
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

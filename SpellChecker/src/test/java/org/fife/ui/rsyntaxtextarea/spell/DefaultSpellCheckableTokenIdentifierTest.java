@@ -3,7 +3,6 @@ package org.fife.ui.rsyntaxtextarea.spell;
 import org.fife.ui.rsyntaxtextarea.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

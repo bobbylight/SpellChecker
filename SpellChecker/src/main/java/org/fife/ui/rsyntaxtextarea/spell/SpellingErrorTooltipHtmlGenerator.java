@@ -4,14 +4,14 @@
  */
 package org.fife.ui.rsyntaxtextarea.spell;
 
-import org.fife.com.swabunga.spell.engine.Word;
-import org.fife.com.swabunga.spell.event.SpellChecker;
-
 import java.awt.*;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import org.fife.com.swabunga.spell.engine.Word;
+import org.fife.com.swabunga.spell.event.SpellChecker;
 
 /**
  * Generates the HTML for a tooltip that displays a spelling error and its possible corrections.

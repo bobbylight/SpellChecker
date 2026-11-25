@@ -1,17 +1,5 @@
 package org.fife.com.swabunga.spell.event;
 
-import org.fife.com.swabunga.spell.engine.Configuration;
-import org.fife.com.swabunga.spell.engine.SpellDictionary;
-import org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap;
-import org.fife.com.swabunga.spell.engine.Word;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.ParameterizedTest;
-
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -19,7 +7,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
+import org.fife.com.swabunga.spell.engine.Configuration;
+import org.fife.com.swabunga.spell.engine.SpellDictionary;
+import org.fife.com.swabunga.spell.engine.SpellDictionaryHashMap;
+import org.fife.com.swabunga.spell.engine.Word;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
