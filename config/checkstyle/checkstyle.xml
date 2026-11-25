@@ -111,7 +111,6 @@
             <property name="accessModifiers" value="package"/>
         </module>
         -->
-        <module name="JavadocStyle"/>
         <module name="AtclauseOrder"/>
         <module name="InvalidJavadocPosition"/>
         <module name="JavadocBlockTagLocation"/>
