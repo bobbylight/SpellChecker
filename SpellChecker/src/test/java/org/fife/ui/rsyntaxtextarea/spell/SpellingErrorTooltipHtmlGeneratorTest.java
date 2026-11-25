@@ -41,7 +41,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     void testGet_evenSuggestionCount() {
         dictionary.addWord("misspelled");
         dictionary.addWord("dispelled");
-        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
+        var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
 
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
 
@@ -63,7 +63,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     @Test
     void testGet_capitalizedWord_suggestionsCapitalized() {
         dictionary.addWord("misspelled");
-        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "Mispelled", sc);
+        var notice = new SpellingParserNotice(parser, "msg", 0, 4, "Mispelled", sc);
 
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
 
@@ -74,7 +74,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
 
     @Test
     void testGet_noSuggestions() {
-        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
+        var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
 
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
 
@@ -89,7 +89,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     @Test
     void testGet_oddSuggestionCount() {
         dictionary.addWord("misspelled");
-        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
+        var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
 
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
 
@@ -111,7 +111,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     void testGet_options_disallowAdd() {
         dictionary.addWord("misspelled");
         dictionary.addWord("dispelled");
-        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
+        var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
         parser.setAllowAdd(false);
 
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
@@ -121,7 +121,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
 
     @Test
     void testGet_options_noUserDictionary() throws IOException {
-        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
+        var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
         parser.setUserDictionary(null);
 
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
@@ -134,7 +134,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
     void testGet_options_disallowIgnore() {
         dictionary.addWord("misspelled");
         dictionary.addWord("dispelled");
-        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
+        var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
         parser.setAllowIgnore(false);
 
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
@@ -144,7 +144,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
 
     @Test
     void testGet_wordWithApostrophe_addLinkContainsWholeWord() {
-        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 8, "would'nt", sc);
+        var notice = new SpellingParserNotice(parser, "msg", 0, 8, "would'nt", sc);
 
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
 
@@ -153,7 +153,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
 
     @Test
     void testGet_wordWithApostrophe_ignoreLinkContainsWholeWord() {
-        SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 8, "would'nt", sc);
+        var notice = new SpellingParserNotice(parser, "msg", 0, 8, "would'nt", sc);
 
         String html = new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
 
@@ -190,8 +190,8 @@ class SpellingErrorTooltipHtmlGeneratorTest {
      * the given prefix, as Swing's HTML parser (which renders the tooltip) sees it.
      */
     private static String getHref(String html, String prefix) {
-        HTMLEditorKit kit = new HTMLEditorKit();
-        HTMLDocument doc = (HTMLDocument)kit.createDefaultDocument();
+        var kit = new HTMLEditorKit();
+        var doc = (HTMLDocument)kit.createDefaultDocument();
         try {
             kit.read(new StringReader(html), doc, 0);
         } catch (IOException | BadLocationException e) {
@@ -210,7 +210,7 @@ class SpellingErrorTooltipHtmlGeneratorTest {
         Locale origDefault = Locale.getDefault();
         try {
             Locale.setDefault(locale);
-            SpellingParserNotice notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
+            var notice = new SpellingParserNotice(parser, "msg", 0, 4, "mispelled", sc);
             return new SpellingErrorTooltipHtmlGenerator().get(sc, notice);
         } finally {
             Locale.setDefault(origDefault);

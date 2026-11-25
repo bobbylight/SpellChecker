@@ -466,7 +466,7 @@ public class SpellChecker {
    *         found and whether a listener cancelled it.
    */
   public final SpellCheckResult checkSpelling(WordTokenizer tokenizer) {
-    CheckState state = new CheckState(config);
+    var state = new CheckState(config);
     while (tokenizer.hasMoreWords() && !state.terminated) {
       String word = tokenizer.nextWord();
       checkWord(word, tokenizer.getCurrentWordPosition(), tokenizer.isNewSentence(), state);

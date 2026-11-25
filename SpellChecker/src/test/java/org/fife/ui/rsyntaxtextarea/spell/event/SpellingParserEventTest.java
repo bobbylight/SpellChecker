@@ -25,13 +25,13 @@ public class SpellingParserEventTest {
 
     @Test
     void testConstructor_wordAdded() {
-        SpellingParserEvent e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_ADDED, "test");
+        var e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_ADDED, "test");
         assertNotNull(e);
     }
 
     @Test
     void testConstructor_wordIgnored() {
-        SpellingParserEvent e = new SpellingParserEvent(parser, textArea,
+        var e = new SpellingParserEvent(parser, textArea,
             SpellingParserEvent.Type.WORD_IGNORED, "test");
         assertNotNull(e);
     }
@@ -43,19 +43,19 @@ public class SpellingParserEventTest {
 
     @Test
     void testGetParser() {
-        SpellingParserEvent e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_ADDED, "test");
+        var e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_ADDED, "test");
         assertEquals(parser, e.getParser());
     }
 
     @Test
     void testGetTextArea() {
-        SpellingParserEvent e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_ADDED, "test");
+        var e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_ADDED, "test");
         assertEquals(textArea, e.getTextArea());
     }
 
     @Test
     void testGetType() {
-        SpellingParserEvent e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_ADDED, "test");
+        var e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_ADDED, "test");
         assertEquals(SpellingParserEvent.Type.WORD_ADDED, e.getType());
         e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_IGNORED, "test");
         assertEquals(SpellingParserEvent.Type.WORD_IGNORED, e.getType());
@@ -63,7 +63,7 @@ public class SpellingParserEventTest {
 
     @Test
     void testGetWord() {
-        SpellingParserEvent e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_ADDED, "test");
+        var e = new SpellingParserEvent(parser, textArea, SpellingParserEvent.Type.WORD_ADDED, "test");
         assertEquals("test", e.getWord());
     }
 }

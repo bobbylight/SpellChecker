@@ -30,7 +30,7 @@ class SpellingErrorTooltipHtmlGenerator {
             "org.fife.ui.rsyntaxtextarea.spell.SpellingParser");
 
     public String get(SpellChecker sc, SpellingParserNotice notice) {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
         String spacing = "&nbsp;".repeat(8);
         String word = notice.getWord();
 
@@ -83,7 +83,7 @@ class SpellingErrorTooltipHtmlGenerator {
 
         // As above, the ADD and IGNORE links' hrefs are double-quoted since the
         // misspelled word can contain single quotes (e.g. "would'nt").
-        SpellingParser sp = (SpellingParser)notice.getParser();
+        var sp = (SpellingParser)notice.getParser();
         if (sp.getAllowAdd() && sp.getUserDictionary() != null) {
             sb.append("<img src='add.png' width='16' height='16'>&nbsp;").
                     append("<a href=\"").append(SpellingErrorAction.ADD).

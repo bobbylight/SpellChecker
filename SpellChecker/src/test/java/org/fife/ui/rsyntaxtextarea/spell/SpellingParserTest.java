@@ -49,7 +49,7 @@ class SpellingParserTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        SpellDictionaryHashMap dictionary = new SpellDictionaryHashMap();
+        var dictionary = new SpellDictionaryHashMap();
         for (String word : WORDS) {
             dictionary.addWord(word);
         }
@@ -61,7 +61,7 @@ class SpellingParserTest {
         File zipFile = File.createTempFile("scUnitTests_spellingParser_eng_dictionary", ".zip");
         zipFile.deleteOnExit();
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFile))) {
-            ZipEntry entry = new ZipEntry("eng_com.dic");
+            var entry = new ZipEntry("eng_com.dic");
             zos.putNextEntry(entry);
             zos.write("aardvark\nappla\nbat\n".getBytes());
             zos.closeEntry();
@@ -161,7 +161,7 @@ class SpellingParserTest {
         }
 
         SpellingParser utf8Parser = SpellingParser.createEnglishSpellingParser(zipFile, true, false);
-        RSyntaxDocument doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
+        var doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
         doc.insertString(0, "caf\u00e9", null);
         ParseResult result = utf8Parser.parse(doc, SyntaxConstants.SYNTAX_STYLE_NONE);
         assertTrue(result.getNotices().isEmpty(), () -> result.getNotices().toString());
@@ -277,7 +277,7 @@ class SpellingParserTest {
         parser.setUserDictionary(userDictFile);
 
         String desc = "ADD://newword";
-        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
+        var e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
         parser.linkClicked(textArea, e);
 
         // Proper event fired
@@ -299,13 +299,13 @@ class SpellingParserTest {
         parser.addSpellingParserListener(listener);
 
         String desc = "ADD://newword";
-        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
+        var e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
         parser.linkClicked(textArea, e);
 
         assertEquals(0, events.size());
 
         // The word isn't added to the in-memory user dictionary either
-        RSyntaxDocument doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
+        var doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
         doc.insertString(0, "newword", null);
         assertEquals(1, parser.parse(doc, SyntaxConstants.SYNTAX_STYLE_NONE).getNotices().size());
     }
@@ -317,7 +317,7 @@ class SpellingParserTest {
         parser.addSpellingParserListener(listener);
 
         String desc = "IGNORE://newword";
-        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
+        var e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
         parser.linkClicked(textArea, e);
 
         assertEquals(1, events.size());
@@ -336,7 +336,7 @@ class SpellingParserTest {
         textArea.setText("0123456789");
 
         String desc = "REPLACE://1,3,replacement,123";
-        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
+        var e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ACTIVATED, null, desc);
         parser.linkClicked(textArea, e);
 
         assertEquals(0, events.size());
@@ -384,7 +384,7 @@ class SpellingParserTest {
      */
     @Test
     void testLinkClicked_replace_toolTipShownBeforeReparse_doesNotReplaceWrongText() throws Exception {
-        SpellDictionaryHashMap dictionary = new SpellDictionaryHashMap();
+        var dictionary = new SpellDictionaryHashMap();
         for (String word : new String[] { "a", "this", "cat", "sat" }) {
             dictionary.addWord(word);
         }
@@ -400,7 +400,7 @@ class SpellingParserTest {
 
         // Hover over offset 9, where "sta" was and the "t" of "cat" now is
         Rectangle r = textArea.modelToView2D(9).getBounds();
-        MouseEvent hover = new MouseEvent(textArea, MouseEvent.MOUSE_MOVED, 0, 0,
+        var hover = new MouseEvent(textArea, MouseEvent.MOUSE_MOVED, 0, 0,
             r.x + 1, r.y + r.height / 2, 0, false);
         String tip = textArea.getToolTipText(hover);
         assertNotNull(tip);
@@ -420,7 +420,7 @@ class SpellingParserTest {
 
         // The mouse entering a hyperlink doesn't do anything
         String desc = "ADD://newword";
-        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ENTERED, null, desc);
+        var e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.ENTERED, null, desc);
         parser.linkClicked(textArea, e);
 
         // No events fired
@@ -435,7 +435,7 @@ class SpellingParserTest {
 
         // The mouse exiting a hyperlink doesn't do anything
         String desc = "ADD://newword";
-        HyperlinkEvent e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.EXITED, null, desc);
+        var e = new HyperlinkEvent(textArea, HyperlinkEvent.EventType.EXITED, null, desc);
         parser.linkClicked(textArea, e);
 
         // No events fired
@@ -444,7 +444,7 @@ class SpellingParserTest {
 
     @Test
     void testParse_plainText_hyphenatedWords() throws BadLocationException {
-        RSyntaxDocument doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
+        var doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_NONE);
         doc.insertString(0, "This is a bat-cave test-caev.", null);
         ParseResult result = parser.parse(doc, SyntaxConstants.SYNTAX_STYLE_NONE);
 
@@ -461,7 +461,7 @@ class SpellingParserTest {
     @NullSource
     @ValueSource(strings = SyntaxConstants.SYNTAX_STYLE_NONE)
     void testParse_plainText(String syntaxStyle) throws BadLocationException {
-        RSyntaxDocument doc = new RSyntaxDocument(syntaxStyle);
+        var doc = new RSyntaxDocument(syntaxStyle);
         doc.insertString(0, "Thiss is a test.", null);
         ParseResult result = parser.parse(doc, null);
 
@@ -488,7 +488,7 @@ class SpellingParserTest {
 
     @Test
     void testParse_nonPlainText() throws BadLocationException {
-        RSyntaxDocument doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        var doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_JAVA);
         doc.insertString(0, "// Thiss is a test.\nThiss error will not be flagged", null);
         ParseResult result = parser.parse(doc, SyntaxConstants.SYNTAX_STYLE_JAVA);
 
@@ -515,7 +515,7 @@ class SpellingParserTest {
 
     @Test
     void testParse_nonPlainText_stopsAtMaxSpellingErrors() throws BadLocationException {
-        RSyntaxDocument doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        var doc = new RSyntaxDocument(SyntaxConstants.SYNTAX_STYLE_JAVA);
         doc.insertString(0, "// Thiss is a test. Thiss is a test", null);
         parser.setMaxErrorCount(1);
         ParseResult result = parser.parse(doc, SyntaxConstants.SYNTAX_STYLE_JAVA);

@@ -25,37 +25,37 @@ class AbstractWordFinderTest {
 
     @Test
     void testIgnore_startAndEndChars() {
-        IgnoreTestWordFinder finder = new IgnoreTestWordFinder("ab <tag> cd");
+        var finder = new IgnoreTestWordFinder("ab <tag> cd");
         assertEquals(8, finder.ignore(3, '<', '>'));
     }
 
     @Test
     void testIgnore_startAndEndChars_noEndCharFound() {
-        IgnoreTestWordFinder finder = new IgnoreTestWordFinder("ab <tag cd");
+        var finder = new IgnoreTestWordFinder("ab <tag cd");
         assertEquals(10, finder.ignore(3, '<', '>'));
     }
 
     @Test
     void testIgnore_startAndEndChars_startCharNotAtIndex() {
-        IgnoreTestWordFinder finder = new IgnoreTestWordFinder("ab <tag> cd");
+        var finder = new IgnoreTestWordFinder("ab <tag> cd");
         assertEquals(2, finder.ignore(2, '<', '>'));
     }
 
     @Test
     void testIgnore_startCharOnly_stopsAtNonLetterOrDigit() {
-        IgnoreTestWordFinder finder = new IgnoreTestWordFinder("ab #tag1 cd");
+        var finder = new IgnoreTestWordFinder("ab #tag1 cd");
         assertEquals(8, finder.ignore(3, '#'));
     }
 
     @Test
     void testIgnore_startCharOnly_toEndOfText() {
-        IgnoreTestWordFinder finder = new IgnoreTestWordFinder("ab #tag1");
+        var finder = new IgnoreTestWordFinder("ab #tag1");
         assertEquals(8, finder.ignore(3, '#'));
     }
 
     @Test
     void testIgnore_indexAtEndOfText() {
-        IgnoreTestWordFinder finder = new IgnoreTestWordFinder("ab");
+        var finder = new IgnoreTestWordFinder("ab");
         assertEquals(2, finder.ignore(2, '<', '>'));
     }
 

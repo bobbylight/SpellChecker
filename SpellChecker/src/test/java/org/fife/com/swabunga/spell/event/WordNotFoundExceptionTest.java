@@ -10,14 +10,14 @@ class WordNotFoundExceptionTest {
 
     @Test
     void testDefaultConstructor() {
-        WordNotFoundException e = new WordNotFoundException();
+        var e = new WordNotFoundException();
         assertNull(e.getMessage());
     }
 
     @Test
     void testConstructorWithMessage() {
         String message = "Word not found";
-        WordNotFoundException e = new WordNotFoundException(message);
+        var e = new WordNotFoundException(message);
         assertEquals(message, e.getMessage());
     }
 }

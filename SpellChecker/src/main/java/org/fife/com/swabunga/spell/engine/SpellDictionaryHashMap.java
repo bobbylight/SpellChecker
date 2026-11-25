@@ -203,7 +203,7 @@ public class SpellDictionaryHashMap implements SpellDictionary {
   public List<Word> getSuggestions(String word, Configuration config) {
 
     int threshold = config.getInteger(Configuration.SPELL_THRESHOLD);
-    EditDistance editDistance = new EditDistance(config);
+    var editDistance = new EditDistance(config);
 
     // A word can be in two groups, so track which have been suggested
     Set<String> suggested = new HashSet<>();

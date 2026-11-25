@@ -10,7 +10,7 @@ class SpellCheckResultTest {
 
     @Test
     void testConstructor_noErrors() {
-        SpellCheckResult result = new SpellCheckResult(0, false);
+        var result = new SpellCheckResult(0, false);
         assertEquals(0, result.getErrorCount());
         assertFalse(result.hasErrors());
         assertFalse(result.isCancelled());
@@ -18,7 +18,7 @@ class SpellCheckResultTest {
 
     @Test
     void testConstructor_errors() {
-        SpellCheckResult result = new SpellCheckResult(3, false);
+        var result = new SpellCheckResult(3, false);
         assertEquals(3, result.getErrorCount());
         assertTrue(result.hasErrors());
         assertFalse(result.isCancelled());
@@ -26,7 +26,7 @@ class SpellCheckResultTest {
 
     @Test
     void testConstructor_cancelled() {
-        SpellCheckResult result = new SpellCheckResult(2, true);
+        var result = new SpellCheckResult(2, true);
         assertEquals(2, result.getErrorCount());
         assertTrue(result.hasErrors());
         assertTrue(result.isCancelled());

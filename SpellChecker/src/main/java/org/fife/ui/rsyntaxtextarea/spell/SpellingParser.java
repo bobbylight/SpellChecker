@@ -424,7 +424,7 @@ public class SpellingParser extends AbstractParser
                     String word = tokens[0];
                     if (sc.addToDictionary(word)) {
                         textArea.forceReparsing(this);
-                        SpellingParserEvent se = new SpellingParserEvent(this,
+                        var se = new SpellingParserEvent(this,
                                 textArea, SpellingParserEvent.Type.WORD_ADDED, word);
                         fireSpellingParserEvent(se);
                     }
@@ -437,7 +437,7 @@ public class SpellingParser extends AbstractParser
                     word = tokens[0];
                     sc.ignoreAll(word);
                     textArea.forceReparsing(this);
-                    SpellingParserEvent se = new SpellingParserEvent(this,
+                    var se = new SpellingParserEvent(this,
                             textArea, SpellingParserEvent.Type.WORD_IGNORED, word);
                     fireSpellingParserEvent(se);
                     break;
@@ -506,7 +506,7 @@ public class SpellingParser extends AbstractParser
      * @param doc The document to spell check.
      */
     private void parseEntireDocument(RSyntaxDocument doc) {
-        DocumentWordTokenizer dwt = new DocumentWordTokenizer(doc);
+        var dwt = new DocumentWordTokenizer(doc);
         sc.checkSpelling(dwt);
     }
 

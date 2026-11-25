@@ -111,7 +111,7 @@ class DocumentWordTokenizerTest {
         // offset 0, so the Segment the tokenizer reads has a non-zero offset
         doc.replace(0, doc.getLength(), "XEnd here. Next one", null);
         doc.remove(0, 1);
-        Segment segment = new Segment();
+        var segment = new Segment();
         doc.getText(0, doc.getLength(), segment);
         assertNotEquals(0, segment.offset, "Test precondition not met");
 
