@@ -1,22 +1,22 @@
 /*
-Jazzy - a Java library for Spell Checking
-Copyright (C) 2001 Mindaugas Idzelis
-Full text of license can be found in LICENSE.txt
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-*/
+ * Jazzy - a Java library for Spell Checking
+ * Copyright (C) 2001 Mindaugas Idzelis
+ * Full text of license can be found in LICENSE.txt
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
 package org.fife.com.swabunga.spell.engine;
 
 /**
@@ -151,22 +151,22 @@ public final class EditDistance {
    * @throws java.lang.Exception when problems occurs during reading args.
    */
   /*
-  public static void main(String[] args) throws Exception {
-    BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
-    //int[][] matrix = new int[0][0];
-    while (true) {
-
-      String input1 = stdin.readLine();
-      if (input1 == null || input1.isEmpty())
-        break;
-
-      String input2 = stdin.readLine();
-      if (input2 == null || input2.isEmpty())
-        break;
-
-      //System.out.println(EditDistance.getDistance(input1, input2,matrix));
-    }
-    //System.out.println("done");
-  }
-  */
+   * public static void main(String[] args) throws Exception {
+   *   BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+   *   //int[][] matrix = new int[0][0];
+   *   while (true) {
+   *
+   *     String input1 = stdin.readLine();
+   *     if (input1 == null || input1.isEmpty())
+   *       break;
+   *
+   *     String input2 = stdin.readLine();
+   *     if (input2 == null || input2.isEmpty())
+   *       break;
+   *
+   *     //System.out.println(EditDistance.getDistance(input1, input2,matrix));
+   *   }
+   *   //System.out.println("done");
+   * }
+   */
 }
