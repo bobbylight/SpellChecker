@@ -19,9 +19,6 @@
  */
 package org.fife.com.swabunga.spell.event;
 
-import java.text.BreakIterator;
-
-
 /**
  * This class tokenizes an input string.
  *
@@ -38,10 +35,6 @@ public abstract class AbstractWordTokenizer implements WordTokenizer {
      * The word finder used to filter out words which are non pertinent to spell checking.
      */
     protected WordFinder finder;
-    /**
-     * An iterator to work through the sentence.
-     */
-    protected BreakIterator sentenceIterator;
 
     /**
      * Creates a new AbstractWordTokenizer object.

@@ -1,5 +1,5 @@
 plugins {
-//    id 'com.github.spotbugs' version '6.5.13'
+    id 'com.github.spotbugs' version '6.5.13'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
@@ -34,7 +34,7 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'checkstyle'
-//    apply plugin: 'com.github.spotbugs'
+    apply plugin: 'com.github.spotbugs'
 
     test {
         useJUnitPlatform()
@@ -45,26 +45,30 @@ subprojects {
         configDirectory = file("$rootProject.projectDir/config/checkstyle")
     }
 
-//    spotbugsMain {
-//        reports {
-//            html {
-//                required = true
-//            }
-//            xml {
-//                required = false
-//            }
-//        }
-//    }
-//    spotbugsTest {
-//        reports {
-//            html {
-//                required = true
-//            }
-//            xml {
-//                required = false
-//            }
-//        }
-//    }
+    spotbugs {
+        excludeFilter = file("$rootProject.projectDir/config/spotbugs-exclude.xml")
+    }
+
+    spotbugsMain {
+        reports {
+            html {
+                required = true
+            }
+            xml {
+                required = false
+            }
+        }
+    }
+    spotbugsTest {
+        reports {
+            html {
+                required = true
+            }
+            xml {
+                required = false
+            }
+        }
+    }
 
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
