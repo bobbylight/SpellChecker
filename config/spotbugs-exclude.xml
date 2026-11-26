@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+
+    <!-- Sharing mutable references (reused Word instances, injected
+         Documents and WordFinders, the live Configuration, etc.) is by
+         design in this API -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2" />
+    </Match>
+
+    <!-- Finalizer attacks aren't a concern for this library -->
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW" />
+    </Match>
+
+    <!-- The added fields don't affect equality: word is already part of the
+         message, and all notices from a parser share its SpellChecker -->
+    <Match>
+        <Class name="org.fife.ui.rsyntaxtextarea.spell.SpellingParserNotice" />
+        <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS" />
+    </Match>
+
+</FindBugsFilter>
