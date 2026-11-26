@@ -1,6 +1,6 @@
 # SpellChecker
 ![Build](https://github.com/bobbylight/SpellChecker/actions/workflows/gradle.yml/badge.svg)
-![CodeQL](https://github.com/bobbylight/SpellChecker/actions/workflows/codeql-analysis.yml/badge.svg)
+![CodeQL](https://github.com/bobbylight/SpellChecker/actions/workflows/github-code-scanning/codeql/badge.svg)
 ![Maven Central](https://maven-badges.sml.io/sonatype-central/com.fifesoft/spellchecker/badge.svg)
 [![codecov](https://codecov.io/gh/bobbylight/SpellChecker/graph/badge.svg?token=xzoUjtmmjf)](https://codecov.io/gh/bobbylight/SpellChecker)
 
